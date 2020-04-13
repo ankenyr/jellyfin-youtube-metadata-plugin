@@ -12,7 +12,6 @@
                     <div class="inputContainer">
                         <label class="inputeLabel inputLabelUnfocused" for="apikey">API Key</label>
                         <input id="apikey" name="apikey" type="text" is="emby-input" />
-                        <div class="fieldDescription">Another Description</div>
                     </div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
@@ -30,9 +29,6 @@
             $('#YoutubeMetadataConfigPage').on('pageshow', function () {
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId).then(function (config) {
-                    $('#Options').val(config.Options).change();
-                    $('#AnInteger').val(config.AnInteger).change();
-                    $('#TrueFalseSetting').checked(config.TrueFalseSetting).checkboxradio("refresh");
                     $('#apikey').val(config.apikey).change();
                     Dashboard.hideLoadingMsg();
                 });
@@ -41,9 +37,6 @@
             $('#YoutubeMetadataConfigForm').on('submit', function () {
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId).then(function (config) {
-                    config.Options = $('#Options').val();
-                    config.AnInteger = $('#AnInteger').val();
-                    config.TrueFalseSetting = $('#TrueFalseSetting').prop('checked');
                     config.apikey = $('#apikey').val();
                     ApiClient.updatePluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
