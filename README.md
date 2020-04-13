@@ -1,5 +1,5 @@
 
-<h1 align="center">[Jellyfin](https://jellyfin.org/) Youtube Metadata Plugin</h1>
+<h1 align="center">Jellyfin Youtube Metadata Plugin</h1>
 
 <p align="center">
 This plugin will download metadata about Youtube videos using a Youtube API key.
