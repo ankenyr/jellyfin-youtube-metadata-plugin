@@ -1,10 +1,11 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
 		<AssemblyVersion>7.0.0</AssemblyVersion>
 		<FileVersion>1.0.0</FileVersion>
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -16,38 +17,21 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Microsoft.Extensions.Logging" Version="3.1.3" />
+	  <PackageReference Include="Google.Apis" Version="1.45.0">
+	    <IncludeAssets></IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Google.Apis.Auth" Version="1.45.0">
+	    <IncludeAssets></IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Google.Apis.Core" Version="1.45.0">
+	    <IncludeAssets></IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1905">
+	    <IncludeAssets></IncludeAssets>
+	  </PackageReference>
+	  <PackageReference Include="Jellyfin.Controller" Version="10.5.2">
+	    <IncludeAssets>compile</IncludeAssets>
+	  </PackageReference>
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="Google.Apis">
-	    <HintPath>..\..\..\..\.nuget\packages\google.apis\1.45.0\lib\netstandard2.0\Google.Apis.dll</HintPath>
-	  </Reference>
-	  <Reference Include="Google.Apis.Auth">
-	    <HintPath>..\..\..\..\.nuget\packages\google.apis.auth\1.45.0\lib\netstandard2.0\Google.Apis.Auth.dll</HintPath>
-	  </Reference>
-	  <Reference Include="Google.Apis.Core">
-	    <HintPath>..\..\..\..\.nuget\packages\google.apis.core\1.45.0\lib\netstandard2.0\Google.Apis.Core.dll</HintPath>
-	  </Reference>
-	  <Reference Include="Google.Apis.YouTube.v3">
-	    <HintPath>..\..\..\..\.nuget\packages\google.apis.youtube.v3\1.45.0.1905\lib\netstandard2.0\Google.Apis.YouTube.v3.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Common">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Providers\bin\Release\netstandard2.1\MediaBrowser.Common.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Controller">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\netstandard2.1\MediaBrowser.Controller.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Model">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Model\bin\Debug\netstandard2.1\MediaBrowser.Model.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Providers">
-	    <HintPath>..\..\jellyfin\Emby.Server.Implementations\bin\Debug\netstandard2.1\MediaBrowser.Providers.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /y $(ProjectDir)\bin\Debug\netstandard2.1 C:\Users\Rob\Desktop\jellyfin-data\plugins" />
-	</Target>
 
 </Project>
