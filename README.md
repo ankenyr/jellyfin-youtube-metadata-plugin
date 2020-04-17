@@ -11,12 +11,26 @@ This plugin will download metadata about Youtube videos using a Youtube API key.
 1. Clone or download this repository.
 1. Ensure you have .NET Core SDK setup and installed.
 1. Build plugin with following command.
-    ```sh
+    ```
     dotnet publish --configuration Release --output bin
     ```
-1. Create folder named `YoutubeMetadata` in the `plugin` directory within `data` directory.
-1. Place the resulting file from step 3 in the `plugins/YoutubeMetadata` folder created in step 4.
-1. If performed correctly you will see the plugin in the dashboard plugin page.
+1. Create folder named `YoutubeMetadata` in the `plugins` directory inside your Jellyfin data
+   directory. You can find your directory by going to Dashboard, and noticing the Paths section.
+   Mine is the root folder of the default Metadata directory.
+    ```
+    # mkdir <Jellyfin Data Directory>/plugins/YoutubeMetadata/
+
+    ```
+1. Place the resulting files from step 3 in the `plugins/YoutubeMetadata` folder created in step 4.
+    ```
+    # cp -r bin/*.dll <Jellyfin Data Directory>/plugins/YoutubeMetadata/`
+    ```
+1. Be sure that the plugin files are owned by your `jellyfin` user:
+    ```
+    # chown -R jellyfin:jellyfin /var/lib/jellyfin/plugins/YoutubeMetadata/
+    ```
+1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
+   Advanced -> Plugins`.
 
 
 ## Setup Plugin
@@ -27,4 +41,4 @@ This plugin will download metadata about Youtube videos using a Youtube API key.
 1. Create a new API key.
 1. Go to the YoutubeMetadata Plugin page in Jellyfin.
 1. Input API key into the text box for the API key and click Save.
-1. Enable plugin for library by going to Admin Dashboard > Libraries, clicking on the three dots for the library and checking the bot for YoutubeMetadata.
+1. You are now able to use the YoutubeMetadata agent in your libraries. 
