@@ -15,15 +15,19 @@ This plugin will download metadata about Youtube videos using a Youtube API key.
     dotnet publish --configuration Release --output bin
     ```
 1. Create folder named `YoutubeMetadata` in the `plugins` directory inside your Jellyfin data
-   directory, usually `/var/lib/jellyfin`. 
+   directory. You can find your directory by going to Dashboard, and noticing the Paths section.
+   Mine is the root folder of the default Metadata directory.
+    ```
+    # mkdir <Jellyfin Data Directory>/plugins/YoutubeMetadata/
+
+    ```
 1. Place the resulting files from step 3 in the `plugins/YoutubeMetadata` folder created in step 4.
     ```
-    $ chmod +x bin/*.dll
-    # cp -r bin/*.dll /var/lib/jellyfin/plugins/YoutubeMetadata/`
+    # cp -r bin/*.dll <Jellyfin Data Directory>/plugins/YoutubeMetadata/`
     ```
 1. Be sure that the plugin files are owned by your `jellyfin` user:
     ```
-    # chown jellyfin:jellyfin /var/lib/jellyfin/plugins/YoutubeMetadata/*.dll
+    # chown -R jellyfin:jellyfin /var/lib/jellyfin/plugins/YoutubeMetadata/
     ```
 1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
    Advanced -> Plugins`.
