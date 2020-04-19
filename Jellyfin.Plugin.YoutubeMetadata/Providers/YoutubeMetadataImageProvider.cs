@@ -61,27 +61,49 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
                 if (obj != null)
                 {
-                    return GetImages(obj.Snippet.Thumbnails.Maxres.Url);
+                    var tnurls = new List<string>();
+                    if (obj.Snippet.Thumbnails.Maxres != null) { 
+                        tnurls.Add(obj.Snippet.Thumbnails.Maxres.Url);
+                    } 
+                    if (obj.Snippet.Thumbnails.Standard != null)
+                    {
+                        tnurls.Add(obj.Snippet.Thumbnails.Standard.Url);
+                    }
+                    if (obj.Snippet.Thumbnails.High != null)
+                    {
+                        tnurls.Add(obj.Snippet.Thumbnails.High.Url);
+                    }
+                    if (obj.Snippet.Thumbnails.Medium != null)
+                    {
+                        tnurls.Add(obj.Snippet.Thumbnails.Medium.Url);
+                    }
+                    if (obj.Snippet.Thumbnails.Default__.Url != null)
+                    {
+                        tnurls.Add(obj.Snippet.Thumbnails.Default__.Url);
+                    }
+
+                    return GetImages(tnurls);
                 }
             }
 
             return new List<RemoteImageInfo>();
         }
-
-        private IEnumerable<RemoteImageInfo> GetImages(string url)
+        
+        private IEnumerable<RemoteImageInfo> GetImages(IEnumerable<string> urls)
         {
             var list = new List<RemoteImageInfo>();
-
-            if (!string.IsNullOrWhiteSpace(url))
+            foreach (string url in urls)
             {
-                list.Add(new RemoteImageInfo
+                if (!string.IsNullOrWhiteSpace(url))
                 {
-                    ProviderName = Name,
-                    Url = url,
-                    Type = ImageType.Primary
-                });
+                    list.Add(new RemoteImageInfo
+                    {
+                        ProviderName = Name,
+                        Url = url,
+                        Type = ImageType.Primary
+                    });
+                }
             }
-
             return list;
         }
 
