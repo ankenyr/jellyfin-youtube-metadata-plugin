@@ -180,7 +180,32 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             });
             var vreq = youtubeService.Videos.List("snippet");
             vreq.Id = youtubeId;
-            var response = await vreq.ExecuteAsync();
+            Google.Apis.YouTube.v3.Data.VideoListResponse response = null;
+            var attempts = 0;
+            do {
+                try
+                {
+                    attempts++;
+                    response = await vreq.ExecuteAsync();
+                    break;
+                }
+                catch (Google.GoogleApiException ex)
+                {
+                    if (attempts == 2)
+                    {
+                        _logger.LogError(ex, "Tried to get metadata multiple times. ");
+                        throw ex;
+                    }
+                    var now = DateTime.Now;
+                    var tomorrow = new DateTime(now.Year, now.Month, now.Day + 1);
+                    var timetosub = tomorrow.Subtract(now);
+                    var inttimetosub = Convert.ToInt32(timetosub.TotalMilliseconds) + 60000;
+                    _logger.LogInformation("Quota exceeded, waiting for {0} seconds", timetosub.TotalSeconds);
+                    await Task.Delay(inttimetosub);
+                    
+                }
+            } while (true);
+            _logger.LogInformation(response.ToString());
             var path = GetVideoInfoPath(_config.ApplicationPaths, youtubeId);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var foo = response.Items[0];
