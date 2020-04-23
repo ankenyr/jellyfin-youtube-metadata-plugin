@@ -1,10 +1,20 @@
 
+
 <h1 align="center">Jellyfin Youtube Metadata Plugin</h1>
 
 <p align="center">
 This plugin will download metadata about Youtube videos using a Youtube API key.
+
 </p>
 
+## Usage
+Currently this plugin only works with the Movie library. Your videos must have the Youtube ID in square braces at the end of the file name. The following are valid names that will be able to be identified.
+
+ - 20110622-Coffee_-_The_Greatest_Addiction_Ever [OTVE5iPMKLg].mp4
+ - 20111130-Death_to_Pennies [y5UT04p5f7U].mp4
+ - 20120529-Is_Pluto_a_planet [Z_2gbGXzFbs].mp4
+
+Future plans to allow users to specify their own regex is planned.
 
 ## Build Process
 
