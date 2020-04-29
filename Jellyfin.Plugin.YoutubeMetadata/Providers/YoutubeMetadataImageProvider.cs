@@ -11,7 +11,7 @@ using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 
-namespace Jellyfin.Plugin.YoutubeMetadata
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class YoutubeMetadataImageProvider : IRemoteImageProvider, IHasOrder
     {

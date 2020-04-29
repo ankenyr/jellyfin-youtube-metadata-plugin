@@ -21,7 +21,7 @@ using MediaBrowser.Controller.Entities.Movies;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
 
-namespace Jellyfin.Plugin.YoutubeMetadata
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class YoutubeMetadataProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
@@ -52,7 +52,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public string Name => "YoutubeMetadata";
 
         /// <inheritdoc />
-        public int Order => 0;
+        public int Order => 1;
 
         /// <inheritdoc />
         public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo searchInfo, CancellationToken cancellationToken)
