@@ -115,7 +115,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        private PersonInfo CreatePerson(string name)
+        public static PersonInfo CreatePerson(string name)
         {
 
             return new PersonInfo
