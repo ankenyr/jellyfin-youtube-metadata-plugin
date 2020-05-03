@@ -99,7 +99,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     result.HasMetadata = true;
                     result.Item.OriginalTitle = info.Name;
                     ProcessResult(result.Item, video);
-                    result.AddPerson(CreatePerson(video.Snippet.ChannelTitle));
+                    result.AddPerson(CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
                 }
             }
             else
@@ -114,14 +114,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// Creates a person object of type director for the provided name.
         /// </summary>
         /// <param name="name"></param>
+        /// <param name="channel_id"></param>
         /// <returns></returns>
-        public static PersonInfo CreatePerson(string name)
+        public static PersonInfo CreatePerson(string name, string channel_id)
         {
-
             return new PersonInfo
             {
                 Name = name,
                 Type = PersonType.Director,
+                ProviderIds = new Dictionary<string, string> { { "youtubemetadata", channel_id }
+            },
             };
         }
         /// <summary>
@@ -155,7 +157,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             if (fileInfo.Exists)
             {
-                if ((DateTime.UtcNow - _fileSystem.GetLastWriteTimeUtc(fileInfo)).TotalDays <= 2)
+                if ((DateTime.UtcNow - _fileSystem.GetLastWriteTimeUtc(fileInfo)).TotalDays <= 10)
                 {
                     return Task.CompletedTask;
                 }

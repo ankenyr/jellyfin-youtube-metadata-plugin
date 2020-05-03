@@ -21,7 +21,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public string description { get; set; }
         public string thumbnail { get; set; }
         // Name for use in API?
-        public string uploader_id { get; set; }
+        public string channel_id { get; set; }
     }
     public class YoutubeLocalProvider : ILocalMetadataProvider<Movie>, IHasItemChangeMonitor
     {
@@ -71,7 +71,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.Item.ProductionYear = date.Year;
                 result.Item.PremiereDate = date;
 
-                result.AddPerson(YoutubeMetadataProvider.CreatePerson(jsonObj.uploader));
+                result.AddPerson(YoutubeMetadataProvider.CreatePerson(jsonObj.uploader, jsonObj.channel_id));
                 return Task.FromResult(result);
             }
             catch (FileNotFoundException)
