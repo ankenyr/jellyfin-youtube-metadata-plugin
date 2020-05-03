@@ -20,7 +20,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _logger = logger;
         }
         // This does not look neccesary?
-        public string Name => "Youtube Local Image Metadata";
+        public string Name => "YoutubeMetadata";
         public List<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             _logger.LogInformation(item.Path);
