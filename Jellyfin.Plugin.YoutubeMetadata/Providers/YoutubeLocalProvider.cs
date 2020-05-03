@@ -36,7 +36,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _json = json;
         }
 
-        public string Name => "Youtube Local Metadata";
+        public string Name => "YoutubeMetadata";
 
         private FileSystemMetadata GetInfoJson(string path)
         {
