@@ -132,7 +132,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="item"></param>
         /// <param name="result"></param>
         /// <param name="preferredLanguage"></param>
-        private void ProcessResult(Movie item, Google.Apis.YouTube.v3.Data.Video result)
+        public void ProcessResult(Video item, Google.Apis.YouTube.v3.Data.Video result)
         {
             _logger.LogInformation(item.ToString());
             _logger.LogInformation(result.ToString());
