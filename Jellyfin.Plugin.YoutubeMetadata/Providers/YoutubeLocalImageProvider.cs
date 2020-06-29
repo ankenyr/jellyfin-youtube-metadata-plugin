@@ -9,7 +9,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class YoutubeLocalImageProvider : ILocalImageFileProvider
+    public class YoutubeLocalImageProvider : ILocalImageFileProvider, IHasOrder
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger _logger;
@@ -21,22 +21,20 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
         // This does not look neccesary?
         public string Name => "YoutubeMetadata";
+        public int Order => 1;
         public List<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             _logger.LogInformation(item.Path);
             var list = new List<LocalImageInfo>();
             var filename = item.FileNameWithoutExtension + ".jpg";
             var fullpath = Path.Combine(item.ContainingFolderPath, filename);
-            try
+
+            var localimg = new LocalImageInfo();
+            var fileInfo = _fileSystem.GetFileSystemInfo(fullpath);
+            if (File.Exists(fileInfo.FullName))
             {
-                var localimg = new LocalImageInfo();
-                var fileInfo = _fileSystem.GetFileSystemInfo(fullpath);
                 localimg.FileInfo = fileInfo;
                 list.Add(localimg);
-            }
-            catch (FileNotFoundException)
-            {
-                _logger.LogInformation("Could not find {0}", filename);
             }
             return list;
         }
