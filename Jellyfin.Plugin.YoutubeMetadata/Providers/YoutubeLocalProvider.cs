@@ -36,7 +36,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _json = json;
         }
 
-        public string Name => "YoutubeMetadata";
+        public string Name => "YouTube Metadata";
 
         private FileSystemMetadata GetInfoJson(string path)
         {
@@ -80,7 +80,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.HasMetadata = false;
                 return Task.FromResult(result);
             }
-            
+
         }
 
         private MovieJson ReadJsonData(MetadataResult<Movie> movieResult, string metaFile, CancellationToken cancellationToken)

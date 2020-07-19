@@ -1,0 +1,19 @@
+---
+name: "YouTube Metadata"
+guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
+version: "1.0.2.1"
+targetAbi: "10.6.0.0"
+owner: "ankenyr"
+overview: "YouTube metadata provider"
+description: "Provides YouTube metadata from the YouTube API and Youtube-dl metadata files."
+category: "Metadata"
+artifacts:
+- "Jellyfin.Plugin.YoutubeMetadata.dll"
+- "Newtonsoft.Json.dll"
+- "Google.Apis.dll"
+- "Google.Apis.Core.dll"
+- "Google.Apis.Auth.dll"
+- "Google.Apis.Auth.PlatformServices.dll"
+- "Google.Apis.YouTube.v3.dll"
+changelog: >
+  changelog

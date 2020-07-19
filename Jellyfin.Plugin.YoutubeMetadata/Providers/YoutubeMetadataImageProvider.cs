@@ -30,7 +30,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
 
         /// <inheritdoc />
-        public string Name => "YoutubeMetadata";
+        public string Name => "YouTube Metadata";
 
         /// <inheritdoc />
         // After embedded and fanart
@@ -62,9 +62,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 if (obj != null)
                 {
                     var tnurls = new List<string>();
-                    if (obj.Snippet.Thumbnails.Maxres != null) { 
+                    if (obj.Snippet.Thumbnails.Maxres != null) {
                         tnurls.Add(obj.Snippet.Thumbnails.Maxres.Url);
-                    } 
+                    }
                     if (obj.Snippet.Thumbnails.Standard != null)
                     {
                         tnurls.Add(obj.Snippet.Thumbnails.Standard.Url);
@@ -88,7 +88,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             return new List<RemoteImageInfo>();
         }
-        
+
         private IEnumerable<RemoteImageInfo> GetImages(IEnumerable<string> urls)
         {
             var list = new List<RemoteImageInfo>();

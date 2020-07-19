@@ -38,7 +38,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return item is Person;
         }
 
-        public string Name => "YoutubeMetadata";
+        public string Name => "YouTube Metadata";
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {
@@ -85,7 +85,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 }
             }
             //return Task.FromResult<IEnumerable<RemoteImageInfo>>(infos);
-            
+
             return infos;
         }
         internal Task EnsureInfo(string channelId, CancellationToken cancellationToken)

@@ -40,7 +40,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
 
         /// <inheritdoc />
-        public string Name => "YoutubeMetadata";
+        public string Name => "YouTube Metadata";
 
         /// <inheritdoc />
         public int Order => 1;
