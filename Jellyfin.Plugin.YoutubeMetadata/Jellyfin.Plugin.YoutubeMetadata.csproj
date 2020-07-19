@@ -30,7 +30,7 @@
 	  <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1905">
 	    <IncludeAssets></IncludeAssets>
 	  </PackageReference>
-	  <PackageReference Include="Jellyfin.Controller" Version="10.6.*-*">
+	  <PackageReference Include="Jellyfin.Controller" Version="10.*-*">
 	    <IncludeAssets>compile</IncludeAssets>
 	  </PackageReference>
 	</ItemGroup>
