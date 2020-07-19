@@ -25,11 +25,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     }
     public class YoutubeLocalProvider : ILocalMetadataProvider<Movie>, IHasItemChangeMonitor
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<YoutubeLocalProvider> _logger;
         private readonly IJsonSerializer _json;
         private readonly IFileSystem _fileSystem;
 
-        public YoutubeLocalProvider(IFileSystem fileSystem, IJsonSerializer json, ILogger logger)
+        public YoutubeLocalProvider(IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeLocalProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;

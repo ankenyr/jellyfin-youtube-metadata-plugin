@@ -12,9 +12,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     public class YoutubeLocalImageProvider : ILocalImageProvider, IHasOrder
     {
         private readonly IFileSystem _fileSystem;
-        private readonly ILogger _logger;
+        private readonly ILogger<YoutubeLocalImageProvider> _logger;
 
-        public YoutubeLocalImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger logger)
+        public YoutubeLocalImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;

@@ -18,10 +18,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly IServerConfigurationManager _config;
         private readonly IHttpClient _httpClient;
         private readonly IJsonSerializer _json;
-        private readonly ILogger _logger;
+        private readonly ILogger<YoutubeMetadataImageProvider> _logger;
         public static YoutubeMetadataProvider Current;
 
-        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IHttpClient httpClient, IJsonSerializer json, ILogger logger)
+        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IHttpClient httpClient, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
         {
             _config = config;
             _httpClient = httpClient;
