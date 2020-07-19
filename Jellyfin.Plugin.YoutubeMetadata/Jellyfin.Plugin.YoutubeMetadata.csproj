@@ -3,8 +3,8 @@
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
-		<AssemblyVersion>1.0.2.0</AssemblyVersion>
-		<FileVersion>1.0.2.0</FileVersion>
+		<AssemblyVersion>1.0.2.1</AssemblyVersion>
+		<FileVersion>1.0.2.1</FileVersion>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<Version>1.0.2.1</Version>
 	</PropertyGroup>
@@ -30,7 +30,7 @@
 	  <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1905">
 	    <IncludeAssets></IncludeAssets>
 	  </PackageReference>
-	  <PackageReference Include="Jellyfin.Controller" Version="10.5.2">
+	  <PackageReference Include="Jellyfin.Controller" Version="10.*-*">
 	    <IncludeAssets>compile</IncludeAssets>
 	  </PackageReference>
 	</ItemGroup>

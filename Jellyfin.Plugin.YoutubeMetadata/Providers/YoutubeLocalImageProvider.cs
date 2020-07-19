@@ -9,18 +9,18 @@ using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class YoutubeLocalImageProvider : ILocalImageFileProvider, IHasOrder
+    public class YoutubeLocalImageProvider : ILocalImageProvider, IHasOrder
     {
         private readonly IFileSystem _fileSystem;
-        private readonly ILogger _logger;
+        private readonly ILogger<YoutubeLocalImageProvider> _logger;
 
-        public YoutubeLocalImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger logger)
+        public YoutubeLocalImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
         }
         // This does not look neccesary?
-        public string Name => "YoutubeMetadata";
+        public string Name => "YouTube Metadata";
         public int Order => 1;
         public List<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {

@@ -25,18 +25,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     }
     public class YoutubeLocalProvider : ILocalMetadataProvider<Movie>, IHasItemChangeMonitor
     {
-        private readonly ILogger _logger;
+        private readonly ILogger<YoutubeLocalProvider> _logger;
         private readonly IJsonSerializer _json;
         private readonly IFileSystem _fileSystem;
 
-        public YoutubeLocalProvider(IFileSystem fileSystem, IJsonSerializer json, ILogger logger)
+        public YoutubeLocalProvider(IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeLocalProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
             _json = json;
         }
 
-        public string Name => "YoutubeMetadata";
+        public string Name => "YouTube Metadata";
 
         private FileSystemMetadata GetInfoJson(string path)
         {
@@ -80,7 +80,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.HasMetadata = false;
                 return Task.FromResult(result);
             }
-            
+
         }
 
         private MovieJson ReadJsonData(MetadataResult<Movie> movieResult, string metaFile, CancellationToken cancellationToken)
