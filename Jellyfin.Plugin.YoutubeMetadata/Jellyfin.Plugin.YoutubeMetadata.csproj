@@ -1,38 +1,23 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
 	<PropertyGroup>
 		<TargetFramework>netstandard2.1</TargetFramework>
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
 		<AssemblyVersion>1.0.2.1</AssemblyVersion>
 		<FileVersion>1.0.2.1</FileVersion>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 		<Version>1.0.2.1</Version>
 	</PropertyGroup>
-
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />
 	</ItemGroup>
-
 	<ItemGroup>
 		<EmbeddedResource Include="Configuration\configPage.html" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <PackageReference Include="Google.Apis" Version="1.45.0">
-	    <IncludeAssets></IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Google.Apis.Auth" Version="1.45.0">
-	    <IncludeAssets></IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Google.Apis.Core" Version="1.45.0">
-	    <IncludeAssets></IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1905">
-	    <IncludeAssets></IncludeAssets>
-	  </PackageReference>
-	  <PackageReference Include="Jellyfin.Controller" Version="10.*-*">
-	    <IncludeAssets>compile</IncludeAssets>
-	  </PackageReference>
+	  <PackageReference Include="Google.Apis" Version="1.45.0" />
+	  <PackageReference Include="Google.Apis.Auth" Version="1.45.0" />
+	  <PackageReference Include="Google.Apis.Core" Version="1.45.0" />
+	  <PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1905" />
+	  <PackageReference Include="Jellyfin.Controller" Version="10.*-*" />
 	</ItemGroup>
-
 </Project>
