@@ -51,4 +51,7 @@ Future plans to allow users to specify their own regex is planned.
 1. Create a new API key.
 1. Go to the YoutubeMetadata Plugin page in Jellyfin.
 1. Input API key into the text box for the API key and click Save.
+1. Navigate to the [YouTube Data API v3 Page](https://console.developers.google.com/apis/api/youtube.googleapis.com/overview).
+1. Click enable then select the project you created
 1. You are now able to use the YoutubeMetadata agent in your libraries. 
+
