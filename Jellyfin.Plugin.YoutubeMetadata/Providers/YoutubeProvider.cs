@@ -134,8 +134,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="preferredLanguage"></param>
         public void ProcessResult(Video item, Google.Apis.YouTube.v3.Data.Video result)
         {
-            _logger.LogInformation(item.ToString());
-            _logger.LogInformation(result.ToString());
             item.Name = result.Snippet.Title;
             item.Overview = result.Snippet.Description;
             var date = DateTime.Parse(result.Snippet.PublishedAtRaw);
@@ -173,7 +171,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         internal async Task DownloadInfo(string youtubeId, CancellationToken cancellationToken)
         {
-            _logger.LogInformation("In DownloadInfo");
+            _logger.LogInformation("Downloading Remote Youtube");
             await Task.Delay(10000).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()

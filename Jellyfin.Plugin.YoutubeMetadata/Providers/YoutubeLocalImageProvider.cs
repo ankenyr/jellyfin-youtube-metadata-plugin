@@ -26,6 +26,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             _logger.LogInformation(item.Path);
             var list = new List<LocalImageInfo>();
+            if (Plugin.Instance.Configuration.DisableLocalMetadata)
+            {
+                _logger.LogInformation("Local Metadata Disabled");
+                return list;
+            }
+            
+            
             var filename = item.FileNameWithoutExtension + ".jpg";
             var fullpath = Path.Combine(item.ContainingFolderPath, filename);
 

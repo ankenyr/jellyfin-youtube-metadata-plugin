@@ -13,6 +13,12 @@
                         <label class="inputeLabel inputLabelUnfocused" for="apikey">API Key</label>
                         <input id="apikey" name="apikey" type="text" is="emby-input" />
                     </div>
+                    <div class="checkboxContainer checkboxContainer-withDescripton">
+                        <label class="emby-checkbox-label">
+                            <input id="DisableLocalMetadata" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
+                            <span>Disable Local Metadata</span>
+                        </label>
+                    </div>
                     <div>
                         <button is="emby-button" type="submit" class="raised button-submit block emby-button">
                             <span>Save</span>
@@ -30,6 +36,7 @@
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId).then(function (config) {
                     $('#apikey').val(config.apikey).change();
+                    document.getElementById('DisableLocalMetadata').checked = config.DisableLocalMetadata;
                     Dashboard.hideLoadingMsg();
                 });
             });
@@ -38,6 +45,7 @@
                 Dashboard.showLoadingMsg();
                 ApiClient.getPluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId).then(function (config) {
                     config.apikey = $('#apikey').val();
+                    config.DisableLocalMetadata = document.getElementById('DisableLocalMetadata').checked;
                     ApiClient.updatePluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId, config).then(function (result) {
                         Dashboard.processPluginConfigurationUpdateResult(result);
                     });

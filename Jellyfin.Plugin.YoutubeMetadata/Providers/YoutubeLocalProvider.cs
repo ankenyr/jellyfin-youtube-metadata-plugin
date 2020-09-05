@@ -58,6 +58,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public Task<MetadataResult<Movie>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<Movie>();
+            if (Plugin.Instance.Configuration.DisableLocalMetadata)
+            {
+                _logger.LogInformation("Local Metadata Disabled");
+                result.HasMetadata = false;
+                return Task.FromResult(result);
+            }
             try
             {
                 var item = new Movie();
