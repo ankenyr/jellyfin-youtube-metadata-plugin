@@ -68,21 +68,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <summary>
         ///  Returns the Youtube ID from the file path. Matches last 11 character field inside square brackets.
         /// </summary>
-        /// <param name="title"></param>
+        /// <param name="name"></param>
         /// <returns></returns>
-        internal string GetYTID(string title)
+        internal string GetYTID(string name)
         {
-            var filename = GetPathByTitle(title);
-            var match = Regex.Match(filename, YTID_RE);
+            var match = Regex.Match(name, YTID_RE);
             return match.Value;
-
         }
 
         /// <inheritdoc />
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<Movie>();
-            var id = GetYTID(info.Name);
+            var id = GetYTID(GetPathByTitle(info.Name));
 
             _logger.LogInformation(id);
 

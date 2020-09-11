@@ -34,7 +34,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         /// <inheritdoc />
         // After embedded and fanart
-        public int Order => 2;
+        public int Order => 1;
 
         /// <inheritdoc />
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
@@ -49,7 +49,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <inheritdoc />
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
-            var id = YoutubeMetadataProvider.Current.GetYTID(item.Name);
+            var id = YoutubeMetadataProvider.Current.GetYTID(item.FileNameWithoutExtension);
 
             if (!string.IsNullOrWhiteSpace(id))
             {
@@ -83,6 +83,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     }
 
                     return GetImages(tnurls);
+                }
+                else
+                {
+                    _logger.LogInformation("Object is null!");
                 }
             }
 
