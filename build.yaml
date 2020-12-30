@@ -1,8 +1,8 @@
 ---
 name: "YouTube Metadata"
 guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
-version: "1.0.2.1"
-targetAbi: "10.6.0.0"
+version: "1.0.3.2"
+targetAbi: "10.7.0.0"
 owner: "ankenyr"
 overview: "YouTube metadata provider"
 description: "Provides YouTube metadata from the YouTube API and Youtube-dl metadata files."

@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Net.Http.Headers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -22,14 +24,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly IHttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _json;
 
-        public CreatorProviderImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClient httpClient, IJsonSerializer json)
+        public CreatorProviderImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json)
         {
             _config = config;
             _fileSystem = fileSystem;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _json = json;
         }
 
@@ -126,13 +128,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var foo = response.Items[0];
             _json.SerializeToFile(foo, path);
         }
-        public async Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            return await _httpClient.GetResponse(new HttpRequestOptions
-            {
-                CancellationToken = cancellationToken,
-                Url = url
-            }).ConfigureAwait(false);
+            var httpClient = _httpClientFactory.CreateClient();
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
     }
 }
