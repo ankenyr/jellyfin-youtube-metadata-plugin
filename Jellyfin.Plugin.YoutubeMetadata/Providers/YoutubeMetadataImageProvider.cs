@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading;
+using System.Net.Http;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Configuration;
@@ -16,15 +17,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     public class YoutubeMetadataImageProvider : IRemoteImageProvider, IHasOrder
     {
         private readonly IServerConfigurationManager _config;
-        private readonly IHttpClient _httpClient;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataImageProvider> _logger;
         public static YoutubeMetadataProvider Current;
 
-        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IHttpClient httpClient, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
+        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
         {
             _config = config;
-            _httpClient = httpClient;
+            _httpClientFactory = httpClientFactory;
             _json = json;
             _logger = logger;
         }
@@ -112,13 +113,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
 
         /// <inheritdoc />
-        public Task<HttpResponseInfo> GetImageResponse(string url, CancellationToken cancellationToken)
+        public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            return _httpClient.GetResponse(new HttpRequestOptions
-            {
-                CancellationToken = cancellationToken,
-                Url = url
-            });
+            var httpClient = _httpClientFactory.CreateClient();
+            return httpClient.GetAsync(url);
         }
 
         /// <inheritdoc />
