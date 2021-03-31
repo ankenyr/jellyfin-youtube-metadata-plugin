@@ -16,7 +16,13 @@ Currently this plugin only works with the Movie library. Your videos must have t
 
 Future plans to allow users to specify their own regex is planned.
 
-## Build Process
+## Installing from my plugin repo
+
+Adding `https://raw.githubusercontent.com/ankenyr/jellyfin-plugin-repo/master/manifest.json` to your plugin
+repositories will allow you to download and install the latest version of the plugin along with other
+plugins I have made.
+
+## Build and Installing from source
 
 1. Clone or download this repository.
 1. Ensure you have .NET Core SDK setup and installed.
