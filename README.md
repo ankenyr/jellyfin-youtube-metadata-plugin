@@ -7,6 +7,15 @@ This plugin will download metadata about Youtube videos using a Youtube API key.
 
 </p>
 
+## Features
+Currently this will populate the following metadata
+ - Thumbnails
+ - Title
+ - Description
+ - Release Date
+ - Release Year
+ - People (Uploader is used as "Director" within Jellyfin)
+
 ## Usage
 Currently this plugin only works with the Movie library. Your videos must have the Youtube ID in square braces at the end of the file name. The following are valid names that will be able to be identified.
 
