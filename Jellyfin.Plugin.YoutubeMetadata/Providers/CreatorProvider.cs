@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;

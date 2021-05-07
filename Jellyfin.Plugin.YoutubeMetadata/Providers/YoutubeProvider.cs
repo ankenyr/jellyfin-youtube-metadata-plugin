@@ -7,7 +7,6 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Common.Configuration;
-using MediaBrowser.Common.Net;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
@@ -61,7 +60,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         private string GetPathByTitle(string title)
         {
-            var query = new MediaBrowser.Controller.Entities.InternalItemsQuery { Name = title };
+            var query = new InternalItemsQuery { Name = title };
             var results = _libmanager.GetItemsResult(query);
             return results.Items[0].Path;
         }
