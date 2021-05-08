@@ -27,7 +27,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataProvider> _logger;
         private readonly ILibraryManager _libmanager;
@@ -41,7 +40,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             _config = config;
             _fileSystem = fileSystem;
-            _httpClientFactory = httpClientFactory;
             _json = json;
             _logger = logger;
             _libmanager = libmanager;
