@@ -48,7 +48,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public async Task<MetadataResult<MusicVideo>> GetMetadata(MusicVideoInfo info, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<MusicVideo>();
-            var id = YoutubeMetadataProvider.Current.GetYTID(info.Name);
+            var id = YoutubeMetadataProvider.GetYTID(info.Name);
 
             _logger.LogInformation(id);
 
@@ -64,7 +64,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     result.Item = new MusicVideo();
                     result.HasMetadata = true;
                     result.Item.OriginalTitle = info.Name;
-                    YoutubeMetadataProvider.Current.ProcessResult(result.Item, video);
+                    YoutubeMetadataProvider.ProcessResult(result.Item, video);
                     result.AddPerson(YoutubeMetadataProvider.CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
                 }
             }

@@ -32,7 +32,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly ILogger<YoutubeMetadataProvider> _logger;
         private readonly ILibraryManager _libmanager;
 
-        public static YoutubeMetadataProvider Current;
+        private static YoutubeMetadataProvider current;
 
         public const string BaseUrl = "https://m.youtube.com/";
         public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
@@ -54,6 +54,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <inheritdoc />
         public int Order => 1;
 
+        public static YoutubeMetadataProvider Current { get => current; set => current = value; }
+
         /// <inheritdoc />
         public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo searchInfo, CancellationToken cancellationToken)
             => Task.FromResult(Enumerable.Empty<RemoteSearchResult>());
@@ -70,7 +72,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        internal string GetYTID(string name)
+        internal static string GetYTID(string name)
         {
             var match = Regex.Match(name, YTID_RE);
             return match.Value;
@@ -130,7 +132,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="item"></param>
         /// <param name="result"></param>
         /// <param name="preferredLanguage"></param>
-        public void ProcessResult(Video item, Google.Apis.YouTube.v3.Data.Video result)
+        public static void ProcessResult(Video item, Google.Apis.YouTube.v3.Data.Video result)
         {
             item.Name = result.Snippet.Title;
             item.Overview = result.Snippet.Description;
