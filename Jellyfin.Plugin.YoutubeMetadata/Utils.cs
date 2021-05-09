@@ -38,32 +38,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             },
             };
         }
-
-        /// <summary>
-        /// Gets the data path of a video provided the youtube ID.
-        /// </summary>
-        /// <param name="appPaths"></param>
-        /// <param name="youtubeId"></param>
-        /// <returns></returns>
-        public static string GetVideoDataPath(IApplicationPaths appPaths, string youtubeId)
-        {
-            var dataPath = Path.Combine(GetVideoDataPath(appPaths), youtubeId);
-
-            return dataPath;
-        }
-
-        /// <summary>
-        /// Gets the Youtube Metadata root cache path.
-        /// </summary>
-        /// <param name="appPaths"></param>
-        /// <returns></returns>
-        public static string GetVideoDataPath(IApplicationPaths appPaths)
-        {
-            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata");
-
-            return dataPath;
-        }
-
         /// <summary>
         /// Gets the path to information on a specific video in the cache.
         /// </summary>
@@ -72,8 +46,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <returns></returns>
         public static string GetVideoInfoPath(IApplicationPaths appPaths, string youtubeID)
         {
-            var dataPath = GetVideoDataPath(appPaths, youtubeID);
-
+            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", youtubeID);
             return Path.Combine(dataPath, "ytvideo.json");
         }
     }

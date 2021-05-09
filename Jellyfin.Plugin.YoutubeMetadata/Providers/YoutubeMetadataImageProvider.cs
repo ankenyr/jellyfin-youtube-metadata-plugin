@@ -55,7 +55,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 await YoutubeMetadataProvider.Current.EnsureInfo(id, cancellationToken).ConfigureAwait(false);
 
-                var path = YoutubeMetadataProvider.GetVideoInfoPath(_config.ApplicationPaths, id);
+                var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
 
                 var obj = _json.DeserializeFromFile<Google.Apis.YouTube.v3.Data.Video>(path);
 
