@@ -18,25 +18,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     public class YoutubeMusicProvider : IRemoteMetadataProvider<MusicVideo, MusicVideoInfo>, IHasOrder
     {
         private readonly IServerConfigurationManager _config;
-        private readonly IFileSystem _fileSystem;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMusicProvider> _logger;
-        private readonly ILibraryManager _libmanager;
 
         public static YoutubeMetadataProvider Current;
 
         public const string BaseUrl = "https://m.youtube.com/";
         public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
 
-        public YoutubeMusicProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMusicProvider> logger, ILibraryManager libmanager)
+        public YoutubeMusicProvider(IServerConfigurationManager config, IJsonSerializer json, ILogger<YoutubeMusicProvider> logger)
         {
             _config = config;
-            _fileSystem = fileSystem;
-            _httpClientFactory = httpClientFactory;
             _json = json;
             _logger = logger;
-            _libmanager = libmanager;
         }
 
         /// <inheritdoc />

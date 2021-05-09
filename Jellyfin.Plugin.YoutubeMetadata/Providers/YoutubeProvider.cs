@@ -27,7 +27,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataProvider> _logger;
         private readonly ILibraryManager _libmanager;
@@ -37,11 +36,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public const string BaseUrl = "https://m.youtube.com/";
         public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
 
-        public YoutubeMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
+        public YoutubeMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
         {
             _config = config;
             _fileSystem = fileSystem;
-            _httpClientFactory = httpClientFactory;
             _json = json;
             _logger = logger;
             _libmanager = libmanager;
