@@ -88,7 +88,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 await EnsureInfo(id, cancellationToken).ConfigureAwait(false);
 
-                var path = GetVideoInfoPath(_config.ApplicationPaths, id);
+                var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
 
                 var video = _json.DeserializeFromFile<Google.Apis.YouTube.v3.Data.Video>(path);
                 if (video != null)
@@ -147,7 +147,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         internal Task EnsureInfo(string youtubeID, CancellationToken cancellationToken)
         {
-            var ytPath = GetVideoInfoPath(_config.ApplicationPaths, youtubeID);
+            var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, youtubeID);
 
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
 
@@ -180,48 +180,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var vreq = youtubeService.Videos.List("snippet");
             vreq.Id = youtubeId;
             var response = await vreq.ExecuteAsync();
-            var path = GetVideoInfoPath(_config.ApplicationPaths, youtubeId);
+            var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, youtubeId);
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             var foo = response.Items[0];
             _json.SerializeToFile(foo, path);
-        }
-
-        /// <summary>
-        /// Gets the data path of a video provided the youtube ID.
-        /// </summary>
-        /// <param name="appPaths"></param>
-        /// <param name="youtubeId"></param>
-        /// <returns></returns>
-        private static string GetVideoDataPath(IApplicationPaths appPaths, string youtubeId)
-        {
-            var dataPath = Path.Combine(GetVideoDataPath(appPaths), youtubeId);
-
-            return dataPath;
-        }
-
-        /// <summary>
-        /// Gets the Youtube Metadata root cache path.
-        /// </summary>
-        /// <param name="appPaths"></param>
-        /// <returns></returns>
-        private static string GetVideoDataPath(IApplicationPaths appPaths)
-        {
-            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata");
-
-            return dataPath;
-        }
-
-        /// <summary>
-        /// Gets the path to information on a specific video in the cache.
-        /// </summary>
-        /// <param name="appPaths"></param>
-        /// <param name="youtubeID"></param>
-        /// <returns></returns>
-        internal static string GetVideoInfoPath(IApplicationPaths appPaths, string youtubeID)
-        {
-            var dataPath = GetVideoDataPath(appPaths, youtubeID);
-
-            return Path.Combine(dataPath, "ytvideo.json");
         }
 
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
