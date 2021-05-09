@@ -49,7 +49,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <inheritdoc />
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
-            var id = YoutubeMetadataProvider.GetYTID(item.FileNameWithoutExtension);
+            var id = Utils.GetYTID(item.FileNameWithoutExtension);
 
             if (!string.IsNullOrWhiteSpace(id))
             {

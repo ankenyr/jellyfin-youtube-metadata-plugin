@@ -24,7 +24,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static YoutubeMetadataProvider Current;
 
         public const string BaseUrl = "https://m.youtube.com/";
-        public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
 
         public YoutubeMusicProvider(IServerConfigurationManager config, IJsonSerializer json, ILogger<YoutubeMusicProvider> logger)
         {
@@ -42,7 +41,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public async Task<MetadataResult<MusicVideo>> GetMetadata(MusicVideoInfo info, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<MusicVideo>();
-            var id = YoutubeMetadataProvider.GetYTID(info.Name);
+            var id = Utils.GetYTID(info.Name);
 
             _logger.LogInformation(id);
 

@@ -34,7 +34,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private static YoutubeMetadataProvider current;
 
         public const string BaseUrl = "https://m.youtube.com/";
-        public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
 
         public YoutubeMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
         {
@@ -65,22 +64,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return results.Items[0].Path;
         }
 
-        /// <summary>
-        ///  Returns the Youtube ID from the file path. Matches last 11 character field inside square brackets.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        internal static string GetYTID(string name)
-        {
-            var match = Regex.Match(name, YTID_RE);
-            return match.Value;
-        }
-
         /// <inheritdoc />
         public async Task<MetadataResult<Movie>> GetMetadata(MovieInfo info, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<Movie>();
-            var id = GetYTID(GetPathByTitle(info.Name));
+            var id = Utils.GetYTID(GetPathByTitle(info.Name));
 
             _logger.LogInformation(id);
 

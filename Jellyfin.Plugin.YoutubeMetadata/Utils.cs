@@ -16,7 +16,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="name"></param>
         /// <returns></returns>
-        internal static string GetYTID(string name)
+        public static string GetYTID(string name)
         {
             var match = Regex.Match(name, YTID_RE);
             return match.Value;
