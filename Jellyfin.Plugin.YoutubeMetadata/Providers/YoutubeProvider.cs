@@ -97,7 +97,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     result.HasMetadata = true;
                     result.Item.OriginalTitle = info.Name;
                     ProcessResult(result.Item, video);
-                    result.AddPerson(CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
+                    result.AddPerson(Utils.CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
                 }
             }
             else
@@ -108,22 +108,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return result;
         }
 
-        /// <summary>
-        /// Creates a person object of type director for the provided name.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <param name="channel_id"></param>
-        /// <returns></returns>
-        public static PersonInfo CreatePerson(string name, string channel_id)
-        {
-            return new PersonInfo
-            {
-                Name = name,
-                Type = PersonType.Director,
-                ProviderIds = new Dictionary<string, string> { { "youtubemetadata", channel_id }
-            },
-            };
-        }
         /// <summary>
         /// Processes the found metadata into the Movie entity.
         /// </summary>

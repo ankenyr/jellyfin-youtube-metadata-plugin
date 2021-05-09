@@ -77,7 +77,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.Item.ProductionYear = date.Year;
                 result.Item.PremiereDate = date;
 
-                result.AddPerson(YoutubeMetadataProvider.CreatePerson(jsonObj.uploader, jsonObj.channel_id));
+                result.AddPerson(Utils.CreatePerson(jsonObj.uploader, jsonObj.channel_id));
                 return Task.FromResult(result);
             }
             catch (FileNotFoundException)

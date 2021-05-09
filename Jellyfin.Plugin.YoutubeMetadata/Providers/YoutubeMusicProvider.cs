@@ -59,7 +59,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     result.HasMetadata = true;
                     result.Item.OriginalTitle = info.Name;
                     YoutubeMetadataProvider.ProcessResult(result.Item, video);
-                    result.AddPerson(YoutubeMetadataProvider.CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
+                    result.AddPerson(Utils.CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
                 }
             }
             else
