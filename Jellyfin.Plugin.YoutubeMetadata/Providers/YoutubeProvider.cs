@@ -130,34 +130,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     return Task.CompletedTask;
                 }
             }
-            return DownloadInfo(youtubeID, cancellationToken);
+            return Utils.APIDownload(youtubeID, _config.ApplicationPaths, cancellationToken, Utils.DownloadType.Video);
         }
-
-        /// <summary>
-        /// Downloads metadata from Youtube API asyncronously and stores it as a json to cache.
-        /// </summary>
-        /// <param name="youtubeId"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        internal async Task DownloadInfo(string youtubeId, CancellationToken cancellationToken)
-        {
-            _logger.LogInformation("Downloading Remote Youtube");
-            await Task.Delay(10000).ConfigureAwait(false);
-            cancellationToken.ThrowIfCancellationRequested();
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = Plugin.Instance.Configuration.apikey,
-                ApplicationName = this.GetType().ToString()
-            });
-            var vreq = youtubeService.Videos.List("snippet");
-            vreq.Id = youtubeId;
-            var response = await vreq.ExecuteAsync();
-            var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, youtubeId);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            var foo = response.Items[0];
-            _json.SerializeToFile(foo, path);
-        }
-
+        
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
