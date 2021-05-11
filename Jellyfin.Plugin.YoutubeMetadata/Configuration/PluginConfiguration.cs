@@ -11,13 +11,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Configuration
     public class PluginConfiguration : BasePluginConfiguration
     {
         // store configurable settings your plugin might need
-        public string apikey { get; set; }
+        public string ApiKey { get; set; }
         public bool DisableLocalMetadata { get; set; }
 
         public PluginConfiguration()
         {
             // set default options here
-            apikey = "string";
+            ApiKey = "string";
             DisableLocalMetadata = false;
         }
     }

@@ -113,7 +113,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             cancellationToken.ThrowIfCancellationRequested();
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
-                ApiKey = Plugin.Instance.Configuration.apikey,
+                ApiKey = Plugin.Instance.Configuration.ApiKey,
                 ApplicationName = "Youtube Metadata"
             });
             // Lets change this

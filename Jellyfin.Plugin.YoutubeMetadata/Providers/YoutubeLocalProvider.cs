@@ -14,14 +14,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     public class MovieJson
     {
         // Human name
-        public string uploader { get; set; }
-        public string upload_date { get; set; }
+        public string Uploader { get; set; }
+        public string UploadDate { get; set; }
         // https://github.com/ytdl-org/youtube-dl/issues/1806
-        public string title { get; set; }
-        public string description { get; set; }
-        public string thumbnail { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public string Thumbnail { get; set; }
         // Name for use in API?
-        public string channel_id { get; set; }
+        public string ChannelId { get; set; }
     }
     public class YoutubeLocalProvider : ILocalMetadataProvider<Movie>, IHasItemChangeMonitor
     {
@@ -71,13 +71,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.HasMetadata = true;
                 result.Item = item;
                 var jsonObj = ReadJsonData(result, infoJson.FullName, cancellationToken);
-                result.Item.Name = jsonObj.title;
-                result.Item.Overview = jsonObj.description;
-                var date = DateTime.ParseExact(jsonObj.upload_date, "yyyyMMdd", null);
+                result.Item.Name = jsonObj.Title;
+                result.Item.Overview = jsonObj.Description;
+                var date = DateTime.ParseExact(jsonObj.UploadDate, "yyyyMMdd", null);
                 result.Item.ProductionYear = date.Year;
                 result.Item.PremiereDate = date;
 
-                result.AddPerson(Utils.CreatePerson(jsonObj.uploader, jsonObj.channel_id));
+                result.AddPerson(Utils.CreatePerson(jsonObj.Uploader, jsonObj.ChannelId));
                 return Task.FromResult(result);
             }
             catch (FileNotFoundException)
