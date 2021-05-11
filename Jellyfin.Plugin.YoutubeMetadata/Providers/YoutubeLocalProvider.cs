@@ -91,8 +91,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         private MovieJson ReadJsonData(MetadataResult<Movie> movieResult, string metaFile, CancellationToken cancellationToken)
         {
-            var movie = movieResult.Item;
-
             cancellationToken.ThrowIfCancellationRequested();
             return _json.DeserializeFromFile<MovieJson>(metaFile);
         }

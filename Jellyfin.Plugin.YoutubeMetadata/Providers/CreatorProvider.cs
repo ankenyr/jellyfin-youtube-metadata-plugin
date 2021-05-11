@@ -96,12 +96,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 return Task.CompletedTask;
             }
-            return Utils.APIDownload(channelId, _config.ApplicationPaths, cancellationToken, Utils.DownloadType.Channel);
+            return Utils.APIDownload(channelId, _config.ApplicationPaths, Utils.DownloadType.Channel, cancellationToken);
         }
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();
-            return await httpClient.GetAsync(url).ConfigureAwait(false);
+            return await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
         }
     }
 }

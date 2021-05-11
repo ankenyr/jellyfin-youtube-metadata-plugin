@@ -127,7 +127,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 return Task.CompletedTask;
             }
-            return Utils.APIDownload(youtubeID, _config.ApplicationPaths, cancellationToken, Utils.DownloadType.Video);
+            return Utils.APIDownload(youtubeID, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
         }
         
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)

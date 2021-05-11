@@ -107,9 +107,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <param name="cancellationToken"></param>
         /// <param name="dtype"></param>
         /// <returns></returns>
-        public static async Task APIDownload(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken, DownloadType dtype)
+        public static async Task APIDownload(string id, IServerApplicationPaths appPaths, DownloadType dtype, CancellationToken cancellationToken)
         {
-            await Task.Delay(10000).ConfigureAwait(false);
+            await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
             var youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {

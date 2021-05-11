@@ -14,7 +14,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly IFileSystem _fileSystem;
         private readonly ILogger<YoutubeLocalImageProvider> _logger;
 
-        public YoutubeLocalImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
+        public YoutubeLocalImageProvider(IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;

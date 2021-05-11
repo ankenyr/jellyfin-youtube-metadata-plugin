@@ -115,7 +115,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();
-            return httpClient.GetAsync(url);
+            return httpClient.GetAsync(url, cancellationToken);
         }
 
         /// <inheritdoc />
