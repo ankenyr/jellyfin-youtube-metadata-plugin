@@ -92,17 +92,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, channelId);
 
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
-
-            if (fileInfo.Exists)
+            if (Utils.IsFresh(fileInfo))
             {
-                if ((DateTime.UtcNow - _fileSystem.GetLastWriteTimeUtc(fileInfo)).TotalDays <= 10)
-                {
-                    return Task.CompletedTask;
-                }
+                return Task.CompletedTask;
             }
             return Utils.APIDownload(channelId, _config.ApplicationPaths, cancellationToken, Utils.DownloadType.Channel);
         }
-
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();

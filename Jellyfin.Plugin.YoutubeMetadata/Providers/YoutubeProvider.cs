@@ -112,7 +112,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
 
         /// <summary>
-        /// Checks and returns data in local cache, downloads and returns if not present.
+        /// Checks and returns data in local cache, downloads and returns if not present or too old.
         /// </summary>
         /// <param name="youtubeID"></param>
         /// <param name="cancellationToken"></param>
@@ -123,12 +123,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
 
-            if (fileInfo.Exists)
+            if (Utils.IsFresh(fileInfo))
             {
-                if ((DateTime.UtcNow - _fileSystem.GetLastWriteTimeUtc(fileInfo)).TotalDays <= 10)
-                {
-                    return Task.CompletedTask;
-                }
+                return Task.CompletedTask;
             }
             return Utils.APIDownload(youtubeID, _config.ApplicationPaths, cancellationToken, Utils.DownloadType.Video);
         }

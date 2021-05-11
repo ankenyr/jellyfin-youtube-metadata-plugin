@@ -22,6 +22,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             Video
         }
 
+        public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
+        {
+            if (fileInfo.Exists && DateTime.UtcNow.Subtract(fileInfo.LastWriteTimeUtc).Days <= 10)
+            {
+                return true;
+            }
+            return false;
+        }
+
         /// <summary>
         ///  Returns the Youtube ID from the file path. Matches last 11 character field inside square brackets.
         /// </summary>
