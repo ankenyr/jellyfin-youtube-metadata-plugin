@@ -5,7 +5,6 @@ using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Controller.Configuration;
-using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
@@ -18,16 +17,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     public class YoutubeMusicProvider : IRemoteMetadataProvider<MusicVideo, MusicVideoInfo>, IHasOrder
     {
         private readonly IServerConfigurationManager _config;
+        private readonly IFileSystem _fileSystem;
         private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMusicProvider> _logger;
 
-        public static YoutubeMetadataProvider Current;
-
         public const string BaseUrl = "https://m.youtube.com/";
 
-        public YoutubeMusicProvider(IServerConfigurationManager config, IJsonSerializer json, ILogger<YoutubeMusicProvider> logger)
+        public YoutubeMusicProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMusicProvider> logger)
         {
             _config = config;
+            _fileSystem = fileSystem;
             _json = json;
             _logger = logger;
         }
@@ -47,7 +46,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             if (!string.IsNullOrWhiteSpace(id))
             {
-                await YoutubeMetadataProvider.Current.EnsureInfo(id, cancellationToken).ConfigureAwait(false);
+                var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
+                var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+                if (Utils.IsFresh(fileInfo))
+                {
+                    return result;
+                }
+                await Utils.APIDownload(id, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
 

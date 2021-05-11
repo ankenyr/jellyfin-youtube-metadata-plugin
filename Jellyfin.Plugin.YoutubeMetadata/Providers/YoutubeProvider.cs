@@ -3,23 +3,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Configuration;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
-
-using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -74,7 +68,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             if (!string.IsNullOrWhiteSpace(id))
             {
-                await EnsureInfo(id, cancellationToken).ConfigureAwait(false);
+                var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
+
+                var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+
+                if (Utils.IsFresh(fileInfo))
+                {
+                    return result;
+                }
+                await Utils.APIDownload(id, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
 
@@ -117,18 +119,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="youtubeID"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        internal Task EnsureInfo(string youtubeID, CancellationToken cancellationToken)
-        {
-            var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, youtubeID);
+        //internal Task EnsureInfo(string youtubeID, CancellationToken cancellationToken)
+        //{
+        //    var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, youtubeID);
 
-            var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+        //    var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
 
-            if (Utils.IsFresh(fileInfo))
-            {
-                return Task.CompletedTask;
-            }
-            return Utils.APIDownload(youtubeID, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
-        }
+        //    if (Utils.IsFresh(fileInfo))
+        //    {
+        //        return Task.CompletedTask;
+        //    }
+        //    return Utils.APIDownload(youtubeID, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
+        //}
         
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {

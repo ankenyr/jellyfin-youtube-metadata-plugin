@@ -10,20 +10,22 @@ using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
+using MediaBrowser.Model.IO;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class YoutubeMetadataImageProvider : IRemoteImageProvider, IHasOrder
     {
         private readonly IServerConfigurationManager _config;
+        private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataImageProvider> _logger;
-        public static YoutubeMetadataProvider Current;
 
-        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
+        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
         {
             _config = config;
+            _fileSystem = fileSystem;
             _httpClientFactory = httpClientFactory;
             _json = json;
             _logger = logger;
@@ -53,7 +55,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             if (!string.IsNullOrWhiteSpace(id))
             {
-                await YoutubeMetadataProvider.Current.EnsureInfo(id, cancellationToken).ConfigureAwait(false);
+                var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
+                var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+                if (Utils.IsFresh(fileInfo))
+                {
+                    return new List<RemoteImageInfo>();
+                }
+                await Utils.APIDownload(id, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
 
