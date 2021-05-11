@@ -70,7 +70,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 var infoJson = GetInfoJson(info.Path);
                 result.HasMetadata = true;
                 result.Item = item;
-                var jsonObj = ReadJsonData(result, infoJson.FullName, cancellationToken);
+                var jsonObj = ReadJsonData(infoJson.FullName, cancellationToken);
                 result.Item.Name = jsonObj.Title;
                 result.Item.Overview = jsonObj.Description;
                 var date = DateTime.ParseExact(jsonObj.UploadDate, "yyyyMMdd", null);
@@ -89,7 +89,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         }
 
-        private MovieJson ReadJsonData(MetadataResult<Movie> movieResult, string metaFile, CancellationToken cancellationToken)
+        private MovieJson ReadJsonData(string metaFile, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             return _json.DeserializeFromFile<MovieJson>(metaFile);
