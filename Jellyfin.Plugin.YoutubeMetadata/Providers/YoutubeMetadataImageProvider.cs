@@ -31,8 +31,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _logger = logger;
         }
 
-        /// <inheritdoc />
-        public string Name => "YouTube Metadata";
+        /// <summary>
+        /// Providers name, this appears in the library metadata settings.
+        /// </summary>
+        public string Name => "YouTube API Image Metadata";
 
         /// <inheritdoc />
         // After embedded and fanart

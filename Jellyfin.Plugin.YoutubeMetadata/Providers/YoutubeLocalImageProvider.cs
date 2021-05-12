@@ -18,8 +18,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _fileSystem = fileSystem;
             _logger = logger;
         }
-        // This does not look neccesary?
-        public string Name => "YouTube Metadata";
+
+        /// <summary>
+        /// Providers name, this does not appear in the library metadata settings.
+        /// </summary>
+        public string Name => "YouTube Local Image Metadata";
         public int Order => 1;
         public List<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {

@@ -32,7 +32,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return item is Person;
         }
 
-        public string Name => "YouTube Metadata";
+        /// <summary>
+        /// Providers name, this does not appear in the library metadata settings.
+        /// </summary>
+        public string Name => "YouTube Creator Metadata";
 
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {

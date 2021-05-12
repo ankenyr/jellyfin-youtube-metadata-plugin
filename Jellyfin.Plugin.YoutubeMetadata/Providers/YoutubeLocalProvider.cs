@@ -36,7 +36,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _json = json;
         }
 
-        public string Name => "YouTube Metadata";
+        /// <summary>
+        /// Providers name, this appears in the library metadata settings.
+        /// </summary>
+        public string Name => "YouTube Local Metadata";
 
         private FileSystemMetadata GetInfoJson(string path)
         {

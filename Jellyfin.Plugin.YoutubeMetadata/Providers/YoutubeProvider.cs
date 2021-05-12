@@ -39,8 +39,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             Current = this;
         }
 
-        /// <inheritdoc />
-        public string Name => "YouTube Metadata";
+        /// <summary>
+        /// Providers name, this appears in the library metadata settings.
+        /// </summary>
+        public string Name => "YouTube API Metadata";
 
         /// <inheritdoc />
         public int Order => 1;
