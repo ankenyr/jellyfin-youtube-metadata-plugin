@@ -51,6 +51,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return file;
         }
 
+        /// <summary>
+        /// Returns bolean if item has changed since last recorded.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="directoryService"></param>
+        /// <returns></returns>
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
             var infoJson = GetInfoJson(item.Path);
@@ -58,6 +64,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return result;
         }
 
+        /// <summary>
+        /// Retrieves metadata of item.
+        /// </summary>
+        /// <param name="info"></param>
+        /// <param name="directoryService"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public Task<MetadataResult<Movie>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<Movie>();
@@ -92,6 +105,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         }
 
+        /// <summary>
+        /// Reads JSON data from file.
+        /// </summary>
+        /// <param name="metaFile"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         private MovieJson ReadJsonData(string metaFile, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

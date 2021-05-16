@@ -40,7 +40,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         // After embedded and fanart
         public int Order => 1;
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the supported images.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {
             return new List<ImageType>
@@ -50,7 +54,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             };
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Retrieves image for item.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
             var id = Utils.GetYTID(item.FileNameWithoutExtension);
@@ -121,14 +130,23 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return list;
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Gets the image response.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();
             return httpClient.GetAsync(url, cancellationToken);
         }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// Returns True if item is supported.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Supports(BaseItem item)
             => item is Movie;
     }

@@ -49,7 +49,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public static YoutubeMetadataProvider Current { get => current; set => current = value; }
 
-        /// <inheritdoc />
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="searchInfo"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(MovieInfo searchInfo, CancellationToken cancellationToken)
             => Task.FromResult(Enumerable.Empty<RemoteSearchResult>());
 
@@ -114,25 +119,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             item.ProductionYear = date.Year;
             item.PremiereDate = date;
         }
-
-        /// <summary>
-        /// Checks and returns data in local cache, downloads and returns if not present or too old.
-        /// </summary>
-        /// <param name="youtubeID"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        //internal Task EnsureInfo(string youtubeID, CancellationToken cancellationToken)
-        //{
-        //    var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, youtubeID);
-
-        //    var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
-
-        //    if (Utils.IsFresh(fileInfo))
-        //    {
-        //        return Task.CompletedTask;
-        //    }
-        //    return Utils.APIDownload(youtubeID, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
-        //}
         
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {

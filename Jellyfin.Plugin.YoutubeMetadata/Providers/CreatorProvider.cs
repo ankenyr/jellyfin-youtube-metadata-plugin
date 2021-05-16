@@ -27,6 +27,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _json = json;
         }
 
+        /// <summary>
+        /// Returns true if BaseItem is of type that this provider supports.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Supports(BaseItem item)
         {
             return item is Person;
@@ -37,11 +42,22 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         public string Name => "YouTube Creator Metadata";
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public IEnumerable<ImageType> GetSupportedImages(BaseItem item)
         {
             yield return ImageType.Primary;
         }
 
+        /// <summary>
+        /// Retrieves metadata for a Creator.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
 
@@ -81,10 +97,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     infos.Add(rii);
                 }
             }
-            //return Task.FromResult<IEnumerable<RemoteImageInfo>>(infos);
-
             return infos;
         }
+
+        /// <summary>
+        /// Ensures that metadata is fresh in the cache or retrieves fresh data.
+        /// </summary>
+        /// <param name="channelId"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         internal Task EnsureInfo(string channelId, CancellationToken cancellationToken)
         {
             var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, channelId);
@@ -96,6 +117,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             }
             return Utils.APIDownload(channelId, _config.ApplicationPaths, Utils.DownloadType.Channel, cancellationToken);
         }
+
+        /// <summary>
+        /// Gets the image response.
+        /// </summary>
+        /// <param name="url"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             var httpClient = _httpClientFactory.CreateClient();

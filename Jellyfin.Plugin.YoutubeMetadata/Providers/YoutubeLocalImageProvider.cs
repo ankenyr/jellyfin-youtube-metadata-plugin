@@ -23,7 +23,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// Providers name, this does not appear in the library metadata settings.
         /// </summary>
         public string Name => "YouTube Local Image Metadata";
+
         public int Order => 1;
+
+        /// <summary>
+        /// Retrieves Image.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <param name="directoryService"></param>
+        /// <returns></returns>
         public List<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             _logger.LogInformation(item.Path);
@@ -47,6 +55,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             }
             return list;
         }
+
+        /// <summary>
+        /// Returns boolean based on support of item.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
         public bool Supports(BaseItem item)
             => item is Movie;
     }
