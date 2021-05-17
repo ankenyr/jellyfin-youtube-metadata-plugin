@@ -2,7 +2,11 @@
 using Google.Apis.YouTube.v3;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
+using MediaBrowser.Controller.Entities.Movies;
+using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Model.Serialization;
+using NYoutubeDL;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -20,6 +24,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         {
             Channel,
             Video
+        }
+        public class YTDLMovieJson
+        {
+            // Human name
+            public string Uploader { get; set; }
+            public string Upload_Date { get; set; }
+            // https://github.com/ytdl-org/youtube-dl/issues/1806
+            public string Title { get; set; }
+            public string Description { get; set; }
+            public string Thumbnail { get; set; }
+            // Name for use in API?
+            public string Channel_Id { get; set; }
         }
 
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
@@ -68,7 +84,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static string GetVideoInfoPath(IServerApplicationPaths appPaths, string youtubeID)
         {
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", youtubeID);
-            return Path.Combine(dataPath, "ytvideo.json");
+            return Path.Combine(dataPath, "ytvideo.info.json");
         }
         /// <summary>
         /// Returns a json of the videos metadata.
@@ -130,5 +146,51 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             File.WriteAllText(path, json);
         }
+        public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var ytd = new YoutubeDL();
+            ytd.Options.FilesystemOptions.WriteInfoJson = true;
+            ytd.Options.VerbositySimulationOptions.SkipDownload = true;
+            // Pulled from above, might want to abstract
+            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
+            ytd.Options.FilesystemOptions.Output = dataPath;
+            var dlstring = "https://www.youtube.com/watch?v=" + id;
+            await ytd.DownloadAsync(dlstring);
+        }
+        /// <summary>
+        /// Reads JSON data from file.
+        /// </summary>
+        /// <param name="metaFile"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        public static YTDLMovieJson ReadYTDLInfo(string fpath, IJsonSerializer json, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            return json.DeserializeFromFile<YTDLMovieJson>(fpath);
+        }
+
+        /// <summary>
+        /// Provides a Movie Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Movie>  MovieJsonToMovie(YTDLMovieJson json)
+        {
+            var item = new Movie();
+            var result = new MetadataResult<Movie>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+            result.Item.Name = json.Title;
+            result.Item.Overview = json.Description;
+            var date = DateTime.ParseExact(json.Upload_Date, "yyyyMMdd", null);
+            result.Item.ProductionYear = date.Year;
+            result.Item.PremiereDate = date;
+            result.AddPerson(Utils.CreatePerson(json.Uploader, json.Channel_Id));
+            return result;
+        }
     }
+
 }

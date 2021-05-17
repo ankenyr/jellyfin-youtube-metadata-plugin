@@ -1,6 +1,5 @@
 ﻿using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
-using System;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -11,18 +10,6 @@ using MediaBrowser.Controller.Entities.Movies;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class MovieJson
-    {
-        // Human name
-        public string Uploader { get; set; }
-        public string UploadDate { get; set; }
-        // https://github.com/ytdl-org/youtube-dl/issues/1806
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string Thumbnail { get; set; }
-        // Name for use in API?
-        public string ChannelId { get; set; }
-    }
     public class YoutubeLocalProvider : ILocalMetadataProvider<Movie>, IHasItemChangeMonitor
     {
         private readonly ILogger<YoutubeLocalProvider> _logger;
@@ -60,7 +47,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
             var infoJson = GetInfoJson(item.Path);
-            var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) > item.DateLastSaved;
+            var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
             return result;
         }
 
@@ -84,17 +71,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 var item = new Movie();
                 var infoJson = GetInfoJson(info.Path);
-                result.HasMetadata = true;
-                result.Item = item;
-                var jsonObj = ReadJsonData(infoJson.FullName, cancellationToken);
-                result.Item.Name = jsonObj.Title;
-                result.Item.Overview = jsonObj.Description;
-                var date = DateTime.ParseExact(jsonObj.UploadDate, "yyyyMMdd", null);
-                result.Item.ProductionYear = date.Year;
-                result.Item.PremiereDate = date;
-
-                result.AddPerson(Utils.CreatePerson(jsonObj.Uploader, jsonObj.ChannelId));
-                return Task.FromResult(result);
+                var jsonObj = Utils.ReadYTDLInfo(infoJson.FullName, _json, cancellationToken);
+                result = Utils.MovieJsonToMovie(jsonObj);
             }
             catch (FileNotFoundException)
             {
@@ -102,19 +80,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.HasMetadata = false;
                 return Task.FromResult(result);
             }
-
+            return Task.FromResult(result);
         }
 
-        /// <summary>
-        /// Reads JSON data from file.
-        /// </summary>
-        /// <param name="metaFile"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        private MovieJson ReadJsonData(string metaFile, CancellationToken cancellationToken)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return _json.DeserializeFromFile<MovieJson>(metaFile);
-        }
+        
     }
 }

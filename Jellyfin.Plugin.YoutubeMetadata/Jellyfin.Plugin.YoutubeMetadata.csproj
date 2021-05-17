@@ -18,7 +18,8 @@
 		<PackageReference Include="Google.Apis.Auth" Version="1.45.0" />
 		<PackageReference Include="Google.Apis.Core" Version="1.45.0" />
 		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.45.0.1905" />
-		<PackageReference Include="Jellyfin.Controller" Version="10.7.0-rc1" />
+		<PackageReference Include="Jellyfin.Controller" Version="10.7.5" />
           <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+          <PackageReference Include="NYoutubeDL" Version="0.11.0" />
 	</ItemGroup>
 </Project>

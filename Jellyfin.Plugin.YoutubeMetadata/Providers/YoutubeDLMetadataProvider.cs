@@ -1,6 +1,5 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -17,7 +16,7 @@ using MediaBrowser.Controller.Entities.Movies;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class YoutubeMetadataProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
+    public class YoutubeDLMetadataProvider : IRemoteMetadataProvider<Movie, MovieInfo>, IHasOrder
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
@@ -25,29 +24,25 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly ILogger<YoutubeMetadataProvider> _logger;
         private readonly ILibraryManager _libmanager;
 
-        private static YoutubeMetadataProvider current;
-
         public const string BaseUrl = "https://m.youtube.com/";
-
-        public YoutubeMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
+        
+        public YoutubeDLMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
         {
             _config = config;
             _fileSystem = fileSystem;
             _json = json;
             _logger = logger;
             _libmanager = libmanager;
-            //Current = this;
         }
 
         /// <summary>
         /// Providers name, this appears in the library metadata settings.
         /// </summary>
-        public string Name => "YouTube API Metadata";
+        public string Name => "YouTube DL Metadata";
 
         /// <inheritdoc />
         public int Order => 1;
 
-        public static YoutubeMetadataProvider Current { get => current; set => current = value; }
 
         /// <summary>
         /// 
@@ -76,25 +71,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             if (!string.IsNullOrWhiteSpace(id))
             {
                 var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
-
                 var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
-
                 if (Utils.IsFresh(fileInfo))
                 {
                     return result;
                 }
-                await Utils.APIDownload(id, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
+                await Utils.YTDLMetadata(id, _config.ApplicationPaths, cancellationToken);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
-
-                var video = _json.DeserializeFromFile<Google.Apis.YouTube.v3.Data.Video>(path);
+                var video = Utils.ReadYTDLInfo(path, _json, cancellationToken);
                 if (video != null)
                 {
-                    result.Item = new Movie();
-                    result.HasMetadata = true;
-                    result.Item.OriginalTitle = info.Name;
-                    ProcessResult(result.Item, video);
-                    result.AddPerson(Utils.CreatePerson(video.Snippet.ChannelTitle, video.Snippet.ChannelId));
+                   result = Utils.MovieJsonToMovie(video);
                 }
             }
             else
@@ -119,7 +107,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             item.ProductionYear = date.Year;
             item.PremiereDate = date;
         }
-        
+
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             throw new NotImplementedException();
