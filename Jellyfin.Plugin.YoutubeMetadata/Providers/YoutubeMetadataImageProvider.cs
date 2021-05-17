@@ -1,16 +1,16 @@
-﻿using System.Collections.Generic;
-using System.Threading;
-using System.Net.Http;
-using System.Threading.Tasks;
-using MediaBrowser.Controller.Configuration;
+﻿using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Entities;
+using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Controller.Entities.Movies;
+using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
-using MediaBrowser.Model.IO;
+using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -81,7 +81,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 if (obj != null)
                 {
                     var tnurls = new List<string>();
-                    if (obj.Snippet.Thumbnails.Maxres != null) {
+                    if (obj.Snippet.Thumbnails.Maxres != null)
+                    {
                         tnurls.Add(obj.Snippet.Thumbnails.Maxres.Url);
                     }
                     if (obj.Snippet.Thumbnails.Standard != null)

@@ -1,18 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading;
-using System.Threading.Tasks;
-using MediaBrowser.Controller.Configuration;
+﻿using MediaBrowser.Controller.Configuration;
+using MediaBrowser.Controller.Entities;
+using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
-using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.Entities.Movies;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net.Http;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -25,7 +25,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly ILibraryManager _libmanager;
 
         public const string BaseUrl = "https://m.youtube.com/";
-        
+
         public YoutubeDLMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
         {
             _config = config;
@@ -82,7 +82,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 var video = Utils.ReadYTDLInfo(path, _json, cancellationToken);
                 if (video != null)
                 {
-                   result = Utils.MovieJsonToMovie(video);
+                    result = Utils.MovieJsonToMovie(video);
                 }
             }
             else
