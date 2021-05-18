@@ -1,12 +1,12 @@
 ﻿using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.IO;
-using MediaBrowser.Model.Serialization;
-using Microsoft.Extensions.Logging;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using MediaBrowser.Model.IO;
+using MediaBrowser.Model.Serialization;
+using Microsoft.Extensions.Logging;
+using MediaBrowser.Controller.Entities.Movies;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -83,6 +83,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return Task.FromResult(result);
         }
 
-
+        
     }
 }

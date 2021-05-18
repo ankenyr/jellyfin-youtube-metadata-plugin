@@ -175,7 +175,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Movie> MovieJsonToMovie(YTDLMovieJson json)
+        public static MetadataResult<Movie>  MovieJsonToMovie(YTDLMovieJson json)
         {
             var item = new Movie();
             var result = new MetadataResult<Movie>

@@ -1,10 +1,10 @@
-﻿using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.Entities.Movies;
-using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.IO;
-using Microsoft.Extensions.Logging;
+﻿using System.IO;
 using System.Collections.Generic;
-using System.IO;
+using MediaBrowser.Controller.Providers;
+using MediaBrowser.Controller.Entities;
+using MediaBrowser.Model.IO;
+using MediaBrowser.Controller.Entities.Movies;
+using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -41,8 +41,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 _logger.LogInformation("Local Metadata Disabled");
                 return list;
             }
-
-
+            
+            
             var filename = item.FileNameWithoutExtension + ".jpg";
             var fullpath = Path.Combine(item.ContainingFolderPath, filename);
 
