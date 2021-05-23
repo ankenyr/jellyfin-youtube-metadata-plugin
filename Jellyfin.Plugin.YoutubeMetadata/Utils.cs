@@ -6,6 +6,7 @@ using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.Serialization;
+using Microsoft.Extensions.Logging;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -20,10 +21,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata
     class Utils
     {
         public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
+
         public enum DownloadType
         {
             Channel,
             Video
+        }
+        public class ThumbnailInfo
+        {
+            public string Url { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
+            public string Resolution { get; set; }
+            public string Id { get; set; }
         }
         public class YTDLMovieJson
         {
@@ -33,9 +43,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             // https://github.com/ytdl-org/youtube-dl/issues/1806
             public string Title { get; set; }
             public string Description { get; set; }
-            public string Thumbnail { get; set; }
             // Name for use in API?
             public string Channel_Id { get; set; }
+            public List<ThumbnailInfo> Thumbnails { get; set; }
+
         }
 
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
@@ -156,7 +167,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
             var dlstring = "https://www.youtube.com/watch?v=" + id;
-            await ytd.DownloadAsync(dlstring);
+            var task = ytd.DownloadAsync(dlstring);
+            if (await Task.WhenAny(task, Task.Delay(10000, cancellationToken)) == task)
+            {
+                await task;
+            }
+            else
+            {
+                throw new Exception(String.Format("Timeout error for video id: {0}", id));
+            }
+
         }
         /// <summary>
         /// Reads JSON data from file.
