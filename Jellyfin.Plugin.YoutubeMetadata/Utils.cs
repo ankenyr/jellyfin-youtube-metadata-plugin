@@ -167,6 +167,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
             var dlstring = "https://www.youtube.com/watch?v=" + id;
+            List<string> ytdl_errs = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             var task = ytd.DownloadAsync(dlstring);
             if (await Task.WhenAny(task, Task.Delay(10000, cancellationToken)) == task)
             {
@@ -174,7 +176,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             }
             else
             {
-                throw new Exception(String.Format("Timeout error for video id: {0}", id));
+                throw new Exception(String.Format("Timeout error for video id: {0}, errors: {1}", id, String.Join(" ", ytdl_errs)));
             }
 
         }
