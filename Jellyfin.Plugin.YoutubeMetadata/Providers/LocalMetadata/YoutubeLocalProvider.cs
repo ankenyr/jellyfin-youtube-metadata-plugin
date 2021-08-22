@@ -1,6 +1,7 @@
 ﻿using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
 using System.IO;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.IO;
@@ -69,7 +70,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 var item = new Movie();
                 var infoJson = GetInfoJson(info.Path);
                 var jsonObj = Utils.ReadYTDLInfo(infoJson.FullName, cancellationToken);
-                result = Utils.MovieJsonToMovie(jsonObj);
+                result = Utils.YTDLJsonToMovie(jsonObj);
             }
             catch (FileNotFoundException)
             {

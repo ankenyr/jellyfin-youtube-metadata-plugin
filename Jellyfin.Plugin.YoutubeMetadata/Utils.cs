@@ -3,8 +3,10 @@ using Google.Apis.YouTube.v3;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
+using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
+using Microsoft.Extensions.Logging;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -27,11 +29,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         }
         public class ThumbnailInfo
         {
-            public string Url { get; set; }
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public string Resolution { get; set; }
-            public string Id { get; set; }
+            public string url { get; set; }
+            public int width { get; set; }
+            public int height { get; set; }
+            public string resolution { get; set; }
+            public string id { get; set; }
         }
         public class YTDLMovieJson
         {
@@ -196,7 +198,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Movie>  MovieJsonToMovie(YTDLMovieJson json)
+        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLMovieJson json)
         {
             var item = new Movie();
             var result = new MetadataResult<Movie>
@@ -210,6 +212,32 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            return result;
+        }
+
+        /// <summary>
+        /// Provides a Episode Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLMovieJson json)
+        {
+            var item = new Episode();
+            var result = new MetadataResult<Episode>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+
+            result.Item.Name = json.title;
+            result.Item.Overview = json.description;
+            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            result.Item.ProductionYear = date.Year;
+            result.Item.PremiereDate = date;
+            result.Item.ForcedSortName = date.ToString("yyyyMMdd") + "-" + result.Item.Name;
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            result.Item.IndexNumber = 1;
+            result.Item.ParentIndexNumber = 1;
             return result;
         }
     }
