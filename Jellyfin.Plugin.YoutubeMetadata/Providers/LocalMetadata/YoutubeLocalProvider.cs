@@ -4,7 +4,6 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Model.IO;
-using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities.Movies;
 
@@ -13,14 +12,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     public class YoutubeLocalProvider : ILocalMetadataProvider<Movie>, IHasItemChangeMonitor
     {
         private readonly ILogger<YoutubeLocalProvider> _logger;
-        private readonly IJsonSerializer _json;
         private readonly IFileSystem _fileSystem;
 
-        public YoutubeLocalProvider(IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeLocalProvider> logger)
+        public YoutubeLocalProvider(IFileSystem fileSystem, ILogger<YoutubeLocalProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
-            _json = json;
         }
 
         /// <summary>
@@ -71,7 +68,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 var item = new Movie();
                 var infoJson = GetInfoJson(info.Path);
-                var jsonObj = Utils.ReadYTDLInfo(infoJson.FullName, _json, cancellationToken);
+                var jsonObj = Utils.ReadYTDLInfo(infoJson.FullName, cancellationToken);
                 result = Utils.MovieJsonToMovie(jsonObj);
             }
             catch (FileNotFoundException)

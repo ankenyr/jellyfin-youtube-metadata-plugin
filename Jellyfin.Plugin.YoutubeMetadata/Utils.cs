@@ -5,8 +5,6 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
-using MediaBrowser.Model.Serialization;
-using Microsoft.Extensions.Logging;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -38,14 +36,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public class YTDLMovieJson
         {
             // Human name
-            public string Uploader { get; set; }
-            public string Upload_Date { get; set; }
+            public string uploader { get; set; }
+            public string upload_date { get; set; }
             // https://github.com/ytdl-org/youtube-dl/issues/1806
-            public string Title { get; set; }
-            public string Description { get; set; }
+            public string title { get; set; }
+            public string description { get; set; }
             // Name for use in API?
-            public string Channel_Id { get; set; }
-            public List<ThumbnailInfo> Thumbnails { get; set; }
+            public string channel_id { get; set; }
+            public List<ThumbnailInfo> thumbnails { get; set; }
 
         }
 
@@ -186,10 +184,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <param name="metaFile"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static YTDLMovieJson ReadYTDLInfo(string fpath, IJsonSerializer json, CancellationToken cancellationToken)
+        public static YTDLMovieJson ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return json.DeserializeFromFile<YTDLMovieJson>(fpath);
+            string jsonString = File.ReadAllText(fpath);
+            return JsonSerializer.Deserialize<YTDLMovieJson>(jsonString);
         }
 
         /// <summary>
@@ -205,12 +204,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 HasMetadata = true,
                 Item = item
             };
-            result.Item.Name = json.Title;
-            result.Item.Overview = json.Description;
-            var date = DateTime.ParseExact(json.Upload_Date, "yyyyMMdd", null);
+            result.Item.Name = json.title;
+            result.Item.Overview = json.description;
+            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
-            result.AddPerson(Utils.CreatePerson(json.Uploader, json.Channel_Id));
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             return result;
         }
     }

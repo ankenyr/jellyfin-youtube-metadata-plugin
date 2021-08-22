@@ -9,7 +9,6 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
-using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
@@ -21,17 +20,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataProvider> _logger;
         private readonly ILibraryManager _libmanager;
 
         public const string BaseUrl = "https://m.youtube.com/";
         
-        public YoutubeDLMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
+        public YoutubeDLMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
         {
             _config = config;
             _fileSystem = fileSystem;
-            _json = json;
             _logger = logger;
             _libmanager = libmanager;
         }
@@ -78,7 +75,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await Utils.YTDLMetadata(id, _config.ApplicationPaths, cancellationToken);
             }
             var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
-            var video = Utils.ReadYTDLInfo(path, _json, cancellationToken);
+            var video = Utils.ReadYTDLInfo(path, cancellationToken);
             if (video != null)
             {
                 result = Utils.MovieJsonToMovie(video);
@@ -113,15 +110,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataImageProvider> _logger;
 
-        public YTDLImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
+        public YTDLImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, ILogger<YoutubeMetadataImageProvider> logger)
         {
             _config = config;
             _fileSystem = fileSystem;
             _httpClientFactory = httpClientFactory;
-            _json = json;
             _logger = logger;
         }
 
@@ -170,13 +165,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await Utils.YTDLMetadata(id, _config.ApplicationPaths, cancellationToken);
             }
             var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
-            var video = Utils.ReadYTDLInfo(path, _json, cancellationToken);
+            var video = Utils.ReadYTDLInfo(path, cancellationToken);
             if (video != null)
             {
                 result.Add(new RemoteImageInfo
                 {
                     ProviderName = Name,
-                    Url = video.Thumbnails[video.Thumbnails.Count - 1].Url,
+                    Url = video.thumbnails[video.thumbnails.Count - 1].Url,
                     Type = ImageType.Primary
                 });
             }

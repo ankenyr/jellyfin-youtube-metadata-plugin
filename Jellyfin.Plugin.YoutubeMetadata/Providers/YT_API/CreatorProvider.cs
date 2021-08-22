@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.IO;
+using System.Text.Json;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -8,7 +10,6 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
-using MediaBrowser.Model.Serialization;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -17,14 +18,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IJsonSerializer _json;
 
-        public CreatorProviderImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json)
+        public CreatorProviderImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory)
         {
             _config = config;
             _fileSystem = fileSystem;
             _httpClientFactory = httpClientFactory;
-            _json = json;
         }
 
         /// <summary>
@@ -69,8 +68,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await EnsureInfo(channelId, cancellationToken).ConfigureAwait(false);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, channelId);
-
-                var channel = _json.DeserializeFromFile<Google.Apis.YouTube.v3.Data.Channel>(path);
+                string jsonString = File.ReadAllText(path);
+                var channel = JsonSerializer.Deserialize<Google.Apis.YouTube.v3.Data.Channel>(jsonString);
                 if (channel != null)
                 {
                     var rii = new RemoteImageInfo();

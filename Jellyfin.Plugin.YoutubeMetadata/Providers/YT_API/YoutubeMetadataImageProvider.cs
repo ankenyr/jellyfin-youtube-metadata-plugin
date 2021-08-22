@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System.IO;
+using System.Text.Json;
+using System.Collections.Generic;
 using System.Threading;
 using System.Net.Http;
 using System.Threading.Tasks;
@@ -8,7 +10,6 @@ using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Model.Providers;
-using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Model.IO;
 
@@ -19,15 +20,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataImageProvider> _logger;
 
-        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, IJsonSerializer json, ILogger<YoutubeMetadataImageProvider> logger)
+        public YoutubeMetadataImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, ILogger<YoutubeMetadataImageProvider> logger)
         {
             _config = config;
             _fileSystem = fileSystem;
             _httpClientFactory = httpClientFactory;
-            _json = json;
             _logger = logger;
         }
 
@@ -75,8 +74,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await Utils.APIDownload(id, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
-
-                var obj = _json.DeserializeFromFile<Google.Apis.YouTube.v3.Data.Video>(path);
+                string jsonString = File.ReadAllText(path);
+                var obj = JsonSerializer.Deserialize<Google.Apis.YouTube.v3.Data.Video>(jsonString);
 
                 if (obj != null)
                 {

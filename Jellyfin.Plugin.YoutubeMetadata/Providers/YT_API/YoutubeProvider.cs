@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json;
 using System.Linq;
 using System.Net.Http;
 using System.Threading;
@@ -10,7 +11,6 @@ using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
-using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
@@ -21,7 +21,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly IJsonSerializer _json;
         private readonly ILogger<YoutubeMetadataProvider> _logger;
         private readonly ILibraryManager _libmanager;
 
@@ -29,11 +28,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public const string BaseUrl = "https://m.youtube.com/";
 
-        public YoutubeMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, IJsonSerializer json, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
+        public YoutubeMetadataProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YoutubeMetadataProvider> logger, ILibraryManager libmanager)
         {
             _config = config;
             _fileSystem = fileSystem;
-            _json = json;
             _logger = logger;
             _libmanager = libmanager;
             //Current = this;
@@ -86,8 +84,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await Utils.APIDownload(id, _config.ApplicationPaths, Utils.DownloadType.Video, cancellationToken);
 
                 var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
-
-                var video = _json.DeserializeFromFile<Google.Apis.YouTube.v3.Data.Video>(path);
+                string jsonString = File.ReadAllText(path);
+                var video = JsonSerializer.Deserialize<Google.Apis.YouTube.v3.Data.Video>(jsonString);
                 if (video != null)
                 {
                     result.Item = new Movie();
