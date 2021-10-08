@@ -40,6 +40,6 @@
 	</ItemGroup>
 
 	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /y /d  &quot;$(TargetPath)&quot; &quot;C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata&quot;" />
+	  <Exec Command="xcopy /y /d  &quot;$(TargetPath)&quot; &quot;C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata&quot;" Condition="'$(OS)' == 'Windows_NT'" />
 	</Target>
 </Project>

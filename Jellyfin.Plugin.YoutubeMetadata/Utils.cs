@@ -45,6 +45,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             public string description { get; set; }
             // Name for use in API?
             public string channel_id { get; set; }
+            public string track { get; set; }
+            public string artist { get; set; }
+            public string album { get; set; }
             public List<ThumbnailInfo> thumbnails { get; set; }
 
         }
@@ -212,6 +215,34 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            return result;
+        }
+
+        /// <summary>
+        /// Provides a MusicVideo Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLMovieJson json)
+        {
+            var item = new MusicVideo();
+            var result = new MetadataResult<MusicVideo>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+
+            result.Item.Name = String.IsNullOrEmpty(json.track) ? json.title : json.track;
+            result.Item.Artists = new List<string> { json.artist };
+            result.Item.Album = json.album;
+            result.Item.Overview = json.description;
+
+            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            result.Item.ProductionYear = date.Year;
+            result.Item.PremiereDate = date;
+
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+
             return result;
         }
 
