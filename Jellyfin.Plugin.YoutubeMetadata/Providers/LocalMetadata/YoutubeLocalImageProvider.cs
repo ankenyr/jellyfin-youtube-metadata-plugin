@@ -32,7 +32,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="item"></param>
         /// <param name="directoryService"></param>
         /// <returns></returns>
-        public List<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
+        public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             _logger.LogInformation(item.Path);
             var list = new List<LocalImageInfo>();

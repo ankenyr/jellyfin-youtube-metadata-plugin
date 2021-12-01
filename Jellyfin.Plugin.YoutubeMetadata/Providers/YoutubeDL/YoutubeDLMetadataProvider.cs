@@ -250,7 +250,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 result.Add(new RemoteImageInfo
                 {
                     ProviderName = Name,
-                    Url = video.thumbnails[video.thumbnails.Count - 1].url,
+                    Url = video.Thumbnails[video.Thumbnails.Count - 1].URL,
                     Type = ImageType.Primary
                 });
             }

@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<TargetFramework>net5.0</TargetFramework>
+		<TargetFramework>net6.0</TargetFramework>
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
 		<AssemblyVersion>1.0.3.4</AssemblyVersion>
 		<FileVersion>1.0.3.4</FileVersion>
@@ -16,30 +16,26 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Google.Apis" Version="1.54.0" />
-		<PackageReference Include="Google.Apis.Auth" Version="1.54.0" />
-		<PackageReference Include="Google.Apis.Core" Version="1.54.0" />
-		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.54.0.2414" />
-          <PackageReference Include="Microsoft.Extensions.Http" Version="5.0.0" />
+		<PackageReference Include="Google.Apis" Version="1.55.0" />
+		<PackageReference Include="Google.Apis.Auth" Version="1.55.0" />
+		<PackageReference Include="Google.Apis.Core" Version="1.55.0" />
+		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.55.0.2449" />
+          <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
           <PackageReference Include="NYoutubeDL" Version="0.11.2" />
 	</ItemGroup>
 
 	<ItemGroup>
 	  <Reference Include="Jellyfin.Data">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net5.0\Jellyfin.Data.dll</HintPath>
+	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\Jellyfin.Data.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MediaBrowser.Common">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net5.0\MediaBrowser.Common.dll</HintPath>
+	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Common.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MediaBrowser.Controller">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net5.0\MediaBrowser.Controller.dll</HintPath>
+	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Controller.dll</HintPath>
 	  </Reference>
 	  <Reference Include="MediaBrowser.Model">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net5.0\MediaBrowser.Model.dll</HintPath>
+	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Model.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
-
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="xcopy /y /d  &quot;$(TargetPath)&quot; &quot;C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata&quot;" Condition="'$(OS)' == 'Windows_NT'" />
-	</Target>
 </Project>
