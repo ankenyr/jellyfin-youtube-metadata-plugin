@@ -166,6 +166,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var ytd = new YoutubeDL();
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
+            Console.WriteLine("inside YTDLMetadata");
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookie.txt");
+            if ( File.Exists(cookie_file) ) {
+                Console.WriteLine("cookie found");
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            }
             // Pulled from above, might want to abstract
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
