@@ -37,7 +37,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
 
         public async Task<MetadataResult<Episode>> GetMetadata(EpisodeInfo info, CancellationToken cancellationToken)
         {
-            Console.WriteLine("Inside GetMetadata");
+
             var result = new MetadataResult<Episode>();
 
             var id = Utils.GetYTID(info.Path);
