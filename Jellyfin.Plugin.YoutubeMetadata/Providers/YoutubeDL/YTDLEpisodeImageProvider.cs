@@ -18,9 +18,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
         private readonly IHttpClientFactory _httpClientFactory;
-        private readonly ILogger<YoutubeMetadataImageProvider> _logger;
+        private readonly ILogger<YTDLEpisodeImageProvider> _logger;
 
-        public YTDLEpisodeImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, ILogger<YoutubeMetadataImageProvider> logger)
+        public YTDLEpisodeImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, ILogger<YTDLEpisodeImageProvider> logger)
         {
             _config = config;
             _fileSystem = fileSystem;
@@ -63,7 +63,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
             var id = Utils.GetYTID(item.FileNameWithoutExtension);
             if (string.IsNullOrWhiteSpace(id))
             {
-                _logger.LogInformation("Youtube ID not found in filename of title: " + item.Name);
+                _logger.LogInformation("Youtube ID not found in filename of title: {item.Name}", item.Name);
                 return result;
             }
             var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
@@ -79,7 +79,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
                 result.Add(new RemoteImageInfo
                 {
                     ProviderName = Name,
-                    Url = video.thumbnails[video.thumbnails.Count - 1].URL,
+                    Url = video.thumbnails[^1].URL,
                     Type = ImageType.Primary
                 });
             }

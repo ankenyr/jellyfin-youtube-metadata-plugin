@@ -6,7 +6,7 @@ using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
-using Microsoft.Extensions.Logging;
+using Newtonsoft.Json.Linq;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -38,19 +38,38 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public class YTDLMovieJson
         {
             // Human name
+#pragma warning disable IDE1006 // Naming Styles
             public string uploader { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
             public string upload_date { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
             // https://github.com/ytdl-org/youtube-dl/issues/1806
+#pragma warning disable IDE1006 // Naming Styles
             public string title { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
             public string description { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
             // Name for use in API?
+#pragma warning disable IDE1006 // Naming Styles
             public string channel_id { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
             public string track { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
             public string artist { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
             public string album { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
+#pragma warning disable IDE1006 // Naming Styles
             public List<ThumbnailInfo> thumbnails { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
 
         }
+
 
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
@@ -100,66 +119,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", youtubeID);
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
-        /// <summary>
-        /// Returns a json of the videos metadata.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="resource"></param>
-        /// <returns></returns>
-        public static async Task<string> Download(string id, VideosResource resource)
-        {
-            var vreq = resource.List("snippet");
-            vreq.Id = id;
-            var response = await vreq.ExecuteAsync();
-            return JsonSerializer.Serialize(response.Items[0]);
-        }
+        
 
-        /// <summary>
-        /// Returns a json of the channels metadata.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="resource"></param>
-        /// <returns></returns>
-        public static async Task<string> Download(string id, ChannelsResource resource)
-        {
-            var vreq = resource.List("snippet");
-            vreq.Id = id;
-            var response = await vreq.ExecuteAsync();
-            return JsonSerializer.Serialize(response.Items[0]);
 
-        }
-
-        /// <summary>
-        /// Downloads and stores metadata from the YT API.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="appPaths"></param>
-        /// <param name="cancellationToken"></param>
-        /// <param name="dtype"></param>
-        /// <returns></returns>
-        public static async Task APIDownload(string id, IServerApplicationPaths appPaths, DownloadType dtype, CancellationToken cancellationToken)
-        {
-            await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
-            cancellationToken.ThrowIfCancellationRequested();
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
-            {
-                ApiKey = Plugin.Instance.Configuration.ApiKey,
-                ApplicationName = "Youtube Metadata"
-            });
-            // Lets change this
-            string json = "";
-            if (dtype == Utils.DownloadType.Video)
-            {
-                json = await Download(id, youtubeService.Videos);
-            }
-            else if (dtype == Utils.DownloadType.Channel)
-            {
-                json = await Download(id, youtubeService.Channels);
-            }
-            var path = Utils.GetVideoInfoPath(appPaths, id);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            File.WriteAllText(path, json);
-        }
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();

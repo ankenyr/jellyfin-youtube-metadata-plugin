@@ -34,7 +34,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
-            _logger.LogInformation(item.Path);
             var list = new List<LocalImageInfo>();
             if (Plugin.Instance.Configuration.DisableLocalMetadata)
             {
