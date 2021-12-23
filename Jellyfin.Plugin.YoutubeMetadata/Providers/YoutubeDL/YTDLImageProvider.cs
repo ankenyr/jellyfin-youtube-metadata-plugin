@@ -14,13 +14,13 @@ using MediaBrowser.Controller.Entities.TV;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
 {
-    public class YTDLEpisodeImageProvider : IRemoteImageProvider, IHasOrder
+    public class YTDLImageProvider : IRemoteImageProvider, IHasOrder
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly ILogger<YTDLEpisodeImageProvider> _logger;
+        private readonly ILogger<YTDLImageProvider> _logger;
 
-        public YTDLEpisodeImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YTDLEpisodeImageProvider> logger)
+        public YTDLImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YTDLImageProvider> logger)
         {
             _config = config;
             _fileSystem = fileSystem;
@@ -91,7 +91,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <param name="url"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
+        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             var httpClient = Plugin.Instance.GetHttpClient();
             return await httpClient.GetAsync(url).ConfigureAwait(false);
