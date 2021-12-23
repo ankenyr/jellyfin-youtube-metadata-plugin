@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Model.Entities;
+using MediaBrowser.Controller.Entities.TV;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
 {
@@ -17,14 +18,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
-        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<YTDLEpisodeImageProvider> _logger;
 
-        public YTDLEpisodeImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, ILogger<YTDLEpisodeImageProvider> logger)
+        public YTDLEpisodeImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YTDLEpisodeImageProvider> logger)
         {
             _config = config;
             _fileSystem = fileSystem;
-            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -94,8 +93,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            var httpClient = _httpClientFactory.CreateClient();
-            return httpClient.GetAsync(url, cancellationToken);
+            var httpClient = Plugin.Instance.GetHttpClient();
+            return await httpClient.GetAsync(url).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -104,6 +103,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Supports(BaseItem item)
-            => item is Movie;
+            => item is Movie || item is Episode;
     }
 }
