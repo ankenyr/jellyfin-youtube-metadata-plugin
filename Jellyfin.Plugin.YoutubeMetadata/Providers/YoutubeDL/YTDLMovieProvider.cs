@@ -9,11 +9,11 @@ using MediaBrowser.Controller;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class YTDLMovieProvider : AbstractYoutubeRemoteProvider<YTDLEpisodeProvider, Movie, MovieInfo>
+    public class YTDLMovieProvider : AbstractYoutubeRemoteProvider<YTDLMovieProvider, Movie, MovieInfo>
     {
         public YTDLMovieProvider(
             IFileSystem fileSystem,
-            ILogger<YTDLEpisodeProvider> logger,
+            ILogger<YTDLMovieProvider> logger,
             IServerConfigurationManager config,
             System.IO.Abstractions.IFileSystem afs) : base(fileSystem, logger, config, afs)
         {

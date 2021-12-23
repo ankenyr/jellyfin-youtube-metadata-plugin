@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Providers;
@@ -8,7 +6,6 @@ using MediaBrowser.Model.IO;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller;
-using System.IO;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {

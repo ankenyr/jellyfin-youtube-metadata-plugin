@@ -9,7 +9,7 @@ using MediaBrowser.Controller;
 using Google.Apis.YouTube.v3.Data;
 using System;
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class YTAPIMovieProvider : AbstractYTAPIProvider<YTAPIMovieProvider, Movie, MovieInfo, Video>
     {

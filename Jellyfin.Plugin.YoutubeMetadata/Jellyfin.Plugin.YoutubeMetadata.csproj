@@ -6,7 +6,7 @@
 		<FileVersion>1.0.3.4</FileVersion>
 		<Version>1.0.3.4</Version>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<RunPostBuildEvent>Always</RunPostBuildEvent>
+		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />
@@ -22,6 +22,7 @@
 		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.55.0.2449" />
           <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
           <PackageReference Include="NYoutubeDL" Version="0.11.2" />
+          <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
 	</ItemGroup>
 
 	<ItemGroup>
@@ -38,4 +39,5 @@
 	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Model.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
+
 </Project>

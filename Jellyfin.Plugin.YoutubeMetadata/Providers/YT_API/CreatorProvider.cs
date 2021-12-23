@@ -11,7 +11,7 @@ using MediaBrowser.Model.Providers;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Model.IO;
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class CreatorProviderImageProvider : AbstractYoutubeImageRemoteProvider<YTAPIImageProvider>
     {

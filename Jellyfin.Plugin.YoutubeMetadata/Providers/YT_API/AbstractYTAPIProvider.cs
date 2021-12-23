@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 using Google.Apis.Requests;
 
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public abstract class AbstractYTAPIProvider <B, T, E, D> : AbstractYoutubeRemoteProvider<B, T, E>
         where T : BaseItem, IHasLookupInfo<E>
@@ -95,15 +95,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
             if (typeof(D) == typeof(Google.Apis.YouTube.v3.Data.Video))
             {  
                 var json = JsonSerializer.Deserialize<Google.Apis.YouTube.v3.Data.Video>(await Download(id, youtubeService.Videos));
-                result.Uploader = json.Snippet.ChannelTitle;
+                result.uploader = json.Snippet.ChannelTitle;
                 if (json.Snippet.PublishedAt.HasValue)
                 {
-                    result.Upload_date = json.Snippet.PublishedAt.Value.ToString("yyyyMMdd");
+                    result.upload_date = json.Snippet.PublishedAt.Value.ToString("yyyyMMdd");
                 }
-                result.Title = json.Snippet.Title;
-                result.Description = json.Snippet.Description;
-                result.Channel_id = json.Snippet.ChannelId;
-                result.Thumbnail = SelectThumbnail(json.Snippet.Thumbnails);
+                result.title = json.Snippet.Title;
+                result.description = json.Snippet.Description;
+                result.channel_id = json.Snippet.ChannelId;
+                result.thumbnail = SelectThumbnail(json.Snippet.Thumbnails);
             }
             else if (typeof(D) == typeof(Google.Apis.YouTube.v3.Data.Channel))
             {

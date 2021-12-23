@@ -13,7 +13,7 @@ using Microsoft.Extensions.Logging;
 using MediaBrowser.Model.IO;
 using System.Linq;
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class YTAPIImageProvider : AbstractYoutubeImageRemoteProvider<YTAPIImageProvider>
     {
@@ -84,7 +84,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
             var url = new RemoteImageInfo
             {
                 ProviderName = Name,
-                Url = obj.Thumbnail,
+                Url = obj.thumbnail,
                 Type = ImageType.Primary
             };
             return tnurls.Append(url);

@@ -8,7 +8,7 @@ using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
 using Google.Apis.YouTube.v3.Data;
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YT_API
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
     public class YTAPIMusicProvider : AbstractYTAPIProvider<YTAPIMusicProvider, MusicVideo, MusicVideoInfo, Google.Apis.YouTube.v3.Data.Video>
     {

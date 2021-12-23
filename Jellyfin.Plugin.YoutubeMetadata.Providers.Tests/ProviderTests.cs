@@ -41,12 +41,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         {
             var json = new YTData
             {
-                Uploader = "Someone",
-                Upload_date = "20211215",
-                Title = "Cool Video",
-                Description = "This is the best video.",
-                Channel_id = "12345",
-                Thumbnail = "somelink"
+                uploader = "Someone",
+                upload_date = "20211215",
+                title = "Cool Video",
+                description = "This is the best video.",
+                channel_id = "12345",
+                thumbnail = "somelink"
             };
             _fs_metadata.LastWriteTimeUtc = DateTime.Today.AddDays(-1);
             _fs_metadata.Exists = true;
@@ -57,10 +57,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
             //var provider = new YTDLEpisodeProvider(_jf_fs.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
             var metadata = _provider.GetMetadata(_epInfo, _token);
             metadata.Wait();
-            Assert.Equal(json.Title, metadata.Result.Item.Name);
-            Assert.Equal(json.Description, metadata.Result.Item.Overview);
+            Assert.Equal(json.title, metadata.Result.Item.Name);
+            Assert.Equal(json.description, metadata.Result.Item.Overview);
             Assert.Equal(2021, metadata.Result.Item.ProductionYear);
-            Assert.Equal(DateTime.ParseExact(json.Upload_date, "yyyyMMdd", null), metadata.Result.Item.PremiereDate);
+            Assert.Equal(DateTime.ParseExact(json.upload_date, "yyyyMMdd", null), metadata.Result.Item.PremiereDate);
             Assert.Equal(1, metadata.Result.Item.IndexNumber);
             Assert.Equal(1, metadata.Result.Item.ParentIndexNumber);
             Assert.Equal("Someone", metadata.Result.People[0].Name);
@@ -83,18 +83,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         {
             var json = new YTData
             {
-                Uploader = "Someone",
-                Upload_date = "20211215",
-                Title = "Cool Video",
-                Description = "This is the best video.",
-                Channel_id = "12345",
-                Thumbnail = "somelink"
+                uploader = "Someone",
+                upload_date = "20211215",
+                title = "Cool Video",
+                description = "This is the best video.",
+                channel_id = "12345",
+                thumbnail = "somelink"
             };
             var result = YTDLEpisodeProvider.YTDLJsonToEpisode(json);
-            Assert.Equal(json.Title, result.Item.Name);
-            Assert.Equal(json.Description, result.Item.Overview);
+            Assert.Equal(json.title, result.Item.Name);
+            Assert.Equal(json.description, result.Item.Overview);
             Assert.Equal(2021, result.Item.ProductionYear);
-            Assert.Equal(DateTime.ParseExact(json.Upload_date, "yyyyMMdd", null), result.Item.PremiereDate);
+            Assert.Equal(DateTime.ParseExact(json.upload_date, "yyyyMMdd", null), result.Item.PremiereDate);
             Assert.Equal(1, result.Item.IndexNumber);
             Assert.Equal(1, result.Item.ParentIndexNumber);
             Assert.Equal("Someone", result.People[0].Name);
@@ -106,13 +106,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                 new object[] {
                     new YTData
                     {
-                        Title = "Foo",
-                        Album = "Bar",
-                        Artist = "Someone",
-                        Upload_date = "20211215",
-                        Description = "Some music",
-                        Uploader = "ankenyr",
-                        Channel_id = "abc123",
+                        title = "Foo",
+                        album = "Bar",
+                        artist = "Someone",
+                        upload_date = "20211215",
+                        description = "Some music",
+                        uploader = "ankenyr",
+                        channel_id = "abc123",
                     },
                     new MetadataResult<MusicVideo>
                     {
@@ -136,13 +136,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                  new object[] {
                     new YTData
                     {
-                        Track = "FooTrack",
-                        Album = "Bar",
-                        Artist = "Someone",
-                        Upload_date = "20211215",
-                        Description = "Some music",
-                        Uploader = "ankenyr",
-                        Channel_id = "abc123",
+                        track = "FooTrack",
+                        album = "Bar",
+                        artist = "Someone",
+                        upload_date = "20211215",
+                        description = "Some music",
+                        uploader = "ankenyr",
+                        channel_id = "abc123",
                     },
                     new MetadataResult<MusicVideo>
                     {
@@ -179,11 +179,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                 new object[] {
                     new YTData
                     {
-                        Title = "Foo",
-                        Upload_date = "20211215",
-                        Description = "Some movie",
-                        Uploader = "ankenyr",
-                        Channel_id = "abc123",
+                        title = "Foo",
+                        upload_date = "20211215",
+                        description = "Some movie",
+                        uploader = "ankenyr",
+                        channel_id = "abc123",
                     },
                     new MetadataResult<Movie>
                     {

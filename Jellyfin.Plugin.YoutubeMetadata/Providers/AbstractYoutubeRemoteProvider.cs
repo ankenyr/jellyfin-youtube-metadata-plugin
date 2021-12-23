@@ -19,20 +19,23 @@ using System.Threading.Tasks;
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
 
+    /// <summary>
+    /// Object should match how YTDL json looks.
+    /// </summary>
     public class YTData
     {
         // Human name
-        public string Uploader { get; set; }
-        public string Upload_date { get; set; }
+        public string uploader { get; set; }
+        public string upload_date { get; set; }
         // https://github.com/ytdl-org/youtube-dl/issues/1806
-        public string Title { get; set; }
-        public string Description { get; set; }
+        public string title { get; set; }
+        public string description { get; set; }
         // Name for use in API?
-        public string Channel_id { get; set; }
-        public string Track { get; set; }
-        public string Artist { get; set; }
-        public string Album { get; set; }
-        public string Thumbnail { get; set; }
+        public string channel_id { get; set; }
+        public string track { get; set; }
+        public string artist { get; set; }
+        public string album { get; set; }
+        public string thumbnail { get; set; }
 
     }
     public abstract class AbstractYoutubeRemoteProvider<B, T, E> : IRemoteMetadataProvider<T, E>
@@ -70,12 +73,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 HasMetadata = true,
                 Item = item
             };
-            result.Item.Name = json.Title;
-            result.Item.Overview = json.Description;
-            var date = DateTime.ParseExact(json.Upload_date, "yyyyMMdd", null);
+            result.Item.Name = json.title;
+            result.Item.Overview = json.description;
+            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
-            result.AddPerson(Utils.CreatePerson(json.Uploader, json.Channel_id));
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             return result;
         }
 
@@ -93,16 +96,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 Item = item
             };
 
-            result.Item.Name = String.IsNullOrEmpty(json.Track) ? json.Title : json.Track;
-            result.Item.Artists = new List<string> { json.Artist };
-            result.Item.Album = json.Album;
-            result.Item.Overview = json.Description;
+            result.Item.Name = String.IsNullOrEmpty(json.track) ? json.title : json.track;
+            result.Item.Artists = new List<string> { json.artist };
+            result.Item.Album = json.album;
+            result.Item.Overview = json.description;
 
-            var date = DateTime.ParseExact(json.Upload_date, "yyyyMMdd", null);
+            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
 
-            result.AddPerson(Utils.CreatePerson(json.Uploader, json.Channel_id));
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
 
             return result;
         }
@@ -121,13 +124,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 Item = item
             };
 
-            result.Item.Name = json.Title;
-            result.Item.Overview = json.Description;
-            var date = DateTime.ParseExact(json.Upload_date, "yyyyMMdd", null);
+            result.Item.Name = json.title;
+            result.Item.Overview = json.description;
+            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.Item.ForcedSortName = date.ToString("yyyyMMdd") + "-" + result.Item.Name;
-            result.AddPerson(Utils.CreatePerson(json.Uploader, json.Channel_id));
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             result.Item.IndexNumber = 1;
             result.Item.ParentIndexNumber = 1;
             return result;
@@ -172,7 +175,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             cancellationToken.ThrowIfCancellationRequested();
             string jsonString = _afs.File.ReadAllText(fpath);
-            return JsonSerializer.Deserialize<YTData>(jsonString);
+            var foo = JsonSerializer.Deserialize<YTData>(jsonString);
+            return foo;
         }
 
         public async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
