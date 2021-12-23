@@ -30,7 +30,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         {
             var httpClient = _httpClientFactory.CreateClient(NamedClient.Default);
             httpClient.DefaultRequestHeaders.UserAgent.Add(
-                new ProductInfoHeaderValue(Name, Version.ToString()));
+                new ProductInfoHeaderValue("YTMetadata", Version.ToString()));
 
             return httpClient;
         }
