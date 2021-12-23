@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO.Abstractions;
 using Jellyfin.Plugin.YoutubeMetadata.Configuration;
 using MediaBrowser.Common.Configuration;
 using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Jellyfin.Plugin.YoutubeMetadata
 {
@@ -30,6 +32,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                     EmbeddedResourcePath = string.Format("{0}.Configuration.configPage.html", GetType().Namespace)
                 }
             };
+        }
+    }
+
+    /// <summary>
+    /// Register webhook services.
+    /// </summary>
+    public class PluginServiceRegistrator : IPluginServiceRegistrator
+    {
+        /// <inheritdoc />
+        public void RegisterServices(IServiceCollection serviceCollection)
+        {
+            serviceCollection.AddScoped<System.IO.Abstractions.IFileSystem, FileSystem>();
         }
     }
 }
