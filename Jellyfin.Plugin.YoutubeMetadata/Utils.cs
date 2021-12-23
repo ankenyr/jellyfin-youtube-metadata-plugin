@@ -27,6 +27,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             Channel,
             Video
         }
+#pragma warning disable IDE1006 // Naming Styles
         public class ThumbnailInfo
         {
             public string url { get; set; }
@@ -38,33 +39,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public class YTDLMovieJson
         {
             // Human name
-#pragma warning disable IDE1006 // Naming Styles
             public string uploader { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning disable IDE1006 // Naming Styles
             public string upload_date { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
             // https://github.com/ytdl-org/youtube-dl/issues/1806
-#pragma warning disable IDE1006 // Naming Styles
             public string title { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning disable IDE1006 // Naming Styles
             public string description { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
             // Name for use in API?
-#pragma warning disable IDE1006 // Naming Styles
             public string channel_id { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning disable IDE1006 // Naming Styles
             public string track { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning disable IDE1006 // Naming Styles
             public string artist { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning disable IDE1006 // Naming Styles
             public string album { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-#pragma warning disable IDE1006 // Naming Styles
             public List<ThumbnailInfo> thumbnails { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
 
