@@ -1,16 +1,15 @@
-﻿using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
+﻿using Jellyfin.Plugin.YoutubeMetadata.Providers;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
-using Newtonsoft.Json.Linq;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.IO.Abstractions;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
@@ -106,22 +105,26 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         
 
 
-        public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken, string name = "")
         {
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
-            Console.WriteLine("inside YTDLMetadata");
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookie.txt");
             if ( File.Exists(cookie_file) ) {
                 Console.WriteLine("cookie found");
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
-            // Pulled from above, might want to abstract
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
-            ytd.Options.FilesystemOptions.Output = dataPath;
             var dlstring = "https://www.youtube.com/watch?v=" + id;
+            if (name != "")
+            {
+                dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", name, "ytvideo");
+                dlstring = "https://www.youtube.com/channel/" + id + "/about";
+            }
+            ytd.Options.FilesystemOptions.Output = dataPath;
+            
             List<string> ytdl_errs = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             var task = ytd.DownloadAsync(dlstring);
@@ -133,7 +136,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             {
                 throw new Exception(String.Format("Timeout error for video id: {0}, errors: {1}", id, String.Join(" ", ytdl_errs)));
             }
-
         }
         /// <summary>
         /// Reads JSON data from file.

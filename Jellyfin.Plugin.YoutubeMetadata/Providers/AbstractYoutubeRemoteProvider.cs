@@ -24,9 +24,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     /// </summary>
     public class YTData
     {
+#pragma warning disable IDE1006 // Naming Styles
         // Human name
         public string uploader { get; set; }
         public string upload_date { get; set; }
+        public string uploader_id { get; set; }
         // https://github.com/ytdl-org/youtube-dl/issues/1806
         public string title { get; set; }
         public string description { get; set; }
@@ -36,7 +38,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public string artist { get; set; }
         public string album { get; set; }
         public string thumbnail { get; set; }
-
+#pragma warning restore IDE1006 // Naming Styles
     }
     public abstract class AbstractYoutubeRemoteProvider<B, T, E> : IRemoteMetadataProvider<T, E>
         where T : BaseItem, IHasLookupInfo<E>
@@ -51,7 +53,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public AbstractYoutubeRemoteProvider(IFileSystem fileSystem,
             ILogger<B> logger,
             IServerConfigurationManager config,
-            System.IO.Abstractions.IFileSystem afs)
+        System.IO.Abstractions.IFileSystem afs)
         {
             _config = config;
             _fileSystem = fileSystem;
@@ -79,6 +81,44 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            return result;
+        }
+        /// <summary>
+        /// Provides a MusicVideo Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Series> YTDLJsonToSeries(YTData json)
+        {
+            var item = new Series();
+            var result = new MetadataResult<Series>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+
+            result.Item.Name = json.uploader;
+            result.Item.Overview = json.description;
+
+            return result;
+        }
+
+        /// <summary>
+        /// Provides a MusicVideo Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Season> YTDLJsonToSeason(YTData json)
+        {
+            var item = new Season();
+            var result = new MetadataResult<Season>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+
+            result.Item.Name = "";
+
             return result;
         }
 
@@ -182,7 +222,20 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
         {
             MetadataResult<T> result = new();
-            var id = GetYTID(info.Path);
+            var id = "";
+            if (typeof(T) == typeof(Series))
+            {
+                
+                id = info.Name;
+            }
+            else
+            {
+                // Episode, Movie, or Music
+                id = GetYTID(info.Path);
+            }
+
+            
+            
             if (string.IsNullOrWhiteSpace(id))
             {
                 _logger.LogInformation("Youtube ID not found in filename of title: {info.Name}", info.Name);

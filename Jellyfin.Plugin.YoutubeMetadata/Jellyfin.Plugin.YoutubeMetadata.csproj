@@ -21,7 +21,6 @@
 		<PackageReference Include="Google.Apis.Core" Version="1.55.0" />
 		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.55.0.2449" />
           <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
-          <PackageReference Include="NYoutubeDL" Version="0.11.2" />
           <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
 	</ItemGroup>
 
@@ -37,6 +36,9 @@
 	  </Reference>
 	  <Reference Include="MediaBrowser.Model">
 	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Model.dll</HintPath>
+	  </Reference>
+	  <Reference Include="NYoutubeDL">
+	    <HintPath>..\..\NYoutubeDLP\src\NYoutubeDL\bin\Debug\netstandard2.0\NYoutubeDL.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
 
