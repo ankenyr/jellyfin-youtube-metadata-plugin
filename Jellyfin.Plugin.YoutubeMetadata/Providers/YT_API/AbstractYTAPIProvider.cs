@@ -91,7 +91,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 ApplicationName = "Youtube Metadata"
             });
 
-            var result = new YTData();
+            var result = new YTDLData();
             if (typeof(D) == typeof(Google.Apis.YouTube.v3.Data.Video))
             {  
                 var json = JsonSerializer.Deserialize<Google.Apis.YouTube.v3.Data.Video>(await Download(id, youtubeService.Videos));

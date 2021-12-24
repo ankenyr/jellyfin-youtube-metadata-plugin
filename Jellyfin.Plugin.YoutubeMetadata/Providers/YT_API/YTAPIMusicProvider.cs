@@ -23,7 +23,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public override string Name => "YouTube-API Music Metadata";
 
-        internal override MetadataResult<MusicVideo> GetMetadataImpl(YTData jsonObj) => YTDLJsonToMusicVideo(jsonObj);
+        internal override MetadataResult<MusicVideo> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToMusicVideo(jsonObj);
 
         internal async override Task GetAndCacheMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {

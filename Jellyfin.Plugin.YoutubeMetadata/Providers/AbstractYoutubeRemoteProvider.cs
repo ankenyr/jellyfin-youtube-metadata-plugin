@@ -18,28 +18,6 @@ using System.Threading.Tasks;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-
-    /// <summary>
-    /// Object should match how YTDL json looks.
-    /// </summary>
-    public class YTData
-    {
-#pragma warning disable IDE1006 // Naming Styles
-        // Human name
-        public string uploader { get; set; }
-        public string upload_date { get; set; }
-        public string uploader_id { get; set; }
-        // https://github.com/ytdl-org/youtube-dl/issues/1806
-        public string title { get; set; }
-        public string description { get; set; }
-        // Name for use in API?
-        public string channel_id { get; set; }
-        public string track { get; set; }
-        public string artist { get; set; }
-        public string album { get; set; }
-        public string thumbnail { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-    }
     public abstract class AbstractYoutubeRemoteProvider<B, T, E> : IRemoteMetadataProvider<T, E>
         where T : BaseItem, IHasLookupInfo<E>
         where E : ItemLookupInfo, new()
@@ -67,7 +45,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Movie> YTDLJsonToMovie(YTData json)
+        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json)
         {
             var item = new Movie();
             var result = new MetadataResult<Movie>
@@ -88,7 +66,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Series> YTDLJsonToSeries(YTData json)
+        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json)
         {
             var item = new Series();
             var result = new MetadataResult<Series>
@@ -108,7 +86,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Season> YTDLJsonToSeason(YTData json)
+        public static MetadataResult<Season> YTDLJsonToSeason(YTDLData json)
         {
             var item = new Season();
             var result = new MetadataResult<Season>
@@ -127,7 +105,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTData json)
+        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json)
         {
             var item = new MusicVideo();
             var result = new MetadataResult<MusicVideo>
@@ -155,7 +133,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Episode> YTDLJsonToEpisode(YTData json)
+        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json)
         {
             var item = new Episode();
             var result = new MetadataResult<Episode>
@@ -211,11 +189,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="metaFile"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public YTData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
+        public YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             string jsonString = _afs.File.ReadAllText(fpath);
-            var foo = JsonSerializer.Deserialize<YTData>(jsonString);
+            var foo = JsonSerializer.Deserialize<YTDLData>(jsonString);
             return foo;
         }
 
@@ -260,7 +238,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             throw new System.NotImplementedException();
         }
 
-        internal abstract MetadataResult<T> GetMetadataImpl(YTData jsonObj);
+        internal abstract MetadataResult<T> GetMetadataImpl(YTDLData jsonObj);
 
         internal abstract Task GetAndCacheMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken);
 

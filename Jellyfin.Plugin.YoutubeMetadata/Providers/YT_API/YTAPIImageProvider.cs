@@ -74,7 +74,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await downloader.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
             }
             string jsonString = File.ReadAllText(ytPath);
-            var obj = JsonSerializer.Deserialize<YTData>(jsonString);
+            var obj = JsonSerializer.Deserialize<YTDLData>(jsonString);
 
             if (obj == null)
             {

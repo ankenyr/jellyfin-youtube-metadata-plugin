@@ -21,7 +21,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public override string Name => "YouTube-DL Movie Metadata";
 
-        internal override MetadataResult<Movie> GetMetadataImpl(YTData jsonObj) => YTDLJsonToMovie(jsonObj);
+        internal override MetadataResult<Movie> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToMovie(jsonObj);
 
         internal async override Task GetAndCacheMetadata(
             string id,

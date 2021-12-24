@@ -50,7 +50,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <inheritdoc />
         public override string Name => "YT";
 
-        internal override MetadataResult<Series> GetMetadataImpl(YTData jsonObj) => YTDLJsonToSeries(jsonObj);
+        internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToSeries(jsonObj);
 
         internal async override Task GetAndCacheMetadata(
             string id,
@@ -68,7 +68,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 var files = _afs.Directory.GetFiles(cacheDir, "*.info.json", SearchOption.AllDirectories);
                 foreach (var file in files)
                 {
-                    var json = JsonSerializer.Deserialize<YTData>(File.ReadAllText(file));
+                    var json = JsonSerializer.Deserialize<YTDLData>(File.ReadAllText(file));
                     if (json.uploader == id)
                     {
                         id = json.channel_id;

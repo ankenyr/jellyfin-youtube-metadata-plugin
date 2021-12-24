@@ -39,7 +39,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         [Fact]
         public void RemoteProviderCachedResultsTest()
         {
-            var json = new YTData
+            var json = new YTDLData
             {
                 uploader = "Someone",
                 upload_date = "20211215",
@@ -81,7 +81,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         [Fact]
         public void YTDLJsonToMovieTest()
         {
-            var json = new YTData
+            var json = new YTDLData
             {
                 uploader = "Someone",
                 upload_date = "20211215",
@@ -104,7 +104,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
             new List<object[]>
             {
                 new object[] {
-                    new YTData
+                    new YTDLData
                     {
                         title = "Foo",
                         album = "Bar",
@@ -134,7 +134,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                     }
                 },
                  new object[] {
-                    new YTData
+                    new YTDLData
                     {
                         track = "FooTrack",
                         album = "Bar",
@@ -166,7 +166,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         };
         [Theory]
         [MemberData(nameof(MusicJsonTests))]
-        public void YTDLJsonToMusicVideo(YTData json, MetadataResult<MusicVideo> expected)
+        public void YTDLJsonToMusicVideo(YTDLData json, MetadataResult<MusicVideo> expected)
         {
             var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMusicVideo(json));
             Assert.Equal(JsonSerializer.Serialize(expected), result);
@@ -177,7 +177,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
             new List<object[]>
             {
                 new object[] {
-                    new YTData
+                    new YTDLData
                     {
                         title = "Foo",
                         upload_date = "20211215",
@@ -205,7 +205,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         };
         [Theory]
         [MemberData(nameof(MovieJsonTests))]
-        public void YTDLJsonToMovie(YTData json, MetadataResult<Movie> expected)
+        public void YTDLJsonToMovie(YTDLData json, MetadataResult<Movie> expected)
         {
             var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMovie(json));
             Assert.Equal(JsonSerializer.Serialize(expected), result);
