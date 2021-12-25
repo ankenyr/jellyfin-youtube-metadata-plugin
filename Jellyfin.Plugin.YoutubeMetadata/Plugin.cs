@@ -15,9 +15,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 {
     public class Plugin : BasePlugin<PluginConfiguration>, IHasWebPages
     {
-        public override string Name => "YouTube Metadata";
+        public override string Name => Constants.PluginName;
 
-        public override Guid Id => Guid.Parse("b4b4353e-dc57-4398-82c1-de9079e7146a");
+        public override Guid Id => Guid.Parse(Constants.PluginGuid);
         IHttpClientFactory _httpClientFactory;
         public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, IHttpClientFactory httpClientFactory) : base(applicationPaths, xmlSerializer)
         {

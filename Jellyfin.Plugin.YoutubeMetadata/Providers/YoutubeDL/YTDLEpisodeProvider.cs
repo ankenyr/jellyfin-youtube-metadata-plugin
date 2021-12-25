@@ -21,7 +21,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
         }
 
-        public override string Name => "YouTube-DL Episode Metadata";
+        public override string Name => Constants.PluginName;
 
         internal override MetadataResult<Episode> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToEpisode(jsonObj);
 

@@ -29,7 +29,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <summary>
         /// Providers name, this appears in the library metadata settings.
         /// </summary>
-        public override string Name => "YouTube API Image Metadata";
+        public override string Name => Constants.PluginName;
 
         /// <summary>
         /// Gets the supported images.

@@ -30,7 +30,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <summary>
         /// Providers name, this appears in the library metadata settings.
         /// </summary>
-        public string Name => "YouTube-DL Image Metadata";
+        public string Name => Constants.PluginName;
 
         /// <inheritdoc />
         // After embedded and fanart

@@ -22,7 +22,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <summary>
         /// Providers name, this does not appear in the library metadata settings.
         /// </summary>
-        public string Name => "YouTube Local Image Metadata";
+        public string Name => Constants.PluginName;
 
         public int Order => 1;
 

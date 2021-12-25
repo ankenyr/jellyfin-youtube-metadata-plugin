@@ -48,7 +48,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
 
         /// <inheritdoc />
-        public override string Name => "YT";
+        public override string Name => Constants.PluginName;
 
         internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToSeries(jsonObj);
 

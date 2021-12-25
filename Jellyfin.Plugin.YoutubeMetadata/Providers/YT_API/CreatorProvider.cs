@@ -27,7 +27,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <summary>
         /// Providers name, this appears in the library metadata settings.
         /// </summary>
-        public override string Name => "YouTube API Creator Image Metadata";
+        public override string Name => Constants.PluginName;
 
         /// <summary>
         /// Returns true if BaseItem is of type that this provider supports.

@@ -9,7 +9,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         public YoutubeLocalProvider(IFileSystem fileSystem, ILogger<YoutubeLocalProvider> logger) : base(fileSystem, logger) { }
 
-        public override string Name => "YouTube Local Metadata";
+        public override string Name => Constants.PluginName;
 
         internal override MetadataResult<Movie> GetMetadataImpl(Utils.YTDLMovieJson jsonObj)
         {
