@@ -197,23 +197,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return foo;
         }
 
-        public async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
+        public virtual async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
         {
             MetadataResult<T> result = new();
-            var id = "";
-            if (typeof(T) == typeof(Series))
-            {
-                
-                id = info.Name;
-            }
-            else
-            {
-                // Episode, Movie, or Music
-                id = GetYTID(info.Path);
-            }
-
-            
-            
+            var id = GetYTID(info.Path);
             if (string.IsNullOrWhiteSpace(id))
             {
                 _logger.LogInformation("Youtube ID not found in filename of title: {info.Name}", info.Name);
