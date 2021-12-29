@@ -102,16 +102,46 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", youtubeID);
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
-        
 
+        public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        {
+            var ytd = new YoutubeDL();
+            var task = ytd.DownloadAsync("https://www.youtube.com/playlist?list=WL");
+            List<string> ytdl_errs = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
+            ytd.Options.VideoSelectionOptions.PlaylistItems = "0";
+            ytd.Options.VerbositySimulationOptions.SkipDownload = true;
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (!File.Exists(cookie_file))
+            {
+                return false;
+            }
+            ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            if (await Task.WhenAny(task, Task.Delay(10000, cancellationToken)) == task)
+            {
+                await task;
+            }
+            else
+            {
+                throw new Exception(String.Format("Timed out verifying cookie: {0}", String.Join(" ", ytdl_errs)));
+            }
+            foreach (string err in ytdl_errs) {
+                var match = Regex.Match(err, @".*The playlist does not exist\..*");
+                if (match.Success)  {
+                    return false;
+                }
+            }
+            return true;
+        }
 
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken, string name = "")
         {
+            var foo = await ValidCookie(appPaths, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
-            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookie.txt");
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
             if ( File.Exists(cookie_file) ) {
                 Console.WriteLine("cookie found");
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
