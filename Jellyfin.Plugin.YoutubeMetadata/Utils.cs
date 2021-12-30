@@ -105,7 +105,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
         public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
-
+            cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             var url = String.Format(Constants.SearchQuery, System.Web.HttpUtility.UrlEncode(query));
             ytd.Options.VerbositySimulationOptions.Simulate = true;
@@ -124,10 +124,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.FilesystemOptions.Cookies = cookie_file;
             var task = ytd.DownloadAsync(url);
             await task;
-            return "";
+            var match = Regex.Match(ytdl_out[0], Constants.YTCHANNEL_RE);
+            return match.Value;
         }
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             var task = ytd.DownloadAsync("https://www.youtube.com/playlist?list=WL");
             List<string> ytdl_errs = new();
@@ -152,7 +154,25 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             }
             return true;
         }
-
+        public static async Task GetChannelInfo(string id, string name, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var ytd = new YoutubeDL();
+            ytd.Options.VideoSelectionOptions.PlaylistItems = "0";
+            ytd.Options.FilesystemOptions.WriteInfoJson = true;
+            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", name, "ytvideo");
+            ytd.Options.FilesystemOptions.Output = dataPath;
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (File.Exists(cookie_file))
+            {
+                Console.WriteLine("cookie found");
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            }
+            List<string> ytdl_errs = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
+            var task = ytd.DownloadAsync(String.Format(Constants.ChannelUrl, id));
+            await task;
+        }
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken, string name = "")
         {
             //var foo = await ValidCookie(appPaths, cancellationToken);
@@ -165,13 +185,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 Console.WriteLine("cookie found");
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
-            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
+            
             var dlstring = "https://www.youtube.com/watch?v=" + id;
-            if (name != "")
-            {
-                dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", name, "ytvideo");
-                dlstring = "https://www.youtube.com/channel/" + id + "/about";
-            }
+            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
             
             List<string> ytdl_errs = new();

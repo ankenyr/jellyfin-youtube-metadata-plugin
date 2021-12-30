@@ -63,46 +63,31 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 await this.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
             }
-            //var video = ReadYTDLInfo(ytPath, cancellationToken);
-            //if (video != null)
-            //{
-                //result = this.GetMetadataImpl(video);
-            //}
+            var video = ReadYTDLInfo(ytPath, cancellationToken);
+            if (video != null)
+            {
+                result = this.GetMetadataImpl(video);
+            }
             return result;
         }
 
         internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToSeries(jsonObj);
 
         internal async override Task GetAndCacheMetadata(
-            string id,
+            string name,
             IServerApplicationPaths appPaths,
             CancellationToken cancellationToken)
         {
-            // Check if Series already exists in cache, this should be present after any episode is refreshed
-            // but is not guaranteed. If not, find some ID in the directory, pull its cache and get ID.
-
-            var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, id);
+            var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, name);
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!IsFresh(fileInfo))
             {
-                Utils.SearchChannel(id, appPaths, cancellationToken);
-                //var cacheDir = Path.Combine(this._config.ApplicationPaths.CachePath, "youtubemetadata");
-                //var files = _afs.Directory.GetFiles(cacheDir, "*.info.json", SearchOption.AllDirectories);
-                //foreach (var file in files)
-                //{
-                //    var json = JsonSerializer.Deserialize<YTDLData>(File.ReadAllText(file));
-                //    if (json.uploader == id)
-                //    {
-                //        id = json.channel_id;
-                //        await Utils.YTDLMetadata(id, appPaths, cancellationToken, json.uploader);
-                //        break;
-                //    }
-                //    _logger.LogInformation(string.Format("No cached results for {0}, this should resolve after episode is resolved.", id));
-                //    return;
+                var searchResult = Utils.SearchChannel(name, appPaths, cancellationToken);
+                await searchResult;
+                await Utils.GetChannelInfo(searchResult.Result, name, appPaths, cancellationToken);
 
-                //}
             }
-            
+
         }
     }
 }
