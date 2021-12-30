@@ -28,8 +28,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     /// </summary>
     public class YTDLSeriesProvider : AbstractYoutubeRemoteProvider<YTDLSeriesProvider, Series, SeriesInfo> //IRemoteMetadataProvider<Series, SeriesInfo>
     {
-        private readonly ILogger<YTDLSeriesProvider> _logger;
-        private readonly ILibraryManager _libraryManager;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TvdbSeriesProvider"/> class.
@@ -44,11 +42,34 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             ILibraryManager libraryManager,
             System.IO.Abstractions.IFileSystem afs) : base(fileSystem, logger, config, afs)
         {
-            _logger = logger;
         }
 
         /// <inheritdoc />
         public override string Name => Constants.PluginName;
+
+        public override async Task<MetadataResult<Series>> GetMetadata(SeriesInfo info, CancellationToken cancellationToken)
+        {
+            MetadataResult<Series> result = new();
+            var id = info.Name;
+            if (string.IsNullOrWhiteSpace(id))
+            {
+                _logger.LogInformation("No name found for media: ", info.Path);
+                result.HasMetadata = false;
+                return result;
+            }
+            var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, id);
+            var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+            if (!IsFresh(fileInfo))
+            {
+                await this.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
+            }
+            //var video = ReadYTDLInfo(ytPath, cancellationToken);
+            //if (video != null)
+            //{
+                //result = this.GetMetadataImpl(video);
+            //}
+            return result;
+        }
 
         internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToSeries(jsonObj);
 
@@ -64,21 +85,22 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!IsFresh(fileInfo))
             {
-                var cacheDir = Path.Combine(this._config.ApplicationPaths.CachePath, "youtubemetadata");
-                var files = _afs.Directory.GetFiles(cacheDir, "*.info.json", SearchOption.AllDirectories);
-                foreach (var file in files)
-                {
-                    var json = JsonSerializer.Deserialize<YTDLData>(File.ReadAllText(file));
-                    if (json.uploader == id)
-                    {
-                        id = json.channel_id;
-                        await Utils.YTDLMetadata(id, appPaths, cancellationToken, json.uploader);
-                        break;
-                    }
-                    _logger.LogInformation(string.Format("No cached results for {0}, this should resolve after episode is resolved.", id));
-                    return;
+                Utils.SearchChannel(id, appPaths, cancellationToken);
+                //var cacheDir = Path.Combine(this._config.ApplicationPaths.CachePath, "youtubemetadata");
+                //var files = _afs.Directory.GetFiles(cacheDir, "*.info.json", SearchOption.AllDirectories);
+                //foreach (var file in files)
+                //{
+                //    var json = JsonSerializer.Deserialize<YTDLData>(File.ReadAllText(file));
+                //    if (json.uploader == id)
+                //    {
+                //        id = json.channel_id;
+                //        await Utils.YTDLMetadata(id, appPaths, cancellationToken, json.uploader);
+                //        break;
+                //    }
+                //    _logger.LogInformation(string.Format("No cached results for {0}, this should resolve after episode is resolved.", id));
+                //    return;
 
-                }
+                //}
             }
             
         }

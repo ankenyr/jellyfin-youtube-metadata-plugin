@@ -31,15 +31,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             CancellationToken cancellationToken)
         {
             await Utils.YTDLMetadata(id, appPaths, cancellationToken);
-            //TODO Clean up the usage of strings and paths.
-            var jsonString = _afs.File.ReadAllText(Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo.info.json"));
-            var json = JsonSerializer.Deserialize<YTDLData>(jsonString);
-            var uploaderPath = Path.Combine(appPaths.CachePath, "youtubemetadata", json.uploader, "ytvideo.info.json");
-            if (!IsFresh(_fileSystem.GetFileSystemInfo(uploaderPath)))
-            {
-                await Utils.YTDLMetadata(json.channel_id, appPaths, cancellationToken, json.uploader);
-            }
-
         }
     }
 }

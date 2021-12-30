@@ -103,6 +103,29 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
 
+        public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        {
+
+            var ytd = new YoutubeDL();
+            var url = String.Format(Constants.SearchQuery, System.Web.HttpUtility.UrlEncode(query));
+            ytd.Options.VerbositySimulationOptions.Simulate = true;
+            ytd.Options.GeneralOptions.FlatPlaylist = true;
+            ytd.Options.VideoSelectionOptions.PlaylistItems = "1";
+            ytd.Options.VerbositySimulationOptions.PrintField = "url";
+            List<string> ytdl_errs = new();
+            List<string> ytdl_out = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
+            ytd.StandardOutputEvent += (sender, output) => ytdl_out.Add(output);
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (!File.Exists(cookie_file))
+            {
+                return "";
+            }
+            ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            var task = ytd.DownloadAsync(url);
+            await task;
+            return "";
+        }
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             var ytd = new YoutubeDL();
@@ -117,17 +140,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 return false;
             }
             ytd.Options.FilesystemOptions.Cookies = cookie_file;
-            if (await Task.WhenAny(task, Task.Delay(10000, cancellationToken)) == task)
+            await task;
+            
+            foreach (string err in ytdl_errs)
             {
-                await task;
-            }
-            else
-            {
-                throw new Exception(String.Format("Timed out verifying cookie: {0}", String.Join(" ", ytdl_errs)));
-            }
-            foreach (string err in ytdl_errs) {
                 var match = Regex.Match(err, @".*The playlist does not exist\..*");
-                if (match.Success)  {
+                if (match.Success)
+                {
                     return false;
                 }
             }
@@ -136,7 +155,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken, string name = "")
         {
-            var foo = await ValidCookie(appPaths, cancellationToken);
+            //var foo = await ValidCookie(appPaths, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
@@ -158,14 +177,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             List<string> ytdl_errs = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             var task = ytd.DownloadAsync(dlstring);
-            if (await Task.WhenAny(task, Task.Delay(10000, cancellationToken)) == task)
-            {
-                await task;
-            }
-            else
-            {
-                throw new Exception(String.Format("Timeout error for video id: {0}, errors: {1}", id, String.Join(" ", ytdl_errs)));
-            }
+            await task;
         }
         /// <summary>
         /// Reads JSON data from file.
