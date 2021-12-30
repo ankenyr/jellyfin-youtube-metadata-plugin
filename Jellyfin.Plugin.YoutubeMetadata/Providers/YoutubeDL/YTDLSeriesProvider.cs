@@ -1,23 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.IO;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
-using System.Text.Json;
-using System.Text.RegularExpressions;
+﻿using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
-using MediaBrowser.Common.Net;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Configuration;
-using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Model.IO;
-using MediaBrowser.Model.Providers;
 using Microsoft.Extensions.Logging;
 using Series = MediaBrowser.Controller.Entities.TV.Series;
 
@@ -39,7 +27,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             IFileSystem fileSystem,
             ILogger<YTDLSeriesProvider> logger,
             IServerConfigurationManager config,
-            ILibraryManager libraryManager,
             System.IO.Abstractions.IFileSystem afs) : base(fileSystem, logger, config, afs)
         {
         }

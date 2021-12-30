@@ -1,6 +1,4 @@
-﻿
-
-namespace Jellyfin.Plugin.YoutubeMetadata
+﻿namespace Jellyfin.Plugin.YoutubeMetadata
 {
     /// <summary>
     /// Object should match how YTDL json looks.

@@ -1,5 +1,4 @@
-﻿using Jellyfin.Plugin.YoutubeMetadata.Providers;
-using MediaBrowser.Controller;
+﻿using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
@@ -9,7 +8,6 @@ using NYoutubeDL;
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.IO.Abstractions;
 using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
