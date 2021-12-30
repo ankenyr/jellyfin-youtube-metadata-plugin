@@ -176,7 +176,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var task = ytd.DownloadAsync(String.Format(Constants.ChannelUrl, id));
             await task;
         }
-        public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken, string name = "")
+        public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             //var foo = await ValidCookie(appPaths, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
