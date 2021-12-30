@@ -71,6 +71,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static string GetYTID(string name)
         {
             var match = Regex.Match(name, YTID_RE);
+            if (!match.Success)
+            {
+                match = Regex.Match(name, Constants.YTCHANNEL_RE);
+            }
             return match.Value;
         }
 
@@ -124,8 +128,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.FilesystemOptions.Cookies = cookie_file;
             var task = ytd.DownloadAsync(url);
             await task;
-            var match = Regex.Match(ytdl_out[0], Constants.YTCHANNEL_RE);
-            return match.Value;
+            return Utils.GetYTID(ytdl_out[0]);
         }
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
