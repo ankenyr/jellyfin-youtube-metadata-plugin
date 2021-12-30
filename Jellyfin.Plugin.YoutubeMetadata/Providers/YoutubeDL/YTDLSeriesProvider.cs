@@ -66,12 +66,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var video = ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
             {
-                result = this.GetMetadataImpl(video);
+                result = this.GetMetadataImpl(video, video.channel_id);
             }
             return result;
         }
 
-        internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj) => YTDLJsonToSeries(jsonObj);
+        internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj, string id) => YTDLJsonToSeries(jsonObj, id);
 
         internal async override Task GetAndCacheMetadata(
             string name,
@@ -85,7 +85,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 var searchResult = Utils.SearchChannel(name, appPaths, cancellationToken);
                 await searchResult;
                 await Utils.GetChannelInfo(searchResult.Result, name, appPaths, cancellationToken);
-
             }
 
         }

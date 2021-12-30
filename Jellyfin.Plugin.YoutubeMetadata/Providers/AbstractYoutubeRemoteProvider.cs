@@ -45,7 +45,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json)
+        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json, string id)
         {
             var item = new Movie();
             var result = new MetadataResult<Movie>
@@ -59,6 +59,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
         /// <summary>
@@ -66,7 +67,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json)
+        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json, string id)
         {
             var item = new Series();
             var result = new MetadataResult<Series>
@@ -77,7 +78,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
             result.Item.Name = json.uploader;
             result.Item.Overview = json.description;
-
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -86,7 +87,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Season> YTDLJsonToSeason(YTDLData json)
+        public static MetadataResult<Season> YTDLJsonToSeason(YTDLData json, string id)
         {
             var item = new Season();
             var result = new MetadataResult<Season>
@@ -96,7 +97,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             };
 
             result.Item.Name = "";
-
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -105,7 +106,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json)
+        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json, string id)
         {
             var item = new MusicVideo();
             var result = new MetadataResult<MusicVideo>
@@ -124,7 +125,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             result.Item.PremiereDate = date;
 
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
-
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -133,7 +134,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json)
+        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json, string id)
         {
             var item = new Episode();
             var result = new MetadataResult<Episode>
@@ -151,6 +152,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             result.Item.IndexNumber = 1;
             result.Item.ParentIndexNumber = 1;
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
@@ -216,7 +218,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var video = ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
             {
-                result = this.GetMetadataImpl(video);
+                result = this.GetMetadataImpl(video, id);
             }
             return result;
         }
@@ -225,7 +227,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             throw new System.NotImplementedException();
         }
 
-        internal abstract MetadataResult<T> GetMetadataImpl(YTDLData jsonObj);
+        internal abstract MetadataResult<T> GetMetadataImpl(YTDLData jsonObj, string id);
 
         internal abstract Task GetAndCacheMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken);
 
