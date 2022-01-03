@@ -5,9 +5,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class YoutubeMusicLocalProvider : AbstractYoutubeLocalProvider<YoutubeMusicLocalProvider, MusicVideo>
+    public class YoutubeLocalMusicProvider : AbstractYoutubeLocalProvider<YoutubeLocalMusicProvider, MusicVideo>
     {
-        public YoutubeMusicLocalProvider(IFileSystem fileSystem, ILogger<YoutubeMusicLocalProvider> logger) : base(fileSystem, logger) { }
+        public YoutubeLocalMusicProvider(IFileSystem fileSystem, ILogger<YoutubeLocalMusicProvider> logger) : base(fileSystem, logger) { }
 
         public override string Name => Constants.PluginName;
 

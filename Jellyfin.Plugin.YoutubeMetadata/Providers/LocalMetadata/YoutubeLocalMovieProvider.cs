@@ -5,9 +5,9 @@ using MediaBrowser.Controller.Entities.Movies;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
-    public class YoutubeLocalProvider : AbstractYoutubeLocalProvider<YoutubeLocalProvider, Movie>
+    public class YoutubeLocalMovieProvider : AbstractYoutubeLocalProvider<YoutubeLocalMovieProvider, Movie>
     {
-        public YoutubeLocalProvider(IFileSystem fileSystem, ILogger<YoutubeLocalProvider> logger) : base(fileSystem, logger) { }
+        public YoutubeLocalMovieProvider(IFileSystem fileSystem, ILogger<YoutubeLocalMovieProvider> logger) : base(fileSystem, logger) { }
 
         public override string Name => Constants.PluginName;
 
