@@ -17,8 +17,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 {
     class Utils
     {
-        public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
-
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
             if (fileInfo.Exists && DateTime.UtcNow.Subtract(fileInfo.LastWriteTimeUtc).Days <= 10)
@@ -35,7 +33,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <returns></returns>
         public static string GetYTID(string name)
         {
-            var match = Regex.Match(name, YTID_RE);
+            var match = Regex.Match(name, Constants.YTID_RE);
             if (!match.Success)
             {
                 match = Regex.Match(name, Constants.YTCHANNEL_RE);
