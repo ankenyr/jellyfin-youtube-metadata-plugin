@@ -49,7 +49,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
                 return Task.FromResult(result);
             }
             var infoJson = Utils.ReadYTDLInfo(infoPath, cancellationToken);
-            result = Utils.YTDLJsonToSeries(infoJson, infoJson.channel_id);
+            result = Utils.YTDLJsonToSeries(infoJson);
             return Task.FromResult(result);
         }
         FileSystemMetadata GetInfoJson(string path)

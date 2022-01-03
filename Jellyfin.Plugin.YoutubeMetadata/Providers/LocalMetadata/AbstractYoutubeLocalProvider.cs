@@ -57,13 +57,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public Task<MetadataResult<T>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<T>();
-            if (Plugin.Instance.Configuration.DisableLocalMetadata)
-            {
-                _logger.LogInformation("Local Metadata Disabled");
-                result.HasMetadata = false;
-                return Task.FromResult(result);
-            }
-
             try
             {
                 var infoJson = GetInfoJson(info.Path);
@@ -80,6 +73,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return Task.FromResult(result);
         }
 
-        internal abstract MetadataResult<T> GetMetadataImpl(Utils.YTDLData jsonObj);
+        internal abstract MetadataResult<T> GetMetadataImpl(YTDLData jsonObj);
     }
 }
