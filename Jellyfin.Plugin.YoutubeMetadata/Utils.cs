@@ -19,12 +19,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
     {
         public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
 
-        public enum DownloadType
-        {
-            Channel,
-            Video
-        }
-
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
             if (fileInfo.Exists && DateTime.UtcNow.Subtract(fileInfo.LastWriteTimeUtc).Days <= 10)
