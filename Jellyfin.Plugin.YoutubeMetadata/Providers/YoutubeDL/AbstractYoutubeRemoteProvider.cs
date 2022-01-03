@@ -22,7 +22,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         where T : BaseItem, IHasLookupInfo<E>
         where E : ItemLookupInfo, new()
     {
-        public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
         protected readonly IServerConfigurationManager _config;
         protected readonly ILogger<B> _logger;
         protected readonly IFileSystem _fileSystem;
@@ -170,7 +169,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public static string GetYTID(string name)
         {
-            var match = Regex.Match(name, YTID_RE);
+            var match = Regex.Match(name, Constants.YTID_RE);
             return match.Value;
         }
         /// <summary>
