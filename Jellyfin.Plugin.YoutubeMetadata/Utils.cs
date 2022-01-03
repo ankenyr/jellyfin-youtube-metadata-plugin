@@ -284,6 +284,25 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ParentIndexNumber = 1;
             return result;
         }
+        /// <summary>
+        /// Provides a MusicVideo Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Series> YTDLJsonToSeries(YTDLMovieJson json, string id)
+        {
+            var item = new Series();
+            var result = new MetadataResult<Series>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+
+            result.Item.Name = json.uploader;
+            result.Item.Overview = json.description;
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
+            return result;
+        }
     }
 
 }
