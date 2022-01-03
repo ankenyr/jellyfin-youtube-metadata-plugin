@@ -24,33 +24,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             Channel,
             Video
         }
-#pragma warning disable IDE1006 // Naming Styles
-        public class ThumbnailInfo
-        {
-            public string url { get; set; }
-            public int width { get; set; }
-            public int height { get; set; }
-            public string resolution { get; set; }
-            public string id { get; set; }
-        }
-        public class YTDLMovieJson
-        {
-            // Human name
-            public string uploader { get; set; }
-            public string upload_date { get; set; }
-            // https://github.com/ytdl-org/youtube-dl/issues/1806
-            public string title { get; set; }
-            public string description { get; set; }
-            // Name for use in API?
-            public string channel_id { get; set; }
-            public string track { get; set; }
-            public string artist { get; set; }
-            public string album { get; set; }
-            public List<ThumbnailInfo> thumbnails { get; set; }
-#pragma warning restore IDE1006 // Naming Styles
-
-        }
-
 
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
@@ -202,11 +175,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <param name="metaFile"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static YTDLMovieJson ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
+        public static YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             string jsonString = File.ReadAllText(fpath);
-            return JsonSerializer.Deserialize<YTDLMovieJson>(jsonString);
+            return JsonSerializer.Deserialize<YTDLData>(jsonString);
         }
 
         /// <summary>
@@ -214,7 +187,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLMovieJson json)
+        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json)
         {
             var item = new Movie();
             var result = new MetadataResult<Movie>
@@ -236,7 +209,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLMovieJson json)
+        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json)
         {
             var item = new MusicVideo();
             var result = new MetadataResult<MusicVideo>
@@ -264,7 +237,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLMovieJson json)
+        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json)
         {
             var item = new Episode();
             var result = new MetadataResult<Episode>
@@ -289,7 +262,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Series> YTDLJsonToSeries(YTDLMovieJson json, string id)
+        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json, string id)
         {
             var item = new Series();
             var result = new MetadataResult<Series>

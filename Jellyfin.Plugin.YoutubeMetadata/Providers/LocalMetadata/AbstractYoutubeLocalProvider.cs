@@ -80,6 +80,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return Task.FromResult(result);
         }
 
-        internal abstract MetadataResult<T> GetMetadataImpl(Utils.YTDLMovieJson jsonObj);
+        internal abstract MetadataResult<T> GetMetadataImpl(Utils.YTDLData jsonObj);
     }
 }

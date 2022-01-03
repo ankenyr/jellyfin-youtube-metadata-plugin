@@ -1,15 +1,24 @@
-﻿namespace Jellyfin.Plugin.YoutubeMetadata
+﻿using System.Collections.Generic;
+
+namespace Jellyfin.Plugin.YoutubeMetadata
 {
     /// <summary>
     /// Object should match how YTDL json looks.
     /// </summary>
+#pragma warning disable IDE1006 // Naming Styles
+    public class ThumbnailInfo
+    {
+        public string url { get; set; }
+        public int width { get; set; }
+        public int height { get; set; }
+        public string resolution { get; set; }
+        public string id { get; set; }
+    }
     public class YTDLData
     {
-        #pragma warning disable IDE1006 // Naming Styles
         // Human name
         public string uploader { get; set; }
         public string upload_date { get; set; }
-        public string uploader_id { get; set; }
         // https://github.com/ytdl-org/youtube-dl/issues/1806
         public string title { get; set; }
         public string description { get; set; }
@@ -18,7 +27,7 @@
         public string track { get; set; }
         public string artist { get; set; }
         public string album { get; set; }
-        public string thumbnail { get; set; }
-        #pragma warning restore IDE1006 // Naming Styles
+        public List<ThumbnailInfo> thumbnails { get; set; }
+#pragma warning restore IDE1006 // Naming Styles
     }
 }
