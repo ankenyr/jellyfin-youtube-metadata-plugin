@@ -23,7 +23,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public string Name => Constants.PluginName;
 
-        public object FileSystemGlobbing { get; private set; }
 
         private string GetSeriesInfo(string path)
         {
