@@ -209,16 +209,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 HasMetadata = true,
                 Item = item
             };
-
             result.Item.Name = String.IsNullOrEmpty(json.track) ? json.title : json.track;
             result.Item.Artists = new List<string> { json.artist };
             result.Item.Album = json.album;
             result.Item.Overview = json.description;
-
             var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
-
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
 
             return result;
@@ -237,7 +234,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 HasMetadata = true,
                 Item = item
             };
-
             result.Item.Name = json.title;
             result.Item.Overview = json.description;
             var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
@@ -254,7 +250,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json, string id)
+        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json)
         {
             var item = new Series();
             var result = new MetadataResult<Series>
@@ -265,7 +261,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
             result.Item.Name = json.uploader;
             result.Item.Overview = json.description;
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
     }

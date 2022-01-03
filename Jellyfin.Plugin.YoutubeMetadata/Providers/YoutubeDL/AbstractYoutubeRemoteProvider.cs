@@ -46,18 +46,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json, string id)
         {
-            var item = new Movie();
-            var result = new MetadataResult<Movie>
-            {
-                HasMetadata = true,
-                Item = item
-            };
-            result.Item.Name = json.title;
-            result.Item.Overview = json.description;
-            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
-            result.Item.ProductionYear = date.Year;
-            result.Item.PremiereDate = date;
-            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            var result = Utils.YTDLJsonToMovie(json);
             result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
@@ -68,34 +57,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json, string id)
         {
-            var item = new Series();
-            var result = new MetadataResult<Series>
-            {
-                HasMetadata = true,
-                Item = item
-            };
-
-            result.Item.Name = json.uploader;
-            result.Item.Overview = json.description;
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
-            return result;
-        }
-
-        /// <summary>
-        /// Provides a MusicVideo Metadata Result from a json object.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public static MetadataResult<Season> YTDLJsonToSeason(YTDLData json, string id)
-        {
-            var item = new Season();
-            var result = new MetadataResult<Season>
-            {
-                HasMetadata = true,
-                Item = item
-            };
-
-            result.Item.Name = "";
+            var result = Utils.YTDLJsonToSeries(json);
             result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
@@ -107,23 +69,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json, string id)
         {
-            var item = new MusicVideo();
-            var result = new MetadataResult<MusicVideo>
-            {
-                HasMetadata = true,
-                Item = item
-            };
-
-            result.Item.Name = String.IsNullOrEmpty(json.track) ? json.title : json.track;
-            result.Item.Artists = new List<string> { json.artist };
-            result.Item.Album = json.album;
-            result.Item.Overview = json.description;
-
-            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
-            result.Item.ProductionYear = date.Year;
-            result.Item.PremiereDate = date;
-
-            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            var result = Utils.YTDLJsonToMusicVideo(json);
             result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
@@ -135,22 +81,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json, string id)
         {
-            var item = new Episode();
-            var result = new MetadataResult<Episode>
-            {
-                HasMetadata = true,
-                Item = item
-            };
-
-            result.Item.Name = json.title;
-            result.Item.Overview = json.description;
-            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
-            result.Item.ProductionYear = date.Year;
-            result.Item.PremiereDate = date;
-            result.Item.ForcedSortName = date.ToString("yyyyMMdd") + "-" + result.Item.Name;
-            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
-            result.Item.IndexNumber = 1;
-            result.Item.ParentIndexNumber = 1;
+            var result = Utils.YTDLJsonToEpisode(json);
             result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
