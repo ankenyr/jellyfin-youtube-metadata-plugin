@@ -1,35 +1,77 @@
+[![Release version](https://img.shields.io/github/v/release/yt-dlp/yt-dlp?color=blue&label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases/latest)
+[![CI Status](https://img.shields.io/github/workflow/status/yt-dlp/yt-dlp/Core%20Tests/master?label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/actions)
+[![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://ko-fi.com/ankenyr)
 
+# Jellyfin Youtube Metadata Plugin
 
-<h1 align="center">Jellyfin Youtube Metadata Plugin</h1>
+## Overview
+Plugin for [Jellyfin](https://jellyfin.org/) that retrieves metadata
+for content from Youtube.
 
-<p align="center">
-This plugin will download metadata about Youtube videos using a Youtube API key.
+### Features
+- Local provider uses the `info.json` files provided from [yt-dlp](https://github.com/yt-dlp/yt-dlp) or similar programs.
+- Remote provider uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) to download `info.json` files.
+- Supports thumbnails of `jpg` or `webp` format for both channel and videos
+- Supports the following library types
+  - MovieS
+  - Music Videos
+  - Shows
 
-</p>
+### Requirements
+- [yt-dlp](https://github.com/yt-dlp/yt-dlp) is required if you are using the remote provider.
 
-## Features
-Currently this will populate the following metadata
- - Thumbnails
- - Title
- - Description
- - Release Date
- - Release Year
- - People (Uploader is used as "Director" within Jellyfin)
+## Installation
+
+### Installing From Repository (Recommended)
+1. Go to the `Admin Dashboard`.
+1. In the left navigation menu, click on `Plugins`.
+1. In the top menu, click `Repositories`.
+1. Click the `+` icon to add a new repository.
+1. `Repository Name` can be anything.
+1. `URL` must be `https://raw.githubusercontent.com/ankenyr/jellyfin-plugin-repo/master/manifest.json`
+1. If done correctly you should see a new repository on the page.
+1. In the top menu, navigate to `Catalog`.
+1. Under the `Metadata` section click on `YoutubeMetadata`.
+1. Click `Install`.
+1. Restart Jellyfin.
+1. On the left navigation menu, click on Plugins.
+1. If successful, you will see `YoutubeMetadata` with status as `Active`
+
+### Manual Installation (Hard)
+1. Navigate to the [releases page](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases).
+1. Download the latest zip file.
+1. Unzip contents into `<jellyfin data directory>/plugins/YoutubeMetadata`.
+1. Restart Jellyfin.
+1. On the left navigation menu, click on Plugins.
+1. If successful, you will see `YoutubeMetadata` with status as `Active`
 
 ## Usage
-Currently this plugin only works with the Movie library. Your videos must have the Youtube ID in square braces at the end of the file name. The following are valid names that will be able to be identified.
+### File Naming Requirements
+All media needs to have the ID embeded in the file name within square brackets.
+The following are valid examples of a channel and video.
+- `3Blue1Brown - NA - 3Blue1Brown_-_Videos [UCYO_jab_esuFRV4b17AJtAw].info.json`
+- `3Blue1Brown - 20211023 - A_few_of_the_best_math_explainers_from_this_summer [F3Qixy-r_rQ].mkv`
 
- - 20110622-Coffee_-_The_Greatest_Addiction_Ever [OTVE5iPMKLg].mp4
- - 20111130-Death_to_Pennies [y5UT04p5f7U].mp4
- - 20120529-Is_Pluto_a_planet [Z_2gbGXzFbs].mp4
+`info.json` and image files need to have the same file name as the media file. As an example, this would cause a breakage
+- `3Blue1Brown - 20211023 - A_few_of_the_best_math_explainers_from_this_summer [F3Qixy-r_rQ].mkv`
+- `3Blue1Brown - 20211023 [F3Qixy-r_rQ].info.json`
 
-Future plans to allow users to specify their own regex is planned.
+The proper naming format is the default when using [yt-dlp](https://github.com/yt-dlp/yt-dlp)
+and is also enforced in [TheFrenchGhosty's Ultimate YouTube-DL Scripts Collection](https://github.com/TheFrenchGhosty/TheFrenchGhostys-Ultimate-YouTube-DL-Scripts-Collection) which I highly recommend.
 
-## Installing from my plugin repo
+### Enabling Provider
+1. Navigate to your `Admin Dashboard`.
+1. On the left navigation menu, click `Libraries`.
+1. Click on ![Threedots](docs/threedots.png) for a supported library type.
+1. Click `Manage library`.
+1. Click the checkbox next to `YoutubeMetadata` for each downloader or fetcher you wish to enable. In the image below you can see two enabled.
+![Library Fetchers](docs/library_fetchers.png)
+1. Click `OK`.
+1. Click `Scan All Libraries`.
 
-Adding `https://raw.githubusercontent.com/ankenyr/jellyfin-plugin-repo/master/manifest.json` to your plugin
-repositories will allow you to download and install the latest version of the plugin along with other
-plugins I have made.
+### Providing Cookies to YT-DLP
+***Warning*** your cookie grants access to accounts the cookie is granted for. Please protect this file if you decide to use it.
+Placing a file named `cookies.txt` into the `<jellyfin data directory>/plugins/YoutubeMetadata` plugin directory will enable YT-DLP to start using your cookie.
 
 ## Build and Installing from source
 
@@ -56,17 +98,3 @@ plugins I have made.
     ```
 1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
    Advanced -> Plugins`.
-
-
-## Setup Plugin
-
-1. Go to [Google's Cloud Console](https://console.cloud.google.com).
-1. Create a project for this plugin.
-1. Navigate to the [API Credentials Page](https://console.cloud.google.com/apis/credentials).
-1. Create a new API key.
-1. Go to the YoutubeMetadata Plugin page in Jellyfin.
-1. Input API key into the text box for the API key and click Save.
-1. Navigate to the [YouTube Data API v3 Page](https://console.developers.google.com/apis/api/youtube.googleapis.com/overview).
-1. Click enable then select the project you created
-1. You are now able to use the YoutubeMetadata agent in your libraries. 
-
