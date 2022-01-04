@@ -1,12 +1,9 @@
-﻿using Google.Apis.Services;
-using Google.Apis.YouTube.v3;
-using MediaBrowser.Controller;
+﻿using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.Entities;
-using Microsoft.Extensions.Logging;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -20,38 +17,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 {
     class Utils
     {
-        public const string YTID_RE = @"(?<=\[)[a-zA-Z0-9\-_]{11}(?=\])";
-
-        public enum DownloadType
-        {
-            Channel,
-            Video
-        }
-        public class ThumbnailInfo
-        {
-            public string URL { get; set; }
-            public int Width { get; set; }
-            public int Height { get; set; }
-            public string Resolution { get; set; }
-            public string Id { get; set; }
-        }
-        public class YTDLMovieJson
-        {
-            // Human name
-            public string uploader { get; set; }
-            public string upload_date { get; set; }
-            // https://github.com/ytdl-org/youtube-dl/issues/1806
-            public string title { get; set; }
-            public string description { get; set; }
-            // Name for use in API?
-            public string channel_id { get; set; }
-            public string track { get; set; }
-            public string artist { get; set; }
-            public string album { get; set; }
-            public List<ThumbnailInfo> thumbnails { get; set; }
-
-        }
-
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
             if (fileInfo.Exists && DateTime.UtcNow.Subtract(fileInfo.LastWriteTimeUtc).Days <= 10)
@@ -68,7 +33,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <returns></returns>
         public static string GetYTID(string name)
         {
-            var match = Regex.Match(name, YTID_RE);
+            var match = Regex.Match(name, Constants.YTID_RE);
+            if (!match.Success)
+            {
+                match = Regex.Match(name, Constants.YTCHANNEL_RE);
+            }
             return match.Value;
         }
 
@@ -100,88 +69,97 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", youtubeID);
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
-        /// <summary>
-        /// Returns a json of the videos metadata.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="resource"></param>
-        /// <returns></returns>
-        public static async Task<string> Download(string id, VideosResource resource)
-        {
-            var vreq = resource.List("snippet");
-            vreq.Id = id;
-            var response = await vreq.ExecuteAsync();
-            return JsonSerializer.Serialize(response.Items[0]);
-        }
 
-        /// <summary>
-        /// Returns a json of the channels metadata.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="resource"></param>
-        /// <returns></returns>
-        public static async Task<string> Download(string id, ChannelsResource resource)
+        public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
-            var vreq = resource.List("snippet");
-            vreq.Id = id;
-            var response = await vreq.ExecuteAsync();
-            return JsonSerializer.Serialize(response.Items[0]);
-
-        }
-
-        /// <summary>
-        /// Downloads and stores metadata from the YT API.
-        /// </summary>
-        /// <param name="id"></param>
-        /// <param name="appPaths"></param>
-        /// <param name="cancellationToken"></param>
-        /// <param name="dtype"></param>
-        /// <returns></returns>
-        public static async Task APIDownload(string id, IServerApplicationPaths appPaths, DownloadType dtype, CancellationToken cancellationToken)
-        {
-            await Task.Delay(10000, cancellationToken).ConfigureAwait(false);
             cancellationToken.ThrowIfCancellationRequested();
-            var youtubeService = new YouTubeService(new BaseClientService.Initializer()
+            var ytd = new YoutubeDL();
+            var url = String.Format(Constants.SearchQuery, System.Web.HttpUtility.UrlEncode(query));
+            ytd.Options.VerbositySimulationOptions.Simulate = true;
+            ytd.Options.GeneralOptions.FlatPlaylist = true;
+            ytd.Options.VideoSelectionOptions.PlaylistItems = "1";
+            ytd.Options.VerbositySimulationOptions.PrintField = "url";
+            List<string> ytdl_errs = new();
+            List<string> ytdl_out = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
+            ytd.StandardOutputEvent += (sender, output) => ytdl_out.Add(output);
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (!File.Exists(cookie_file))
             {
-                ApiKey = Plugin.Instance.Configuration.ApiKey,
-                ApplicationName = "Youtube Metadata"
-            });
-            // Lets change this
-            string json = "";
-            if (dtype == Utils.DownloadType.Video)
-            {
-                json = await Download(id, youtubeService.Videos);
+                return "";
             }
-            else if (dtype == Utils.DownloadType.Channel)
+            ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            var task = ytd.DownloadAsync(url);
+            await task;
+            return Utils.GetYTID(ytdl_out[0]);
+        }
+        public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var ytd = new YoutubeDL();
+            var task = ytd.DownloadAsync("https://www.youtube.com/playlist?list=WL");
+            List<string> ytdl_errs = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
+            ytd.Options.VideoSelectionOptions.PlaylistItems = "0";
+            ytd.Options.VerbositySimulationOptions.SkipDownload = true;
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (!File.Exists(cookie_file))
             {
-                json = await Download(id, youtubeService.Channels);
+                return false;
             }
-            var path = Utils.GetVideoInfoPath(appPaths, id);
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
-            File.WriteAllText(path, json);
+            ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            await task;
+            
+            foreach (string err in ytdl_errs)
+            {
+                var match = Regex.Match(err, @".*The playlist does not exist\..*");
+                if (match.Success)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static async Task GetChannelInfo(string id, string name, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var ytd = new YoutubeDL();
+            ytd.Options.VideoSelectionOptions.PlaylistItems = "0";
+            ytd.Options.FilesystemOptions.WriteInfoJson = true;
+            var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", name, "ytvideo");
+            ytd.Options.FilesystemOptions.Output = dataPath;
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (File.Exists(cookie_file))
+            {
+                Console.WriteLine("cookie found");
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            }
+            List<string> ytdl_errs = new();
+            ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
+            var task = ytd.DownloadAsync(String.Format(Constants.ChannelUrl, id));
+            await task;
         }
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
+            //var foo = await ValidCookie(appPaths, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
-            // Pulled from above, might want to abstract
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if ( File.Exists(cookie_file) ) {
+                Console.WriteLine("cookie found");
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            }
+            
+            var dlstring = "https://www.youtube.com/watch?v=" + id;
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
-            var dlstring = "https://www.youtube.com/watch?v=" + id;
+            
             List<string> ytdl_errs = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             var task = ytd.DownloadAsync(dlstring);
-            if (await Task.WhenAny(task, Task.Delay(10000, cancellationToken)) == task)
-            {
-                await task;
-            }
-            else
-            {
-                throw new Exception(String.Format("Timeout error for video id: {0}, errors: {1}", id, String.Join(" ", ytdl_errs)));
-            }
-
+            await task;
         }
         /// <summary>
         /// Reads JSON data from file.
@@ -189,11 +167,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <param name="metaFile"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public static YTDLMovieJson ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
+        public static YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             string jsonString = File.ReadAllText(fpath);
-            return JsonSerializer.Deserialize<YTDLMovieJson>(jsonString);
+            return JsonSerializer.Deserialize<YTDLData>(jsonString);
         }
 
         /// <summary>
@@ -201,7 +179,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLMovieJson json)
+        public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json)
         {
             var item = new Movie();
             var result = new MetadataResult<Movie>
@@ -223,7 +201,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLMovieJson json)
+        public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json)
         {
             var item = new MusicVideo();
             var result = new MetadataResult<MusicVideo>
@@ -231,16 +209,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 HasMetadata = true,
                 Item = item
             };
-
             result.Item.Name = String.IsNullOrEmpty(json.track) ? json.title : json.track;
             result.Item.Artists = new List<string> { json.artist };
             result.Item.Album = json.album;
             result.Item.Overview = json.description;
-
             var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
-
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
 
             return result;
@@ -251,7 +226,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>
-        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLMovieJson json)
+        public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json)
         {
             var item = new Episode();
             var result = new MetadataResult<Episode>
@@ -259,7 +234,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 HasMetadata = true,
                 Item = item
             };
-
             result.Item.Name = json.title;
             result.Item.Overview = json.description;
             var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
@@ -269,6 +243,24 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             result.Item.IndexNumber = 1;
             result.Item.ParentIndexNumber = 1;
+            return result;
+        }
+        /// <summary>
+        /// Provides a MusicVideo Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json)
+        {
+            var item = new Series();
+            var result = new MetadataResult<Series>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+
+            result.Item.Name = json.uploader;
+            result.Item.Overview = json.description;
             return result;
         }
     }

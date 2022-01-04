@@ -1,8 +1,11 @@
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
+using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
+using System;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -46,7 +49,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
             return result;
         }
-
+        private string GetSeriesInfo(string path)
+        {
+            Matcher matcher = new();
+            matcher.AddInclude("*.info.json");
+            string infoPath = "";
+            foreach (string file in matcher.GetResultsInFullPath(path))
+            {
+                if (Regex.Match(file, Constants.YTID_RE).Success)
+                {
+                    infoPath = file;
+                    break;
+                }
+            }
+            return infoPath;
+        }
         /// <summary>
         /// Retrieves metadata of item.
         /// </summary>
@@ -57,29 +74,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public Task<MetadataResult<T>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
             var result = new MetadataResult<T>();
-            if (Plugin.Instance.Configuration.DisableLocalMetadata)
+            string infoPath = GetSeriesInfo(info.ContainingFolderPath);
+            if (String.IsNullOrEmpty(infoPath))
             {
-                _logger.LogInformation("Local Metadata Disabled");
-                result.HasMetadata = false;
                 return Task.FromResult(result);
             }
-
-            try
-            {
-                var infoJson = GetInfoJson(info.Path);
-                var jsonObj = Utils.ReadYTDLInfo(infoJson.FullName, cancellationToken);
-                result = this.GetMetadataImpl(jsonObj);
-            }
-            catch (FileNotFoundException)
-            {
-                _logger.LogInformation("Could not find {0}", info.Path);
-                result.HasMetadata = false;
-                return Task.FromResult(result);
-            }
+            //var infoJson = GetInfoJson(infoPath);
+            var jsonObj = Utils.ReadYTDLInfo(infoPath, cancellationToken);
+            result = this.GetMetadataImpl(jsonObj);
 
             return Task.FromResult(result);
         }
 
-        internal abstract MetadataResult<T> GetMetadataImpl(Utils.YTDLMovieJson jsonObj);
+        internal abstract MetadataResult<T> GetMetadataImpl(YTDLData jsonObj);
     }
 }

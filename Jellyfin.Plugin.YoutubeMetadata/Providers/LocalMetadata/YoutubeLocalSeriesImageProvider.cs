@@ -1,23 +1,21 @@
-﻿using System.IO;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.IO;
-using MediaBrowser.Controller.Entities.Movies;
 using Microsoft.Extensions.Logging;
-using System.Text.RegularExpressions;
+using MediaBrowser.Controller.Entities.TV;
 using Microsoft.Extensions.FileSystemGlobbing;
 using System;
-using MediaBrowser.Controller.Entities.TV;
+using System.Text.RegularExpressions;
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Providers
+namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
 {
-    public class YoutubeLocalImageProvider : ILocalImageProvider, IHasOrder
+    public class YoutubeLocalSeriesImageProvider : ILocalImageProvider
     {
         private readonly IFileSystem _fileSystem;
         private readonly ILogger<YoutubeLocalImageProvider> _logger;
 
-        public YoutubeLocalImageProvider(IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
+        public YoutubeLocalSeriesImageProvider(IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
@@ -27,17 +25,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// Providers name, this does not appear in the library metadata settings.
         /// </summary>
         public string Name => Constants.PluginName;
-
-        public int Order => 1;
         private string GetSeriesInfo(string path)
         {
             Matcher matcher = new();
-            matcher.AddInclude("*.jpg");
-            matcher.AddInclude("*.webp");
+            matcher.AddInclude("**/*.jpg");
+            matcher.AddInclude("**/*.webp");
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
-                if (Regex.Match(file, Constants.YTID_RE).Success)
+                if (Regex.Match(file, Constants.YTCHANNEL_RE).Success)
                 {
                     infoPath = file;
                     break;
@@ -54,7 +50,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             var list = new List<LocalImageInfo>();
-            string jpgPath = GetSeriesInfo(item.ContainingFolderPath);
+            string jpgPath = GetSeriesInfo(item.Path);
             if (String.IsNullOrEmpty(jpgPath))
             {
                 return list;
@@ -76,6 +72,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Supports(BaseItem item)
-            => item is Movie || item is Episode || item is MusicVideo;
+            => item is Series;
     }
 }

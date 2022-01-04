@@ -5,6 +5,10 @@ VisualStudioVersion = 16.0.29920.165
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Jellyfin.Plugin.YoutubeMetadata", "Jellyfin.Plugin.YoutubeMetadata\Jellyfin.Plugin.YoutubeMetadata.csproj", "{7F127DA5-69DA-4CFB-A777-4001891AA38C}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0B1ABEEF-7324-4CEA-84FD-DE646A39B866}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Jellyfin.Plugin.YoutubeMetadata.Tests.Providers", "Jellyfin.Plugin.YoutubeMetadata.Providers.Tests\Jellyfin.Plugin.YoutubeMetadata.Tests.Providers.csproj", "{D0F6505D-20CB-4657-BDE7-1C269526C5BF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,9 +19,16 @@ Global
 		{7F127DA5-69DA-4CFB-A777-4001891AA38C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7F127DA5-69DA-4CFB-A777-4001891AA38C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7F127DA5-69DA-4CFB-A777-4001891AA38C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D0F6505D-20CB-4657-BDE7-1C269526C5BF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D0F6505D-20CB-4657-BDE7-1C269526C5BF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D0F6505D-20CB-4657-BDE7-1C269526C5BF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D0F6505D-20CB-4657-BDE7-1C269526C5BF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D0F6505D-20CB-4657-BDE7-1C269526C5BF} = {0B1ABEEF-7324-4CEA-84FD-DE646A39B866}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {5073F749-15A8-4963-899A-33AA8D1781B5}

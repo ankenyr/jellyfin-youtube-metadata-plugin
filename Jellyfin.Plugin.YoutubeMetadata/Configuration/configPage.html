@@ -8,23 +8,6 @@
     <div id="YoutubeMetadataConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
         <div data-role="content">
             <div class="content-primary">
-                <form id="YoutubeMetadataConfigForm">
-                    <div class="inputContainer">
-                        <label class="inputeLabel inputLabelUnfocused" for="apikey">API Key</label>
-                        <input id="apikey" name="apikey" type="text" is="emby-input" />
-                    </div>
-                    <div class="checkboxContainer checkboxContainer-withDescripton">
-                        <label class="emby-checkbox-label">
-                            <input id="DisableLocalMetadata" name="TrueFalseCheckBox" type="checkbox" is="emby-checkbox" />
-                            <span>Disable Local Metadata</span>
-                        </label>
-                    </div>
-                    <div>
-                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
-                            <span>Save</span>
-                        </button>
-                    </div>
-                </form>
             </div>
         </div>
         <script type="text/javascript">
@@ -32,26 +15,7 @@
                 pluginUniqueId: 'b4b4353e-dc57-4398-82c1-de9079e7146a'
             };
 
-            $('#YoutubeMetadataConfigPage').on('pageshow', function () {
-                Dashboard.showLoadingMsg();
-                ApiClient.getPluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId).then(function (config) {
-                    $('#apikey').val(config.apikey).change();
-                    document.getElementById('DisableLocalMetadata').checked = config.DisableLocalMetadata;
-                    Dashboard.hideLoadingMsg();
-                });
-            });
 
-            $('#YoutubeMetadataConfigForm').on('submit', function () {
-                Dashboard.showLoadingMsg();
-                ApiClient.getPluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId).then(function (config) {
-                    config.apikey = $('#apikey').val();
-                    config.DisableLocalMetadata = document.getElementById('DisableLocalMetadata').checked;
-                    ApiClient.updatePluginConfiguration(YoutubeMetadataConfigPage.pluginUniqueId, config).then(function (result) {
-                        Dashboard.processPluginConfigurationUpdateResult(result);
-                    });
-                });
-                return false;
-            });
         </script>
     </div>
 </body>
