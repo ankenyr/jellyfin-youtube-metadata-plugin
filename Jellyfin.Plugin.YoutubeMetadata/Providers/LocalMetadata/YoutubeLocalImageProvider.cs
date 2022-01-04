@@ -5,6 +5,10 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.IO;
 using MediaBrowser.Controller.Entities.Movies;
 using Microsoft.Extensions.Logging;
+using System.Text.RegularExpressions;
+using Microsoft.Extensions.FileSystemGlobbing;
+using System;
+using MediaBrowser.Controller.Entities.TV;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -25,7 +29,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public string Name => Constants.PluginName;
 
         public int Order => 1;
-
+        private string GetSeriesInfo(string path)
+        {
+            Matcher matcher = new();
+            matcher.AddInclude("*.jpg");
+            string infoPath = "";
+            foreach (string file in matcher.GetResultsInFullPath(path))
+            {
+                if (Regex.Match(file, Constants.YTCHANNEL_RE).Success)
+                {
+                    infoPath = file;
+                    break;
+                }
+            }
+            return infoPath;
+        }
         /// <summary>
         /// Retrieves Image.
         /// </summary>
@@ -35,23 +53,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             var list = new List<LocalImageInfo>();
-            if (Plugin.Instance.Configuration.DisableLocalMetadata)
+            string jpgPath = GetSeriesInfo(item.Path);
+            if (String.IsNullOrEmpty(jpgPath))
             {
-                _logger.LogInformation("Local Metadata Disabled");
                 return list;
             }
-            
-            
-            var filename = item.FileNameWithoutExtension + ".jpg";
-            var fullpath = Path.Combine(item.ContainingFolderPath, filename);
-
-            var localimg = new LocalImageInfo();
-            var fileInfo = _fileSystem.GetFileSystemInfo(fullpath);
-            if (File.Exists(fileInfo.FullName))
+            if (String.IsNullOrEmpty(jpgPath))
             {
-                localimg.FileInfo = fileInfo;
-                list.Add(localimg);
+                return list;
             }
+            var localimg = new LocalImageInfo();
+            var fileInfo = _fileSystem.GetFileSystemInfo(jpgPath);
+            localimg.FileInfo = fileInfo;
+            list.Add(localimg);
             return list;
         }
 
@@ -61,6 +75,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Supports(BaseItem item)
-            => item is Movie;
+            => item is Movie || item is Episode || item is MusicVideo;
     }
 }
