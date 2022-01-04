@@ -33,6 +33,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             Matcher matcher = new();
             matcher.AddInclude("*.jpg");
+            matcher.AddInclude("*.webp");
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
@@ -53,7 +54,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
             var list = new List<LocalImageInfo>();
-            string jpgPath = GetSeriesInfo(item.Path);
+            string jpgPath = GetSeriesInfo(item.ContainingFolderPath);
             if (String.IsNullOrEmpty(jpgPath))
             {
                 return list;
