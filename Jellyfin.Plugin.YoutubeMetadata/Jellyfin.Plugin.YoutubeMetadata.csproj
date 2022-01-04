@@ -16,10 +16,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Google.Apis" Version="1.55.0" />
-		<PackageReference Include="Google.Apis.Auth" Version="1.55.0" />
-		<PackageReference Include="Google.Apis.Core" Version="1.55.0" />
-		<PackageReference Include="Google.Apis.YouTube.v3" Version="1.55.0.2449" />
+          <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="6.0.0" />
           <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
           <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
 	</ItemGroup>
