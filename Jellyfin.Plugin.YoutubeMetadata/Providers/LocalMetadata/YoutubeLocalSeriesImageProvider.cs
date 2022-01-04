@@ -29,6 +29,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         {
             Matcher matcher = new();
             matcher.AddInclude("**/*.jpg");
+            matcher.AddInclude("**/*.webp");
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
