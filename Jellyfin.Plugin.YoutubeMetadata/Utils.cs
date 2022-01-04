@@ -84,14 +84,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             ytd.StandardOutputEvent += (sender, output) => ytdl_out.Add(output);
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
-            if (!File.Exists(cookie_file))
+            if (File.Exists(cookie_file))
             {
-                return "";
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
-            ytd.Options.FilesystemOptions.Cookies = cookie_file;
             var task = ytd.DownloadAsync(url);
             await task;
-            return Utils.GetYTID(ytdl_out[0]);
+            Uri uri = new Uri(ytdl_out[0]);
+            return uri.Segments[uri.Segments.Length - 1];
         }
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
@@ -103,11 +103,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.VideoSelectionOptions.PlaylistItems = "0";
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
-            if (!File.Exists(cookie_file))
+            if (File.Exists(cookie_file))
             {
-                return false;
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
-            ytd.Options.FilesystemOptions.Cookies = cookie_file;
             await task;
             
             foreach (string err in ytdl_errs)
@@ -131,7 +130,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
             if (File.Exists(cookie_file))
             {
-                Console.WriteLine("cookie found");
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
             List<string> ytdl_errs = new();
@@ -148,7 +146,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
             if ( File.Exists(cookie_file) ) {
-                Console.WriteLine("cookie found");
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
             
