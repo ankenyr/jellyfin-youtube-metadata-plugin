@@ -37,7 +37,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
-                if (Regex.Match(file, Constants.YTCHANNEL_RE).Success)
+                if (Regex.Match(file, Constants.YTID_RE).Success)
                 {
                     infoPath = file;
                     break;
