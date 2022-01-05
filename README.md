@@ -16,6 +16,7 @@ for content from Youtube.
   - Movies
   - Music Videos
   - Shows
+- Supports ExternalID providing quick links to source of metadata.
 
 ### Requirements
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) is required if you are using the remote provider.
