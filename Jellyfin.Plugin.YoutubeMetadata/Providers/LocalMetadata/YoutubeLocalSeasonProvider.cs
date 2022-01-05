@@ -9,8 +9,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
 {
     public class YoutubeLocalSeasonProvider : ILocalMetadataProvider<Season>, IHasItemChangeMonitor
     {
+        protected readonly ILogger<YoutubeLocalSeasonProvider> _logger;
         public string Name => Constants.PluginName;
-
+        public YoutubeLocalSeasonProvider(ILogger<YoutubeLocalSeasonProvider> logger)
+        {
+            _logger = logger;
+        }
         public Task<MetadataResult<Season>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
             _logger.LogDebug("GetMetadata: {Path}", info.Path);
