@@ -98,3 +98,8 @@ Placing a file named `cookies.txt` into the `<jellyfin data directory>/plugins/Y
     ```
 1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
    Advanced -> Plugins`.
+
+### Donations
+If this plugin helps you, please consider a donation!
+You can use my [ko-fi](https://ko-fi.com/ankenyr) link.
+If you would rather donate in some way not supported yet, let me know how you would like to donate.
