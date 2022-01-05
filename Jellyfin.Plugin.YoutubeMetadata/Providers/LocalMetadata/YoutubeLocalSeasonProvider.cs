@@ -18,6 +18,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
 
         public Task<MetadataResult<Season>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("GetMetadata: {Path}", info.Path);
             MetadataResult<Season> result = new();
             var item = new Season();
             item.IndexNumber = 1;
@@ -30,7 +31,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
 
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
-
             return true;
         }
     }

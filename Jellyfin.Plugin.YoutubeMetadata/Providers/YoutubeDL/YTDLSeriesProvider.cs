@@ -36,6 +36,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public override async Task<MetadataResult<Series>> GetMetadata(SeriesInfo info, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("GetMetadata: {Path}", info.Path);
             MetadataResult<Series> result = new();
             var id = info.Name;
             if (string.IsNullOrWhiteSpace(id))

@@ -58,6 +58,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("GetImages: {Name}", item.Name);
             var result = new List<RemoteImageInfo>();
             //var id = item.GetProviderId(Constants.PluginName);
             var name = item.Name;

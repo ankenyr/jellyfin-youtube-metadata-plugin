@@ -49,6 +49,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         /// <returns></returns>
         public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
+            _logger.LogDebug("GetImages: {Name}", item.Name);
             var list = new List<LocalImageInfo>();
             string jpgPath = GetSeriesInfo(item.Path);
             if (String.IsNullOrEmpty(jpgPath))

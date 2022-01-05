@@ -41,6 +41,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public Task<MetadataResult<Series>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("GetMetadata: {Path}", info.Path);
             MetadataResult<Series> result = new();
             string infoPath = GetSeriesInfo(info.Path);
             if (String.IsNullOrEmpty(infoPath))
@@ -62,6 +63,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
+            _logger.LogDebug("HasChanged: {Name}", item.Name);
             string infoPath = GetSeriesInfo(item.Path);
             var infoJson = GetInfoJson(infoPath);
             var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;

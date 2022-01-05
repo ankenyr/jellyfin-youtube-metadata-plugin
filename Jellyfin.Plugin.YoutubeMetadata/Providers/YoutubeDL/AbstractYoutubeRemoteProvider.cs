@@ -131,6 +131,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public virtual async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("GetMetadata: {Path}", info.Path);
             MetadataResult<T> result = new();
             var id = GetYTID(info.Path);
             if (string.IsNullOrWhiteSpace(id))
