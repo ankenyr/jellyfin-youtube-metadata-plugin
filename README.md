@@ -1,4 +1,4 @@
-[![Release version](https://img.shields.io/github/v/release/yt-dlp/yt-dlp?color=blue&label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases/latest)
+[![Release version](https://img.shields.io/github/v/release/ankenyr/jellyfin-youtube-metadata-plugin?color=blue&label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases/latest)
 [![CI Status](https://img.shields.io/github/workflow/status/yt-dlp/yt-dlp/Core%20Tests/master?label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/actions)
 [![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://ko-fi.com/ankenyr)
 
