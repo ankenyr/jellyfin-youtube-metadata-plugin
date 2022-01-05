@@ -1,4 +1,4 @@
-[![Release version](https://img.shields.io/github/v/release/yt-dlp/yt-dlp?color=blue&label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases/latest)
+[![Release version](https://img.shields.io/github/v/release/ankenyr/jellyfin-youtube-metadata-plugin?color=blue&label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases/latest)
 [![CI Status](https://img.shields.io/github/workflow/status/yt-dlp/yt-dlp/Core%20Tests/master?label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/actions)
 [![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://ko-fi.com/ankenyr)
 
@@ -13,7 +13,7 @@ for content from Youtube.
 - Remote provider uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) to download `info.json` files.
 - Supports thumbnails of `jpg` or `webp` format for both channel and videos
 - Supports the following library types
-  - MovieS
+  - Movies
   - Music Videos
   - Shows
 
