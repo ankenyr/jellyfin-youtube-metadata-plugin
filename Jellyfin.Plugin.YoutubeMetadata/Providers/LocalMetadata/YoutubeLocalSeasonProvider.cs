@@ -1,12 +1,7 @@
 ﻿using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.IO;
-using Microsoft.Extensions.FileSystemGlobbing;
 using Microsoft.Extensions.Logging;
-using System;
-using System.IO;
-using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 

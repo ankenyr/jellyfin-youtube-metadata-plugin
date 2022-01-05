@@ -8,7 +8,6 @@ using MediaBrowser.Model.IO;
 using MediaBrowser.Model.Providers;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities;
-using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Entities.TV;
 

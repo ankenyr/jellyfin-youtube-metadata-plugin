@@ -4,10 +4,7 @@ using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
 using Microsoft.Extensions.Logging;
-using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller;
-using System.IO;
-using System.Text.Json;
 using MediaBrowser.Controller.Entities;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers

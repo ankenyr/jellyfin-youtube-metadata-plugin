@@ -6,8 +6,6 @@ using MediaBrowser.Model.IO;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller;
-using System.IO;
-using System.Text.Json;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
