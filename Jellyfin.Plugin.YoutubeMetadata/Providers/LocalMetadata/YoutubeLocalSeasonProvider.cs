@@ -2,6 +2,8 @@
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
 using Microsoft.Extensions.Logging;
+using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -20,9 +22,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
             _logger.LogDebug("GetMetadata: {Path}", info.Path);
             MetadataResult<Season> result = new();
             var item = new Season();
-            item.IndexNumber = 1;
-            item.Name = "Season 1";
-            item.OriginalTitle = "Season 1";
+            item.Name = Path.GetFileNameWithoutExtension(info.Path);
             result.Item = item;
             result.HasMetadata = true;
             return Task.FromResult(result);
