@@ -6,7 +6,6 @@
 		<FileVersion>1.0.3.4</FileVersion>
 		<Version>1.0.3.4</Version>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
-		<RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />
@@ -16,27 +15,16 @@
 	</ItemGroup>
 
 	<ItemGroup>
+          <PackageReference Include="Jellyfin.Controller" Version="10.8.0-alpha5" />
+          <PackageReference Include="Jellyfin.Data" Version="10.8.0-alpha5" />
           <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="6.0.0" />
           <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
           <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Reference Include="Jellyfin.Data">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\Jellyfin.Data.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Common">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Common.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Controller">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Controller.dll</HintPath>
-	  </Reference>
-	  <Reference Include="MediaBrowser.Model">
-	    <HintPath>..\..\jellyfin\MediaBrowser.Controller\bin\Debug\net6.0\MediaBrowser.Model.dll</HintPath>
-	  </Reference>
 	  <Reference Include="NYoutubeDL">
 	    <HintPath>..\..\NYoutubeDLP\src\NYoutubeDL\bin\Debug\netstandard2.0\NYoutubeDL.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
-
 </Project>
