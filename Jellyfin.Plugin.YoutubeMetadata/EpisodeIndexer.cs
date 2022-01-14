@@ -13,43 +13,52 @@ namespace Jellyfin.Plugin.YoutubeMetadata
     {
         protected readonly ILibraryManager _libmanager;
         protected readonly IItemRepository _repository;
-        public EpisodeIndexer(ILibraryManager libmanager, IItemRepository repository)
+        public EpisodeIndexer(
+            ILibraryManager libmanager,
+            IItemRepository repository)
         {
             _libmanager = libmanager;
             _repository = repository;
         }
-        public Task Run(IProgress<double> progress, CancellationToken cancellationToken)
+        public async Task Run(IProgress<double> progress, CancellationToken cancellationToken)
         {
-            //var foo = new InternalPeopleQuery();
-            //foo.PersonTypes.Append(PersonType.Director);
-
-            //foreach (var person in _libmanager.GetPeopleItems(foo))
-            //{
-            //if (person.HasProviderId(Constants.PluginName))
-            //{
-            //var query = new InternalItemsQuery();
-            //var dto = new DtoOptions();
-            //dto.Fields = new List<ItemFields>{ };
-            //query.DtoOptions = dto;
-            //var result = _libmanager.GetItemList(query);
-
-            //}
-            //var biz = "";
-            //}
-            var result = _repository.GetItems(new InternalItemsQuery
+            
+            var shows = _repository.GetItems(new InternalItemsQuery
             {
-                OrderBy = new[]
-    {
-        ("SortName", SortOrder.Ascending)
-    },
                 Recursive = true,
                 IncludeItemTypes = new[] { BaseItemKind.Series },
-                // 10.7 IncludeItemTypes = new[] { typeof(Series).FullName },
                 DtoOptions = new DtoOptions()
             });
-            var yoo = "a";
-            //_libmanager.QueryItems();
-            throw new NotImplementedException();
+            foreach (var show in shows.Items)
+            {
+                if (!show.ProviderIds.ContainsKey(Constants.PluginName))
+                {
+                    continue;
+                }
+                var seasons = _repository.GetItems(new InternalItemsQuery
+                {
+                    ParentId = show.Id,
+                    IncludeItemTypes = new[] { BaseItemKind.Season },
+                    DtoOptions = new DtoOptions()
+                });
+                foreach (var season in seasons.Items)
+                {
+                    var episodes = _repository.GetItems(new InternalItemsQuery
+                    {
+                        AncestorIds = new[] { season.Id },
+                        IncludeItemTypes = new[] { BaseItemKind.Episode },
+                        DtoOptions = new DtoOptions()
+                    });
+                    var index = 1;
+                    foreach (var episode in episodes.Items)
+                    {
+                        episode.IndexNumber = index;
+                        await _libmanager.UpdateItemAsync(episode, season, ItemUpdateType.MetadataEdit, cancellationToken);
+                        index++;
+                    }
+                }
+            }
+            return;
         }
     }
 }
