@@ -63,11 +63,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
-            _logger.LogDebug("HasChanged: {Name}", item.Name);
-            string infoPath = GetSeriesInfo(item.Path);
-            var infoJson = GetInfoJson(infoPath);
-            var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
-            return result;
+            var infoPath = GetSeriesInfo(item.Path);
+            if (!String.IsNullOrEmpty(infoPath))
+            {
+                var infoJson = GetInfoJson(infoPath);
+                var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
+                return result;
+            }
+            return false;
+            
         }
     }
 }
