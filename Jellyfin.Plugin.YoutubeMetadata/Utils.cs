@@ -258,6 +258,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
             result.Item.Name = json.uploader;
             result.Item.Overview = json.description;
+            result.Item.ProviderIds.Add(Constants.PluginName, json.channel_id);
             return result;
         }
     }
