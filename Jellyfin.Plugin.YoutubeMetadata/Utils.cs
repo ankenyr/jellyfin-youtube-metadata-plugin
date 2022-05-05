@@ -167,6 +167,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
+            System.Console.WriteLine(fpath);
             string jsonString = File.ReadAllText(fpath);
             return JsonSerializer.Deserialize<YTDLData>(jsonString);
         }
@@ -255,10 +256,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 HasMetadata = true,
                 Item = item
             };
-
             result.Item.Name = json.uploader;
             result.Item.Overview = json.description;
             result.Item.ProviderIds.Add(Constants.PluginName, json.channel_id);
+
             return result;
         }
     }

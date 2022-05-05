@@ -50,17 +50,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
-        /// <summary>
-        /// Provides a MusicVideo Metadata Result from a json object.
-        /// </summary>
-        /// <param name="json"></param>
-        /// <returns></returns>
-        public static MetadataResult<Series> YTDLJsonToSeries(YTDLData json, string id)
-        {
-            var result = Utils.YTDLJsonToSeries(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
-            return result;
-        }
 
         /// <summary>
         /// Provides a MusicVideo Metadata Result from a json object.

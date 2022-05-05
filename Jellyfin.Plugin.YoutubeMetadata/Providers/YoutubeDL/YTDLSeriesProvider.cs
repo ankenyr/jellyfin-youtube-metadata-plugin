@@ -55,12 +55,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var video = ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
             {
-                result = this.GetMetadataImpl(video, video.channel_id);
+                try
+                {
+                    result = this.GetMetadataImpl(video, video.channel_id);
+                }
+                catch (System.ArgumentException e)
+                {
+                    _logger.LogError("YTDLSeriesProvider: Error parsing json: ");
+                    _logger.LogError(video.ToString());
+                    _logger.LogError(video.title);
+                }
             }
             return result;
         }
 
-        internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj, string id) => YTDLJsonToSeries(jsonObj, id);
+        internal override MetadataResult<Series> GetMetadataImpl(YTDLData jsonObj, string id) => Utils.YTDLJsonToSeries(jsonObj);
 
         internal async override Task GetAndCacheMetadata(
             string name,
