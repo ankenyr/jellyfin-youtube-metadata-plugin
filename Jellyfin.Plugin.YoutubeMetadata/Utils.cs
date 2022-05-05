@@ -71,7 +71,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         }
 
         public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
-        {
+        {            
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDL();
             var url = String.Format(Constants.SearchQuery, System.Web.HttpUtility.UrlEncode(query));

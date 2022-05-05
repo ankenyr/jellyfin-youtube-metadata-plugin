@@ -70,6 +70,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!(Utils.IsFresh(fileInfo)))
             {
+                _logger.LogDebug("{item.Name} is not fresh.", item.Name);
                 await Utils.YTDLMetadata(id, _config.ApplicationPaths, cancellationToken);
             }
             var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
@@ -94,6 +95,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("YTDLImageProvider: GetImageResponse ", url);
             var httpClient = Plugin.Instance.GetHttpClient();
             return await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
         }

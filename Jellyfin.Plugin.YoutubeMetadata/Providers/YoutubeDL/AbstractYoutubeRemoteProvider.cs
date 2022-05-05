@@ -131,12 +131,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public virtual async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetMetadata: {Path}", info.Path);
+            _logger.LogDebug("AbstractYTRemote: GetMetadata: {Path}", info.Path);
             MetadataResult<T> result = new();
             var id = GetYTID(info.Path);
             if (string.IsNullOrWhiteSpace(id))
             {
-                _logger.LogInformation("Youtube ID not found in filename of title: {info.Name}", info.Name);
+                _logger.LogInformation("AbstractYTRemote: Youtube ID not found in filename of title: {info.Name}", info.Name);
                 result.HasMetadata = false;
                 return result;
             }

@@ -14,7 +14,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     /// <summary>
     /// Tvdb series provider.
     /// </summary>
-    public class YTDLSeriesProvider : AbstractYoutubeRemoteProvider<YTDLSeriesProvider, Series, SeriesInfo> //IRemoteMetadataProvider<Series, SeriesInfo>
+    public class YTDLSeriesProvider : AbstractYoutubeRemoteProvider<YTDLSeriesProvider, Series, SeriesInfo>
     {
 
         /// <summary>
@@ -49,6 +49,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!IsFresh(fileInfo))
             {
+                _logger.LogDebug("{info.Name} is not fresh.", info.Name);
                 await this.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
             }
             var video = ReadYTDLInfo(ytPath, cancellationToken);
@@ -66,10 +67,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             IServerApplicationPaths appPaths,
             CancellationToken cancellationToken)
         {
+            _logger.LogDebug("YTDLSeriesProvider: GetAndCacheMetadata ", name);
             var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, name);
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!IsFresh(fileInfo))
             {
+                _logger.LogDebug("YTDLSeriesProvider: {name} is not fresh.", name);
                 var searchResult = Utils.SearchChannel(name, appPaths, cancellationToken);
                 await searchResult;
                 await Utils.GetChannelInfo(searchResult.Result, name, appPaths, cancellationToken);

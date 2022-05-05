@@ -59,7 +59,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         {
             _logger.LogDebug("GetImages: {Name}", item.Name);
             var result = new List<RemoteImageInfo>();
-            //var id = item.GetProviderId(Constants.PluginName);
             var name = item.Name;
             if (string.IsNullOrWhiteSpace(name))
             {
@@ -70,6 +69,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!(Utils.IsFresh(fileInfo)))
             {
+                _logger.LogDebug(name, " is not fresh.");
                 await Utils.YTDLMetadata(name, _config.ApplicationPaths, cancellationToken);
             }
             var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, name);
