@@ -2,9 +2,9 @@
 	<PropertyGroup>
 		<TargetFramework>net6.0</TargetFramework>
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
-		<AssemblyVersion>1.0.3.5</AssemblyVersion>
-		<FileVersion>1.0.3.5</FileVersion>
-		<Version>1.0.3.5</Version>
+		<AssemblyVersion>1.0.3.6</AssemblyVersion>
+		<FileVersion>1.0.3.6</FileVersion>
+		<Version>1.0.3.6</Version>
 		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
