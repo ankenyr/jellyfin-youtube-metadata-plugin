@@ -10,6 +10,7 @@ using System.Text.Json;
 using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Entities.Movies;
+using System.Net.Http;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
 {
@@ -19,6 +20,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
     {
         private readonly Moq.Mock<MediaBrowser.Model.IO.IFileSystem> _jf_fs;
         private readonly MockFileSystem _fs;
+        private readonly Moq.Mock<IHttpClientFactory> _mockFactory;
         private readonly Moq.Mock<MediaBrowser.Controller.Configuration.IServerConfigurationManager> _config;
         private readonly EpisodeInfo _epInfo;
         private readonly MediaBrowser.Model.IO.FileSystemMetadata _fs_metadata;
@@ -28,17 +30,27 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         {
             _jf_fs = new Mock<MediaBrowser.Model.IO.IFileSystem>();
             _fs = new MockFileSystem(new Dictionary<string, MockFileData> { });
+            _mockFactory = new Mock<IHttpClientFactory>();
             _config = new Mock<MediaBrowser.Controller.Configuration.IServerConfigurationManager>();
             _config.Setup(config => config.ApplicationPaths.CachePath).Returns("\\cache");
             _epInfo = new EpisodeInfo();
             _fs_metadata = new MediaBrowser.Model.IO.FileSystemMetadata();
             _token = new CancellationToken();
-            _provider = new YTDLEpisodeProvider(_jf_fs.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
+            _provider = new YTDLEpisodeProvider(_jf_fs.Object, _mockFactory.Object,  new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
         }
 
         [Fact]
         public void RemoteProviderCachedResultsTest()
         {
+            var thumbnails = new List<ThumbnailInfo>();
+            var tn = new ThumbnailInfo
+            {
+                url = "https://www.something.com",
+                width = 10,
+                height = 10,
+                resolution = "10x10",
+                id = "id912az"
+            };
             var json = new YTDLData
             {
                 uploader = "Someone",
@@ -46,7 +58,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                 title = "Cool Video",
                 description = "This is the best video.",
                 channel_id = "12345",
-                thumbnail = "somelink"
+                thumbnails = thumbnails
             };
             _fs_metadata.LastWriteTimeUtc = DateTime.Today.AddDays(-1);
             _fs_metadata.Exists = true;
@@ -72,7 +84,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         public void RemoteProviderInvalidIdTest(string path)
         {
             _epInfo.Path = path;
-            var provider = new YTDLEpisodeProvider(_jf_fs.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
+            var provider = new YTDLEpisodeProvider(_jf_fs.Object, _mockFactory.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
             var metadata = provider.GetMetadata(_epInfo, _token);
             metadata.Wait();
             Assert.False(metadata.Result.HasMetadata);
@@ -81,6 +93,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         [Fact]
         public void YTDLJsonToMovieTest()
         {
+            var thumbnails = new List<ThumbnailInfo>();
+            var tn = new ThumbnailInfo
+            {
+                url = "https://www.something.com",
+                width = 10,
+                height = 10,
+                resolution = "10x10",
+                id = "id912az"
+            };
+            thumbnails.Add(tn);
             var json = new YTDLData
             {
                 uploader = "Someone",
@@ -88,9 +110,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                 title = "Cool Video",
                 description = "This is the best video.",
                 channel_id = "12345",
-                thumbnail = "somelink"
-            };
-            var result = YTDLEpisodeProvider.YTDLJsonToEpisode(json);
+                thumbnails = thumbnails
+        };
+            var result = YTDLEpisodeProvider.YTDLJsonToEpisode(json, "id123");
             Assert.Equal(json.title, result.Item.Name);
             Assert.Equal(json.description, result.Item.Overview);
             Assert.Equal(2021, result.Item.ProductionYear);
@@ -168,7 +190,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         [MemberData(nameof(MusicJsonTests))]
         public void YTDLJsonToMusicVideo(YTDLData json, MetadataResult<MusicVideo> expected)
         {
-            var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMusicVideo(json));
+            var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMusicVideo(json, "id123"));
             Assert.Equal(JsonSerializer.Serialize(expected), result);
             
         }
@@ -207,7 +229,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         [MemberData(nameof(MovieJsonTests))]
         public void YTDLJsonToMovie(YTDLData json, MetadataResult<Movie> expected)
         {
-            var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMovie(json));
+            var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMovie(json, "id123"));
             Assert.Equal(JsonSerializer.Serialize(expected), result);
         }
 
