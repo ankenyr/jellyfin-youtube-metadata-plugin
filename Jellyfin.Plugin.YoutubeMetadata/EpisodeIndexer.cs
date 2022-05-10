@@ -35,7 +35,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
         public string Category => Constants.PluginName;
 
-        public async Task Execute(CancellationToken cancellationToken, IProgress<double> progress)
+        public async Task ExecuteAsync(IProgress<double> progress, CancellationToken cancellationToken)
+        {
+            await Run(progress, cancellationToken);
+            return;
+        }
+        // foodsssas
+        public async Task Execute(IProgress<double> progress, CancellationToken cancellationToken)
         {
             await Run(progress, cancellationToken);
             return;
