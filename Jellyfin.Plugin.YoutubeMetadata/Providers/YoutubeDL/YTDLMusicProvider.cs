@@ -6,6 +6,7 @@ using MediaBrowser.Model.IO;
 using Microsoft.Extensions.Logging;
 using MediaBrowser.Controller;
 using MediaBrowser.Controller.Entities;
+using System.Net.Http;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 {
@@ -13,9 +14,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
     {
         public YTDLMusicProvider(
             IFileSystem fileSystem,
+            IHttpClientFactory httpClientFactory,
             ILogger<YTDLMusicProvider> logger,
             IServerConfigurationManager config,
-            System.IO.Abstractions.IFileSystem afs) : base(fileSystem, logger, config, afs)
+            System.IO.Abstractions.IFileSystem afs) : base(fileSystem, httpClientFactory, logger, config, afs)
         {
         }
 

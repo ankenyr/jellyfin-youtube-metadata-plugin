@@ -17,12 +17,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
     {
         private readonly IServerConfigurationManager _config;
         private readonly IFileSystem _fileSystem;
+        private readonly IHttpClientFactory _httpClientFactory;
         private readonly ILogger<YTDLImageProvider> _logger;
 
-        public YTDLSeriesImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, ILogger<YTDLImageProvider> logger)
+        public YTDLSeriesImageProvider(IServerConfigurationManager config, IFileSystem fileSystem, IHttpClientFactory httpClientFactory, ILogger<YTDLImageProvider> logger)
         {
             _config = config;
             _fileSystem = fileSystem;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
         }
 
@@ -92,10 +94,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <param name="url"></param>
         /// <param name="cancellationToken"></param>
         /// <returns></returns>
-        public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
+        public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            var httpClient = Plugin.Instance.GetHttpClient();
-            return await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
+            return _httpClientFactory.CreateClient(Constants.PluginName).GetAsync(url, cancellationToken);
         }
 
         /// <summary>

@@ -25,9 +25,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="libraryManager">Instance of the <see cref="ILibraryManager"/> interface.</param>
         public YTDLSeriesProvider(
             IFileSystem fileSystem,
+            IHttpClientFactory httpClientFactory,
             ILogger<YTDLSeriesProvider> logger,
             IServerConfigurationManager config,
-            System.IO.Abstractions.IFileSystem afs) : base(fileSystem, logger, config, afs)
+            System.IO.Abstractions.IFileSystem afs) : base(fileSystem, httpClientFactory, logger, config, afs)
         {
         }
 
@@ -87,6 +88,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 await Utils.GetChannelInfo(searchResult.Result, name, appPaths, cancellationToken);
             }
 
+        }
+        public override Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
+        {
+            return _httpClientFactory.CreateClient(Constants.PluginName).GetAsync(url, cancellationToken);
         }
     }
 }

@@ -23,17 +23,20 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         where E : ItemLookupInfo, new()
     {
         protected readonly IServerConfigurationManager _config;
+        protected readonly IHttpClientFactory _httpClientFactory;
         protected readonly ILogger<B> _logger;
         protected readonly IFileSystem _fileSystem;
         protected readonly System.IO.Abstractions.IFileSystem _afs;
 
         public AbstractYoutubeRemoteProvider(IFileSystem fileSystem,
+            IHttpClientFactory httpClientFactory,
             ILogger<B> logger,
             IServerConfigurationManager config,
         System.IO.Abstractions.IFileSystem afs)
         {
             _config = config;
             _fileSystem = fileSystem;
+            _httpClientFactory = httpClientFactory;
             _logger = logger;
             _afs = afs;
         }
@@ -151,7 +154,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         internal abstract Task GetAndCacheMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken);
 
-        public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
+        public virtual Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             throw new System.NotImplementedException();
         }
