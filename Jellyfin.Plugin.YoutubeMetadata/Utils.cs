@@ -15,7 +15,7 @@ using System.Threading.Tasks;
 
 namespace Jellyfin.Plugin.YoutubeMetadata
 {
-    class Utils
+    public class Utils
     {
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
@@ -167,7 +167,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            System.Console.WriteLine(fpath);
             string jsonString = File.ReadAllText(fpath);
             return JsonSerializer.Deserialize<YTDLData>(jsonString);
         }
@@ -215,7 +214,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
-
             return result;
         }
 
@@ -259,7 +257,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.Name = json.uploader;
             result.Item.Overview = json.description;
             result.Item.ProviderIds.Add(Constants.PluginName, json.channel_id);
-
             return result;
         }
     }

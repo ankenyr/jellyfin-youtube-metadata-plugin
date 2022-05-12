@@ -12,7 +12,7 @@ using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using System.Net.Http;
 
-namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
+namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 {
 
 
@@ -36,7 +36,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
             _epInfo = new EpisodeInfo();
             _fs_metadata = new MediaBrowser.Model.IO.FileSystemMetadata();
             _token = new CancellationToken();
-            _provider = new YTDLEpisodeProvider(_jf_fs.Object, _mockFactory.Object,  new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
+            _provider = new YTDLEpisodeProvider(_jf_fs.Object, _mockFactory.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
         }
 
         [Fact]
@@ -111,7 +111,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                 description = "This is the best video.",
                 channel_id = "12345",
                 thumbnails = thumbnails
-        };
+            };
             var result = YTDLEpisodeProvider.YTDLJsonToEpisode(json, "id123");
             Assert.Equal(json.title, result.Item.Name);
             Assert.Equal(json.description, result.Item.Overview);
@@ -151,7 +151,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                         People = new List<PersonInfo> {new PersonInfo {
                             Name = "ankenyr",
                             Type = PersonType.Director,
-                            ProviderIds = new Dictionary<string, string> { { "youtubemetadata", "abc123" } } }
+                            ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     }
                 },
@@ -181,7 +181,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                         People = new List<PersonInfo> {new PersonInfo {
                             Name = "ankenyr",
                             Type = PersonType.Director,
-                            ProviderIds = new Dictionary<string, string> { { "youtubemetadata", "abc123" } } }
+                            ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     }
                 }
@@ -192,7 +192,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
         {
             var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMusicVideo(json, "id123"));
             Assert.Equal(JsonSerializer.Serialize(expected), result);
-            
+
         }
 
         public static IEnumerable<object[]> MovieJsonTests =>
@@ -220,7 +220,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests.Providers
                         People = new List<PersonInfo> {new PersonInfo {
                             Name = "ankenyr",
                             Type = PersonType.Director,
-                            ProviderIds = new Dictionary<string, string> { { "youtubemetadata", "abc123" } } }
+                            ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     }
                 }
