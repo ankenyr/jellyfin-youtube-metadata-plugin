@@ -26,6 +26,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
 
         private string GetSeriesInfo(string path)
         {
+            _logger.LogDebug("YTLocalSeries GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
             matcher.AddInclude("**/*.info.json");
             string infoPath = "";
@@ -37,11 +38,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
                     break;
                 }
             }
+            _logger.LogDebug("YTLocalSeries GetSeriesInfo Result: {InfoPath}", infoPath);
             return infoPath;
         }
         public Task<MetadataResult<Series>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetMetadata: {Path}", info.Path);
+            _logger.LogDebug("YTLocalSeries GetMetadata: {Path}", info.Path);
             MetadataResult<Series> result = new();
             string infoPath = GetSeriesInfo(info.Path);
             if (String.IsNullOrEmpty(infoPath))
@@ -50,6 +52,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
             }
             var infoJson = Utils.ReadYTDLInfo(infoPath, cancellationToken);
             result = Utils.YTDLJsonToSeries(infoJson);
+            _logger.LogDebug("YTLocalSeries GetMetadata Result: {Result}", result);
             return Task.FromResult(result);
         }
         FileSystemMetadata GetInfoJson(string path)
@@ -63,14 +66,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
+            _logger.LogDebug("YTLocalSeries HasChanged: {Path}", item.Path);
             var infoPath = GetSeriesInfo(item.Path);
+            var result = false;
             if (!String.IsNullOrEmpty(infoPath))
             {
                 var infoJson = GetInfoJson(infoPath);
-                var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
-                return result;
+                result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
             }
-            return false;
+            _logger.LogDebug("YTLocalSeries HasChanged Result: {Result}", result);
+            return result;
             
         }
     }

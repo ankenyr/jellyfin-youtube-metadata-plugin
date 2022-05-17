@@ -29,6 +29,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         protected FileSystemMetadata GetInfoJson(string path)
         {
+            _logger.LogDebug("YTLocal GetInfoJson: {Path}", path);
             var fileInfo = _fileSystem.GetFileSystemInfo(path);
             var directoryInfo = fileInfo.IsDirectory ? fileInfo : _fileSystem.GetDirectoryInfo(Path.GetDirectoryName(path));
             var directoryPath = directoryInfo.FullName;
@@ -45,13 +46,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public bool HasChanged(BaseItem item, IDirectoryService directoryService)
         {
-            _logger.LogDebug("HasChanged: {Name}", item.Name);
+            _logger.LogDebug("YTLocal HasChanged: {Name}", item.Name);
             var infoJson = GetInfoJson(item.Path);
             var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
+            _logger.LogDebug("YTLocal HasChanged Result: {Result}", result);
             return result;
         }
         private string GetSeriesInfo(string path)
         {
+            _logger.LogDebug("YTLocal GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
             matcher.AddInclude("*.info.json");
             string infoPath = "";
@@ -63,6 +66,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     break;
                 }
             }
+            _logger.LogDebug("YTLocal GetSeriesInfo Result: {InfoPath}", infoPath);
             return infoPath;
         }
         /// <summary>
@@ -74,15 +78,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public Task<MetadataResult<T>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetMetadata: {Path}", info.Path);
+            _logger.LogDebug("YTLocal GetMetadata: {Path}", info.Path);
             var result = new MetadataResult<T>();
             string infoPath = GetSeriesInfo(info.ContainingFolderPath);
             if (String.IsNullOrEmpty(infoPath))
             {
                 return Task.FromResult(result);
             }
-            //var infoJson = GetInfoJson(infoPath);
             var jsonObj = Utils.ReadYTDLInfo(infoPath, cancellationToken);
+            _logger.LogDebug("YTLocal GetMetadata Result: {JSON}", jsonObj.ToString());
             result = this.GetMetadataImpl(jsonObj);
 
             return Task.FromResult(result);

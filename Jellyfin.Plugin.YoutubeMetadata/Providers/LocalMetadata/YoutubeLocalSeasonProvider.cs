@@ -19,7 +19,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public Task<MetadataResult<Season>> GetMetadata(ItemInfo info, IDirectoryService directoryService, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetMetadata: {Path}", info.Path);
+            _logger.LogDebug("YTLocalSeason GetMetadata: {Path}", info.Path);
             MetadataResult<Season> result = new();
             var item = new Season();
             item.Name = Path.GetFileNameWithoutExtension(info.Path);

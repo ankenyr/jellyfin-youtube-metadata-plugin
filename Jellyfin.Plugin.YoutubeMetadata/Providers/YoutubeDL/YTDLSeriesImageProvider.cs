@@ -59,19 +59,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetImages: {Name}", item.Name);
+            _logger.LogDebug("YTDLSeriesImage GetImages: {Name}", item.Name);
             var result = new List<RemoteImageInfo>();
             var name = item.Name;
             if (string.IsNullOrWhiteSpace(name))
             {
-                _logger.LogInformation("Youtube ID not found in Item: {item.Name}", item.Name);
+                _logger.LogDebug("YTDLSeriesImage GetImages: Youtube ID not found in Item: {item.Name}", item.Name);
                 return result;
             }
             var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, name);
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!(Utils.IsFresh(fileInfo)))
             {
-                _logger.LogDebug(name, " is not fresh.");
+                _logger.LogDebug("YTDLSeriesImage GetImages: {Name} is not fresh", name);
                 await Utils.YTDLMetadata(name, _config.ApplicationPaths, cancellationToken);
             }
             var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, name);
@@ -96,6 +96,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("YTDLSeriesImage GetImageResponse: {URL}", url);
             return _httpClientFactory.CreateClient(Constants.PluginName).GetAsync(url, cancellationToken);
         }
 

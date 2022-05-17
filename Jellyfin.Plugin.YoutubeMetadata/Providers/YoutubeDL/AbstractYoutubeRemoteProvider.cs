@@ -115,20 +115,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("YTDL ReadYTDLInfo: {Path}", fpath);
             cancellationToken.ThrowIfCancellationRequested();
             string jsonString = _afs.File.ReadAllText(fpath);
-            var foo = JsonSerializer.Deserialize<YTDLData>(jsonString);
-            return foo;
+            var json = JsonSerializer.Deserialize<YTDLData>(jsonString);
+            return json;
         }
 
         public virtual async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("AbstractYTRemote: GetMetadata: {Path}", info.Path);
+            _logger.LogDebug("YTDL GetMetadata: {Path}", info.Path);
             MetadataResult<T> result = new();
             var id = GetYTID(info.Path);
             if (string.IsNullOrWhiteSpace(id))
             {
-                _logger.LogInformation("AbstractYTRemote: Youtube ID not found in filename of title: {info.Name}", info.Name);
+                _logger.LogInformation("YTDL GetMetadata: Youtube ID not found in filename of title: {info.Name}", info.Name);
                 result.HasMetadata = false;
                 return result;
             }
@@ -136,11 +137,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!IsFresh(fileInfo))
             {
+                _logger.LogDebug("YTDL GetMetadata: Not Fresh: {ID}", id);
                 await this.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
             }
             var video = ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
             {
+                _logger.LogDebug("YTDL GetMetadata: Calling Impl function: {ID}", id);
                 result = this.GetMetadataImpl(video, id);
             }
             return result;

@@ -30,6 +30,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public int Order => 1;
         private string GetSeriesInfo(string path)
         {
+            _logger.LogDebug("YTLocalImage GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
             matcher.AddInclude("*.jpg");
             matcher.AddInclude("*.webp");
@@ -42,6 +43,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                     break;
                 }
             }
+            _logger.LogDebug("YTLocalImage GetSeriesInfo Result: {InfoPath}", infoPath);
             return infoPath;
         }
         /// <summary>
@@ -52,7 +54,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public IEnumerable<LocalImageInfo> GetImages(BaseItem item, IDirectoryService directoryService)
         {
-            _logger.LogDebug("GetImages: {Name}", item.Name);
+            _logger.LogDebug("YTLocalImage GetImages: {Name}", item.Name);
             var list = new List<LocalImageInfo>();
             string jpgPath = GetSeriesInfo(item.ContainingFolderPath);
             if (String.IsNullOrEmpty(jpgPath))

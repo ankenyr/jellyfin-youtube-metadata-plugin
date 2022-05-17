@@ -37,21 +37,22 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
 
         public override async Task<MetadataResult<Series>> GetMetadata(SeriesInfo info, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetMetadata: {Path}", info.Path);
+            _logger.LogDebug("YTDLSeries GetMetadata: {Path}", info.Path);
             MetadataResult<Series> result = new();
-            var id = info.Name;
-            if (string.IsNullOrWhiteSpace(id))
+            var name = info.Name;
+            if (string.IsNullOrWhiteSpace(name))
             {
-                _logger.LogInformation("No name found for media: ", info.Path);
+                _logger.LogDebug("YTDLSeries GetMetadata: No name found for media: ", info.Path);
                 result.HasMetadata = false;
                 return result;
             }
-            var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, id);
+            var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, name);
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+            _logger.LogDebug("YTDLSeries GetMetadata: FileInfo: {Path} ", fileInfo.Name);
             if (!IsFresh(fileInfo))
             {
-                _logger.LogDebug("{info.Name} is not fresh.", info.Name);
-                await this.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
+                _logger.LogDebug("YTDLSeries GetMetadata: {info.Name} is not fresh.", fileInfo.Name);
+                await this.GetAndCacheMetadata(name, this._config.ApplicationPaths, cancellationToken);
             }
             var video = ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
@@ -62,7 +63,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 }
                 catch (System.ArgumentException e)
                 {
-                    _logger.LogError("YTDLSeriesProvider: Error parsing json: ");
+                    _logger.LogError("YTDLSeries GetMetadata: Error parsing json: ");
                     _logger.LogError(video.ToString());
                     _logger.LogError(video.title);
                 }
@@ -77,12 +78,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             IServerApplicationPaths appPaths,
             CancellationToken cancellationToken)
         {
-            _logger.LogDebug("YTDLSeriesProvider: GetAndCacheMetadata ", name);
+            _logger.LogDebug("YTDLSeries GetMetadataImpl: GetAndCacheMetadata {Name}", name);
             var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, name);
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!IsFresh(fileInfo))
             {
-                _logger.LogDebug("YTDLSeriesProvider: {name} is not fresh.", name);
+                _logger.LogDebug("YTDLSeries GetMetadataImpl: {Name} is not fresh", fileInfo.Name);
                 var searchResult = Utils.SearchChannel(name, appPaths, cancellationToken);
                 await searchResult;
                 await Utils.GetChannelInfo(searchResult.Result, name, appPaths, cancellationToken);
@@ -91,6 +92,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         }
         public override Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("YTDLSeries GetImageResponse: {URL}", url);
             return _httpClientFactory.CreateClient(Constants.PluginName).GetAsync(url, cancellationToken);
         }
     }

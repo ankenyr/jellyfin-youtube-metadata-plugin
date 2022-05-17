@@ -58,25 +58,26 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public async Task<IEnumerable<RemoteImageInfo>> GetImages(BaseItem item, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("GetImages: {Name}", item.Name);
+            _logger.LogDebug("YTDLImage GetImages: {Name}", item.Name);
             var result = new List<RemoteImageInfo>();
             var id = Utils.GetYTID(item.FileNameWithoutExtension);
             if (string.IsNullOrWhiteSpace(id))
             {
-                _logger.LogInformation("Youtube ID not found in filename of title: {item.Name}", item.Name);
+                _logger.LogDebug("YTDLImage GetImages: Youtube ID not found in filename of title: {item.Name}", item.Name);
                 return result;
             }
             var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
             var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
             if (!(Utils.IsFresh(fileInfo)))
             {
-                _logger.LogDebug("{item.Name} is not fresh.", item.Name);
+                _logger.LogDebug("YTDLImage GetImages: {item.Name} is not fresh.", item.Name);
                 await Utils.YTDLMetadata(id, _config.ApplicationPaths, cancellationToken);
             }
             var path = Utils.GetVideoInfoPath(_config.ApplicationPaths, id);
             var video = Utils.ReadYTDLInfo(path, cancellationToken);
             if (video != null)
             {
+                _logger.LogDebug("YTDLImage GetImages: Creating RemoteImageInfo for {ID}", id);
                 result.Add(new RemoteImageInfo
                 {
                     ProviderName = Name,
@@ -95,7 +96,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <returns></returns>
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
-            _logger.LogDebug("YTDLImageProvider: GetImageResponse ", url);
+            _logger.LogDebug("YTDLImage GetImages: GetImageResponse ", url);
             var httpClient = Plugin.Instance.GetHttpClient();
             return await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
         }

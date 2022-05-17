@@ -27,4 +27,8 @@
 	    <HintPath>..\..\NYoutubeDLP\src\NYoutubeDL\bin\Debug\netstandard2.0\NYoutubeDL.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
+
+	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
+	  <Exec Command="mkdir C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata_1.0.3.6&#xD;&#xA;xcopy /y $(ProjectDir)\bin\Debug\net6.0 C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata_1.0.3.6" />
+	</Target>
 </Project>

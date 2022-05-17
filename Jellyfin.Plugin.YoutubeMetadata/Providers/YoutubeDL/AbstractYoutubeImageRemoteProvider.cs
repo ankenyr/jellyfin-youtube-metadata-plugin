@@ -42,6 +42,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <returns></returns>
         public async Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
+            _logger.LogDebug("YTDLRemoteImage GetImageResponse: {URL}", url);
             var httpClient = _httpClientFactory.CreateClient();
             return await httpClient.GetAsync(url, cancellationToken).ConfigureAwait(false);
         }
