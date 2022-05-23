@@ -90,8 +90,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             }
             var task = ytd.DownloadAsync(url);
             await task;
-            Uri uri = new Uri(ytdl_out[0]);
-            return uri.Segments[uri.Segments.Length - 1];
+            if (ytdl_out.Count > 0)
+            {
+                Uri uri = new Uri(ytdl_out[0]);
+                return uri.Segments[uri.Segments.Length - 1];
+            }
+            else
+            {
+                return null;
+            }
         }
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
