@@ -5,7 +5,6 @@
 		<AssemblyVersion>1.0.3.6</AssemblyVersion>
 		<FileVersion>1.0.3.6</FileVersion>
 		<Version>1.0.3.6</Version>
-		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />
@@ -28,7 +27,4 @@
 	  </Reference>
 	</ItemGroup>
 
-	<Target Name="PostBuild" AfterTargets="PostBuildEvent">
-	  <Exec Command="mkdir C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata_1.0.3.6&#xD;&#xA;xcopy /y $(ProjectDir)\bin\Debug\net6.0 C:\Users\Rob\Desktop\jellyfin-data\plugins\YoutubeMetadata_1.0.3.6" />
-	</Target>
 </Project>
