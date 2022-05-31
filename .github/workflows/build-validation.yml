@@ -22,6 +22,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      fetch-depth: 0
     - name: Setup .NET Core
       uses: actions/setup-dotnet@v1
       with:
@@ -44,7 +45,7 @@ jobs:
     - name: Package
       shell: bash
       run: |
-        tag=$(git describe --tags)
+        tag=$(git describe --tags --always)
         release_name="YoutubeMetadata-$tag-${{ matrix.target }}"
 
         # Pack files
