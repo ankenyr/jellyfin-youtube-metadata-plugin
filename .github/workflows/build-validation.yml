@@ -61,6 +61,6 @@ jobs:
         name: "${{ steps.create_package.outputs.release_tag }}"
         automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
+          #          "${{ steps.create_package.outputs.filename }}"
         files: |
           *.zip
-          #          "${{ steps.create_package.outputs.filename }}"
