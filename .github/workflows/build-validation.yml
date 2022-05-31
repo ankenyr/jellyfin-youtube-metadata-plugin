@@ -53,11 +53,12 @@ jobs:
         7z a -tzip "${release_name}.zip" "./bin/*"
         echo "::set-output name=release_name::${release_name}"
         echo "::set-output name=release_tag::${tag}"
-      
+  makerelease:
     - uses: "marvinpinto/action-automatic-releases@latest"
+      needs: build
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        name: "${{ jobs.Package.release_tag }}"
+        name: "${{ needs.build.release_tag }}"
         prerelease: true
         files: |
           YoutubeMetadata-*.zip
