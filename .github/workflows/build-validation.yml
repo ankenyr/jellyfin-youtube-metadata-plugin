@@ -59,6 +59,7 @@ jobs:
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
         name: "${{ steps.create_package.outputs.release_tag }}"
+        automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
         files: |
           "${{ steps.create_package.outputs.filename }}"
