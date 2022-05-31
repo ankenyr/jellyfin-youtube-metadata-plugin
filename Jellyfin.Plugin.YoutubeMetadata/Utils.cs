@@ -78,7 +78,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.VerbositySimulationOptions.Simulate = true;
             ytd.Options.GeneralOptions.FlatPlaylist = true;
             ytd.Options.VideoSelectionOptions.PlaylistItems = "1";
-            ytd.Options.VerbositySimulationOptions.PrintField = "url";
+//            ytd.Options.VerbositySimulationOptions.PrintField = "url";
             List<string> ytdl_errs = new();
             List<string> ytdl_out = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
