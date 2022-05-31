@@ -13,7 +13,6 @@ env:
 
 jobs:
   build:
-
     name: build-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
@@ -44,6 +43,7 @@ jobs:
       run: dotnet publish --configuration Release --no-restore --output bin
 
     - name: Package
+      id: create_package
       shell: bash
       run: |
         tag=$(git describe --tags --always)
@@ -53,23 +53,12 @@ jobs:
         7z a -tzip "${release_name}.zip" "./bin/*"
         echo "::set-output name=release_name::${release_name}"
         echo "::set-output name=release_tag::${tag}"
+        echo "::set-output name=filename::${release_name}.zip"
 
-        
-    - name: Archive code coverage results
-      uses: actions/upload-artifact@v3
-      with:
-        name: release-file
-        path: "*.zip"
-  makerelease:
-    - name: Download a single artifact
-      uses: actions/download-artifact@v3
-      with:
-        name: release-file
     - uses: "marvinpinto/action-automatic-releases@latest"
-      needs: build
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        name: "${{ needs.build.release_tag }}"
+        name: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
         files: |
-          YoutubeMetadata-*.zip
+          "${{ steps.create_package.outputs.filename }}"
