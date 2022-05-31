@@ -47,7 +47,7 @@ jobs:
       shell: bash
       run: |
         tag=$(git describe --tags --always)
-        release_name="YoutubeMetadata-$tag-${{ matrix.target }}"
+        release_name="YoutubeMetadata-$tag"
 
         # Pack files
         7z a -tzip "${release_name}.zip" "./bin/*"
@@ -62,4 +62,5 @@ jobs:
         automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
         files: |
-          "${{ steps.create_package.outputs.filename }}"
+          *.zip
+          #          "${{ steps.create_package.outputs.filename }}"
