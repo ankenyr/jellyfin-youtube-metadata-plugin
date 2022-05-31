@@ -40,3 +40,12 @@ jobs:
 
     - name: Publish
       run: dotnet publish --configuration Release --no-restore --output bin
+
+    - name: Package
+      shell: bash
+      run: |
+        tag=$(git describe --tags --abbrev=0)
+        release_name="YoutubeMetadata-$tag-${{ matrix.target }}"
+
+        # Pack files
+        7z a -tzip "${release_name}.zip" "./bin/*"
