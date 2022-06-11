@@ -4,7 +4,7 @@
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
 		<AssemblyVersion>1.0.3.6</AssemblyVersion>
 		<FileVersion>1.0.3.6</FileVersion>
-		<Version>1.0.3.6</Version>
+		<Version>1.0.3.7</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />
@@ -15,7 +15,7 @@
 
 	<ItemGroup>
           <PackageReference Include="Jellyfin.Controller" Version="10.8.0-beta2" />
-          <PackageReference Include="Jellyfin.Data" Version="10.8.0-beta2" />
+          <PackageReference Include="Jellyfin.Data" Version="10.8.0" />
           <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="6.0.0" />
           <PackageReference Include="Microsoft.Extensions.Http" Version="6.0.0" />
           <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
@@ -26,5 +26,4 @@
 	    <HintPath>..\..\NYoutubeDLP\src\NYoutubeDL\bin\Debug\netstandard2.0\NYoutubeDL.dll</HintPath>
 	  </Reference>
 	</ItemGroup>
-
 </Project>
