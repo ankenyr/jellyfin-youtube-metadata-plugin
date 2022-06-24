@@ -23,6 +23,28 @@ for content from Youtube.
 
 ## Installation
 
+### Prerequirements
+You are required to have yt-dlp available on the system or container Jellyfin is running on. The following are examples of how you could do this depending on your setup and are not to be considered an exhaustive list.
+
+#### Installing from package manager
+`sudo apt-get install yt-dlp`
+
+#### Installing in a container
+```
+$ docker exec -it -u root jellyfin bash
+$ curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /bin/yt-dlp
+$ chmod a+rx /bin/yt-dlp
+$ apt update && apt install --no-install-recommends --no-install-suggests python3
+```
+
+#### Building a docker image depending on YT-DLP
+```
+FROM linuxserver/jellyfin:nightly
+RUN apt-get update && apt-get install -y \
+    python3-pip
+RUN python3 -m pip install -U yt-dlp
+```
+
 ### Installing From Repository (Recommended)
 1. Go to the `Admin Dashboard`.
 1. In the left navigation menu, click on `Plugins`.
