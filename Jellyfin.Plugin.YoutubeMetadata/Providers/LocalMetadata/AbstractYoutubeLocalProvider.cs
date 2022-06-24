@@ -52,23 +52,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _logger.LogDebug("YTLocal HasChanged Result: {Result}", result);
             return result;
         }
-        private string GetSeriesInfo(string path)
-        {
-            _logger.LogDebug("YTLocal GetSeriesInfo: {Path}", path);
-            Matcher matcher = new();
-            matcher.AddInclude("*.info.json");
-            string infoPath = "";
-            foreach (string file in matcher.GetResultsInFullPath(path))
-            {
-                if (Regex.Match(file, Constants.YTID_RE).Success)
-                {
-                    infoPath = file;
-                    break;
-                }
-            }
-            _logger.LogDebug("YTLocal GetSeriesInfo Result: {InfoPath}", infoPath);
-            return infoPath;
-        }
+
         /// <summary>
         /// Retrieves metadata of item.
         /// </summary>
@@ -80,12 +64,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             _logger.LogDebug("YTLocal GetMetadata: {Path}", info.Path);
             var result = new MetadataResult<T>();
-            string infoPath = GetSeriesInfo(info.ContainingFolderPath);
-            if (String.IsNullOrEmpty(infoPath))
+            var infoFile = Path.ChangeExtension(info.Path, "info.json");
+            if (File.Exists(infoFile))
             {
                 return Task.FromResult(result);
             }
-            var jsonObj = Utils.ReadYTDLInfo(infoPath, cancellationToken);
+            var jsonObj = Utils.ReadYTDLInfo(infoFile, cancellationToken);
             _logger.LogDebug("YTLocal GetMetadata Result: {JSON}", jsonObj.ToString());
             result = this.GetMetadataImpl(jsonObj);
 
