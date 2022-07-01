@@ -6,25 +6,62 @@
 </head>
 <body>
     <div id="YoutubeMetadataConfigPage" data-role="page" class="page type-interior pluginConfigurationPage" data-require="emby-input,emby-button,emby-select,emby-checkbox">
-        <div data-role="content">
-            <div class="content-primary">
-            </div>
-        </div>
-        <script type="text/javascript">
-            var YoutubeMetadataConfigPage = {
-                pluginUniqueId: 'b4b4353e-dc57-4398-82c1-de9079e7146a'
-            };
-
-
-        </script>
-        <div>
+        <div class="fieldDescription">
             <h1>Youtube Metadata Configuration Page</h1>
-            <h2>Thanks for installing! Currently there are no configurations to set on this page.</h2>
             <p>For information on how to setup your libraries, see the Github page&nbsp;</p>
             <p><a href="https://github.com/ankenyr/jellyfin-youtube-metadata-plugin">https://github.com/ankenyr/jellyfin-youtube-metadata-plugin</a></p>
             <p>If this plugin has helped you please consider buying me a coffee.</p>
-            <p><a href="https://ko-fi.com/ankenyr">https://ko-fi.com/ankenyr</a></p>
+            <p>
+                <a href="https://ko-fi.com/ankenyr">
+                    <img alt="Ko-fi" src="https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge">
+                </a>
+            </p>
         </div>
+        <div data-role="content">
+            <div class="content-primary">
+                <form id="YoutubeMetadataConfigForm">
+                    <div class="selectContainer">
+                        <label class="inputeLabel inputLabelUnfocused" for="IDType">ID Type</label>
+                        <select is="emby-select" id="IDType" name="IDType" class="emby-select-withcolor emby-select">
+                            <option value="YTDLP">YTDLP</option>
+                            <option value="TubeArchivist">TubeArchivist</option>
+                        </select>
+                    </div>
+                    <div>
+                        <button is="emby-button" type="submit" class="raised button-submit block emby-button">
+                            <span>Save</span>
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <script type="text/javascript">
+            var YoutubeMetadataConfig = {
+                pluginUniqueId: 'b4b4353e-dc57-4398-82c1-de9079e7146a'
+            };
+
+            document.querySelector('#YoutubeMetadataConfigPage')
+                .addEventListener('pageshow', function () {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(YoutubeMetadataConfig.pluginUniqueId).then(function (config) {
+                        document.querySelector('#IDType').value = config.IDType;
+                        Dashboard.hideLoadingMsg();
+                    });
+                });
+
+            document.querySelector('#YoutubeMetadataConfigPage')
+                .addEventListener('submit', function () {
+                    Dashboard.showLoadingMsg();
+                    ApiClient.getPluginConfiguration(YoutubeMetadataConfig.pluginUniqueId).then(function (config) {
+                        config.IDType = document.querySelector('#IDType').value;
+                        ApiClient.updatePluginConfiguration(YoutubeMetadataConfig.pluginUniqueId, config).then(function (result) {
+                            Dashboard.processPluginConfigurationUpdateResult(result);
+                        });
+                    });
+
+                    return false;
+                });
+        </script>
     </div>
     
 </body>
