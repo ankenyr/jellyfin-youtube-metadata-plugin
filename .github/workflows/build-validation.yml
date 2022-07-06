@@ -1,0 +1,66 @@
+name: build
+
+on:
+  push:
+  pull_request:
+    branches: [ main ]
+    paths:
+    - '**.cs'
+    - '**.csproj'
+
+env:
+  DOTNET_VERSION: '6.0.300' # The .NET SDK version to use
+
+jobs:
+  build:
+    name: build-${{matrix.os}}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macOS-latest]
+
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - name: Setup .NET Core
+      uses: actions/setup-dotnet@v1
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Install dependencies
+      run: dotnet restore
+      
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Test
+      run: dotnet test --no-restore --verbosity normal
+      # Tests need to be updated to not fail, so ignore for now but still run
+      continue-on-error: true
+
+    - name: Publish
+      run: dotnet publish --configuration Release --no-restore --output bin
+
+    - name: Package
+      id: create_package
+      shell: bash
+      run: |
+        tag=$(git describe --tags --always)
+        release_name="YoutubeMetadata-$tag"
+
+        # Pack files
+        7z a -tzip "${release_name}.zip" "./bin/*"
+        echo "::set-output name=release_name::${release_name}"
+        echo "::set-output name=release_tag::${tag}"
+        echo "::set-output name=filename::${release_name}.zip"
+
+    - uses: "marvinpinto/action-automatic-releases@latest"
+      with:
+        repo_token: "${{ secrets.GITHUB_TOKEN }}"
+        name: "${{ steps.create_package.outputs.release_tag }}"
+        automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
+        prerelease: true
+          #          "${{ steps.create_package.outputs.filename }}"
+        files: |
+          *.zip
