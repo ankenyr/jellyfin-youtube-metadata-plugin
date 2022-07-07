@@ -73,12 +73,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var ytd = new YoutubeDL();
+            var ytd = new YoutubeDLP();
             var url = String.Format(Constants.SearchQuery, System.Web.HttpUtility.UrlEncode(query));
             ytd.Options.VerbositySimulationOptions.Simulate = true;
             ytd.Options.GeneralOptions.FlatPlaylist = true;
             ytd.Options.VideoSelectionOptions.PlaylistItems = "1";
-            ytd.Options.VerbositySimulationOptions.PrintField = "url";
+            ytd.Options.VerbositySimulationOptions.Print = "url";
             List<string> ytdl_errs = new();
             List<string> ytdl_out = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
@@ -103,7 +103,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var ytd = new YoutubeDL();
+            var ytd = new YoutubeDLP();
             var task = ytd.DownloadAsync("https://www.youtube.com/playlist?list=WL");
             List<string> ytdl_errs = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
@@ -129,7 +129,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static async Task GetChannelInfo(string id, string name, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            var ytd = new YoutubeDL();
+            var ytd = new YoutubeDLP();
             ytd.Options.VideoSelectionOptions.PlaylistItems = "0";
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", name, "ytvideo");
@@ -148,7 +148,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         {
             //var foo = await ValidCookie(appPaths, cancellationToken);
             cancellationToken.ThrowIfCancellationRequested();
-            var ytd = new YoutubeDL();
+            var ytd = new YoutubeDLP();
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");

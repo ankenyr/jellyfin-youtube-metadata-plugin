@@ -21,10 +21,4 @@
           <PackageReference Include="NYoutubeDLP" Version="0.12.1" />
           <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
 	</ItemGroup>
-
-	<ItemGroup>
-	  <Reference Include="NYoutubeDL">
-	    <HintPath>..\..\NYoutubeDLP\src\NYoutubeDL\bin\Debug\netstandard2.0\NYoutubeDL.dll</HintPath>
-	  </Reference>
-	</ItemGroup>
 </Project>
