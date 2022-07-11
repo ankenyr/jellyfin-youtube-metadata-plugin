@@ -100,15 +100,28 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                     }).Items);
                     episodes.Sort(delegate (BaseItem x, BaseItem y)
                     {
-                        if (x.Name == null && y.Name == null) return 0;
-                        else if (x.Name == null) return -1;
-                        else if (y.Name == null) return 1;
-                        else return x.Name.CompareTo(y.Name);
+                        if (!x.PremiereDate.HasValue && !y.PremiereDate.HasValue) {
+                            _logger.LogWarning("Episode [{Name}] does not have 'PremiereDate'", x.FileNameWithoutExtension);
+                            _logger.LogWarning("Episode [{Name}] does not have 'PremiereDate'", y.FileNameWithoutExtension);
+                            return 0;
+                        } else if (!x.PremiereDate.HasValue) {
+                            _logger.LogWarning("Episode [{Name}] does not have 'PremiereDate'", x.FileNameWithoutExtension);
+                            return -1;
+                        } else if (!y.PremiereDate.HasValue) {
+                            _logger.LogWarning("Episode [{Name}] does not have 'PremiereDate'", y.FileNameWithoutExtension);
+                            return 1;
+                        } else {
+                            return DateTime.Compare(x.PremiereDate.Value, y.PremiereDate.Value);
+                        }
                     });
                     var eindex = 1;
                     foreach (var episode in episodes)
                     {
-                        _logger.LogDebug("Epsiode {Name} should now be index {Index}", episode.Name, eindex);
+                        if (episode.PremiereDate.HasValue) {
+                            _logger.LogDebug("Episode [{Name} - {Date:MM/dd/yyyy}] should now be index {Index}", episode.Name, episode.PremiereDate, eindex);
+                        } else {
+                            _logger.LogDebug("Episode {Name} should now be index {Index}", episode.Name, eindex);
+                        }
                         episode.IndexNumber = eindex;
                         episode.ParentIndexNumber = sindex;
                         await _libmanager.UpdateItemAsync(episode, season, ItemUpdateType.MetadataEdit, cancellationToken);
