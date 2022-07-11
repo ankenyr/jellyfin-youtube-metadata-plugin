@@ -193,7 +193,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             };
             result.Item.Name = json.title;
             result.Item.Overview = json.description;
-            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            var date = new DateTime(1970, 1, 1);
+            try
+            {
+                date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            }
+            catch
+            {
+
+            }
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
@@ -217,7 +225,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.Artists = new List<string> { json.artist };
             result.Item.Album = json.album;
             result.Item.Overview = json.description;
-            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            var date = new DateTime(1970, 1, 1);
+            try
+            {
+                date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            }
+            catch
+            {
+
+            }
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
@@ -239,7 +255,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             };
             result.Item.Name = json.title;
             result.Item.Overview = json.description;
-            var date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            var date = new DateTime(1970, 1, 1);
+            try
+            {
+                date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            }
+            catch
+            {
+
+            }
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.Item.ForcedSortName = date.ToString("yyyyMMdd") + "-" + result.Item.Name;
