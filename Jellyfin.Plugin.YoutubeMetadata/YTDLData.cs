@@ -27,6 +27,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public string track { get; set; }
         public string artist { get; set; }
         public string album { get; set; }
+        public string thumbnail { get; set; }
         public List<ThumbnailInfo> thumbnails { get; set; }
 #pragma warning restore IDE1006 // Naming Styles
     }

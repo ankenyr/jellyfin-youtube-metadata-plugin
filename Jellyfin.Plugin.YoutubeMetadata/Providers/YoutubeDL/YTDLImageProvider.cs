@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
@@ -81,7 +81,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
                 result.Add(new RemoteImageInfo
                 {
                     ProviderName = Name,
-                    Url = video.thumbnails[^1].url,
+                    Url = video.thumbnail,
                     Type = ImageType.Primary
                 });
             }
