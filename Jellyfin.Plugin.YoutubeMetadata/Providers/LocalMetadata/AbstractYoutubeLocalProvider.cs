@@ -65,7 +65,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _logger.LogDebug("YTLocal GetMetadata: {Path}", info.Path);
             var result = new MetadataResult<T>();
             var infoFile = Path.ChangeExtension(info.Path, "info.json");
-            if (File.Exists(infoFile))
+            if (!File.Exists(infoFile))
             {
                 return Task.FromResult(result);
             }
