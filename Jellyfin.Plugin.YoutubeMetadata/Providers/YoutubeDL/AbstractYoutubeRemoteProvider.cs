@@ -107,21 +107,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
 
-        /// <summary>
-        /// Reads JSON data from file.
-        /// </summary>
-        /// <param name="metaFile"></param>
-        /// <param name="cancellationToken"></param>
-        /// <returns></returns>
-        public YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
-        {
-            _logger.LogDebug("YTDL ReadYTDLInfo: {Path}", fpath);
-            cancellationToken.ThrowIfCancellationRequested();
-            string jsonString = _afs.File.ReadAllText(fpath);
-            var json = JsonSerializer.Deserialize<YTDLData>(jsonString);
-            return json;
-        }
-
         public virtual async Task<MetadataResult<T>> GetMetadata(E info, CancellationToken cancellationToken)
         {
             _logger.LogDebug("YTDL GetMetadata: {Path}", info.Path);
@@ -140,7 +125,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 _logger.LogDebug("YTDL GetMetadata: Not Fresh: {ID}", id);
                 await this.GetAndCacheMetadata(id, this._config.ApplicationPaths, cancellationToken);
             }
-            var video = ReadYTDLInfo(ytPath, cancellationToken);
+            var video = Utils.ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
             {
                 _logger.LogDebug("YTDL GetMetadata: Calling Impl function: {ID}", id);

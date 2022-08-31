@@ -174,8 +174,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         public static YTDLData ReadYTDLInfo(string fpath, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            string jsonString = File.ReadAllText(fpath);
-            return JsonSerializer.Deserialize<YTDLData>(jsonString);
+            try
+            {
+                string jsonString = File.ReadAllText(fpath);
+                return JsonSerializer.Deserialize<YTDLData>(jsonString);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+            
         }
 
         /// <summary>

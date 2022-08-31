@@ -70,8 +70,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 return Task.FromResult(result);
             }
             var jsonObj = Utils.ReadYTDLInfo(infoFile, cancellationToken);
-            _logger.LogDebug("YTLocal GetMetadata Result: {JSON}", jsonObj.ToString());
-            result = this.GetMetadataImpl(jsonObj);
+            if (jsonObj != null)
+            {
+                _logger.LogDebug("YTLocal GetMetadata Result: {JSON}", jsonObj.ToString());
+                result = this.GetMetadataImpl(jsonObj);
+            }
 
             return Task.FromResult(result);
         }

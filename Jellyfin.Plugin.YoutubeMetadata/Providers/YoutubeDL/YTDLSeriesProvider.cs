@@ -54,7 +54,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 _logger.LogDebug("YTDLSeries GetMetadata: {info.Name} is not fresh.", fileInfo.Name);
                 await this.GetAndCacheMetadata(name, this._config.ApplicationPaths, cancellationToken);
             }
-            var video = ReadYTDLInfo(ytPath, cancellationToken);
+            var video = Utils.ReadYTDLInfo(ytPath, cancellationToken);
             if (video != null)
             {
                 try
