@@ -53,12 +53,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
             {
                 result.Item.ProviderIds.Remove(Constants.PluginName);
-                result.Item.ProviderIds.Add(Constants.PluginName, id);
             }
-            else
-            {
-                result.Item.ProviderIds.Add(Constants.PluginName, id);
-            }
+            
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -73,12 +70,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
             {
                 result.Item.ProviderIds.Remove(Constants.PluginName);
-                result.Item.ProviderIds.Add(Constants.PluginName, id);
             }
-            else
-            {
-                result.Item.ProviderIds.Add(Constants.PluginName, id);
-            }
+
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -93,12 +87,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
             {
                 result.Item.ProviderIds.Remove(Constants.PluginName);
-                result.Item.ProviderIds.Add(Constants.PluginName, id);
             }
-            else
-            {
-                result.Item.ProviderIds.Add(Constants.PluginName, id);
-            }
+            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)

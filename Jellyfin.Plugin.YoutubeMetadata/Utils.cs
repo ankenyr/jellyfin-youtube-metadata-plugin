@@ -215,6 +215,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            
+            if (String.IsNullOrEmpty(json.id))
+            {
+                return result;
+            }
+
+            if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
+            {
+                result.Item.ProviderIds.Remove(Constants.PluginName);
+            }
+
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
+
             return result;
         }
 
@@ -240,13 +253,23 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             {
                 date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
             }
-            catch
-            {
-
-            }
+            catch { }
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+
+            if (String.IsNullOrEmpty(json.id))
+            {
+                return result;
+            }
+
+            if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
+            {
+                result.Item.ProviderIds.Remove(Constants.PluginName);
+            }
+
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
+
             return result;
         }
 
@@ -280,6 +303,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             result.Item.IndexNumber = 1;
             result.Item.ParentIndexNumber = 1;
+
             if (String.IsNullOrEmpty(json.id))
             {
                 return result;
@@ -288,12 +312,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
             {
                 result.Item.ProviderIds.Remove(Constants.PluginName);
-                result.Item.ProviderIds.Add(Constants.PluginName, json.id);
             }
-            else
-            {
-                result.Item.ProviderIds.Add(Constants.PluginName, json.id);
-            }
+
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
 
             return result;
         }
