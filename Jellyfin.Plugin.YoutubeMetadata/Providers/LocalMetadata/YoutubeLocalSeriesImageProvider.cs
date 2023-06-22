@@ -15,26 +15,33 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         private readonly IFileSystem _fileSystem;
         private readonly ILogger<YoutubeLocalImageProvider> _logger;
 
+        /// <summary>
+        /// Providers name, this does not appear in the library metadata settings.
+        /// </summary>
+        public string Name => Constants.PluginName;
+
         public YoutubeLocalSeriesImageProvider(IFileSystem fileSystem, ILogger<YoutubeLocalImageProvider> logger)
         {
             _fileSystem = fileSystem;
             _logger = logger;
         }
-
         /// <summary>
-        /// Providers name, this does not appear in the library metadata settings.
+        /// Returns boolean based on support of item.
         /// </summary>
-        public string Name => Constants.PluginName;
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Supports(BaseItem item) => item is Series;
         private string GetSeriesInfo(string path)
         {
             _logger.LogDebug("YTLocalImageSeries GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
             matcher.AddInclude("**/*.jpg");
             matcher.AddInclude("**/*.webp");
+            Regex rx = new Regex(Constants.YTCHANNEL_RE, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
-                if (Regex.Match(file, Constants.YTCHANNEL_RE).Success)
+                if (rx.IsMatch(file))
                 {
                     infoPath = file;
                     break;
@@ -66,12 +73,5 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
             return list;
         }
 
-        /// <summary>
-        /// Returns boolean based on support of item.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public bool Supports(BaseItem item)
-            => item is Series;
     }
 }

@@ -23,16 +23,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
         }
         public string Name => Constants.PluginName;
 
-
         private string GetSeriesInfo(string path)
         {
             _logger.LogDebug("YTLocalSeries GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
             matcher.AddInclude("**/*.info.json");
+            Regex rx = new Regex(Constants.YTCHANNEL_RE, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
-                if (Regex.Match(file, Constants.YTCHANNEL_RE).Success)
+                if (rx.IsMatch(file))
                 {
                     infoPath = file;
                     break;
@@ -76,7 +76,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.LocalMetadata
             }
             _logger.LogDebug("YTLocalSeries HasChanged Result: {Result}", result);
             return result;
-            
+
         }
     }
 }

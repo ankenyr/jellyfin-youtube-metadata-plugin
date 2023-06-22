@@ -28,16 +28,25 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public string Name => Constants.PluginName;
 
         public int Order => 1;
+
+        /// <summary>
+        /// Returns boolean based on support of item.
+        /// </summary>
+        /// <param name="item"></param>
+        /// <returns></returns>
+        public bool Supports(BaseItem item) => item is Movie || item is Episode || item is MusicVideo;
+
         private string GetSeriesInfo(string path)
         {
             _logger.LogDebug("YTLocalImage GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
+            Regex rx = new Regex(Constants.YTID_RE, RegexOptions.Compiled | RegexOptions.IgnoreCase);
             matcher.AddInclude("*.jpg");
             matcher.AddInclude("*.webp");
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
-                if (Regex.Match(file, Constants.YTID_RE).Success)
+                if (rx.IsMatch(file))
                 {
                     infoPath = file;
                     break;
@@ -61,23 +70,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 return list;
             }
-            if (String.IsNullOrEmpty(jpgPath))
-            {
-                return list;
-            }
             var localimg = new LocalImageInfo();
             var fileInfo = _fileSystem.GetFileSystemInfo(jpgPath);
             localimg.FileInfo = fileInfo;
             list.Add(localimg);
             return list;
         }
-
-        /// <summary>
-        /// Returns boolean based on support of item.
-        /// </summary>
-        /// <param name="item"></param>
-        /// <returns></returns>
-        public bool Supports(BaseItem item)
-            => item is Movie || item is Episode || item is MusicVideo;
     }
 }

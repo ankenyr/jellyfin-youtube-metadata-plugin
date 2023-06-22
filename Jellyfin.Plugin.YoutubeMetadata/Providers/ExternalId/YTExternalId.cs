@@ -12,34 +12,25 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.ExternalId
         public bool Supports(IHasProviderIds item)
             => item is Movie || item is Episode || item is MusicVideo;
 
-        public string ProviderName
-            => Constants.PluginName;
+        public string ProviderName => Constants.PluginName;
 
-        public string Key
-            => Constants.PluginName;
+        public string Key => Constants.PluginName;
 
-        public ExternalIdMediaType? Type
-            => null;
+        public ExternalIdMediaType? Type => null;
 
-        public string UrlFormatString
-            => Constants.VideoUrl;
+        public string UrlFormatString => Constants.VideoUrl;
     }
 
     public class YTSeriesExternalId : IExternalId
     {
-        public bool Supports(IHasProviderIds item)
-            => item is Series;
+        public bool Supports(IHasProviderIds item) => item is Series;
 
-        public string ProviderName
-            => Constants.PluginName;
+        public string ProviderName => Constants.PluginName;
 
-        public string Key
-            => Constants.PluginName;
+        public string Key => Constants.PluginName;
 
-        public ExternalIdMediaType? Type
-            => null;
+        public ExternalIdMediaType? Type => null;
 
-        public string UrlFormatString
-            => Constants.ChannelUrl;
+        public string UrlFormatString => Constants.ChannelUrl;
     }
 }

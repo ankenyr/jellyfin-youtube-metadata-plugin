@@ -16,7 +16,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata
     }
     public class YTDLData
     {
-        // Human name
+        // ref id
+        public string id { get; set; }
         public string uploader { get; set; }
         public string upload_date { get; set; }
         // https://github.com/ytdl-org/youtube-dl/issues/1806
