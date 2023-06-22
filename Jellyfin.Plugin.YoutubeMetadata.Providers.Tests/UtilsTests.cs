@@ -11,6 +11,7 @@ using System.Threading;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities.Movies;
 using System;
+using System.IO;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 {
@@ -18,13 +19,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
     {
         [Theory]
         [InlineData("3Blue1Brown - 20190113 - The_most_unexpected_answer_to_a_counting_puzzle [HEfHFsfGXjs].mkv", "HEfHFsfGXjs")]
+        [InlineData("3Blue1Brown - 20190113 - The_most_unexpected_answer_to_a_counting_puzzle [youtube-HEfHFsfGXjs].mkv", "HEfHFsfGXjs")]
         [InlineData("Foo", "")]
         [InlineData("3Blue1Brown - NA - 3Blue1Brown_-_Videos [UCYO_jab_esuFRV4b17AJtAw].info.json", "UCYO_jab_esuFRV4b17AJtAw")]
+        [InlineData("3Blue1Brown - NA - 3Blue1Brown_-_Videos [youtube-UCYO_jab_esuFRV4b17AJtAw].info.json", "UCYO_jab_esuFRV4b17AJtAw")]
         public void GetYTIDTest(string fn, string expected)
         {
             Assert.Equal(expected, Utils.GetYTID(fn));
-
-
         }
 
         [Fact]
@@ -40,21 +41,24 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         public void GetVideoInfoPathTest()
         {
             var mockAppPath = Mock.Of<IServerApplicationPaths>(a =>
-            a.CachePath == @"\foo\bar");
-            
+            a.CachePath == Path.Combine("foo", "bar").ToString()
+            );
+
             var result = Utils.GetVideoInfoPath(mockAppPath, "id123");
-            Assert.Equal(@"\foo\bar\youtubemetadata\id123\ytvideo.info.json", result);
+            Assert.Equal(Path.Combine("foo", "bar", "youtubemetadata", "id123", "ytvideo.info.json").ToString(), result);
         }
 
         [Fact]
         public void YTDLJsonToMovieTest()
         {
-            var data = new YTDLData {
+            var data = new YTDLData
+            {
                 title = "Foo",
                 description = "Some cool movie!",
                 upload_date = "20220131",
                 uploader = "SomeGuyIKnow",
-                channel_id = "ABCDEFGHIJKLMNOPQRSTUVWX" };
+                channel_id = "ABCDEFGHIJKLMNOPQRSTUVWX"
+            };
             var result = Utils.YTDLJsonToMovie(data);
             var person = new PersonInfo
             {

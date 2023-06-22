@@ -50,7 +50,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json, string id)
         {
             var result = Utils.YTDLJsonToMovie(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
+            if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
+            {
+                result.Item.ProviderIds.Remove(Constants.PluginName);
+                result.Item.ProviderIds.Add(Constants.PluginName, id);
+            }
+            else
+            {
+                result.Item.ProviderIds.Add(Constants.PluginName, id);
+            }
             return result;
         }
 
@@ -62,7 +70,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json, string id)
         {
             var result = Utils.YTDLJsonToMusicVideo(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
+            if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
+            {
+                result.Item.ProviderIds.Remove(Constants.PluginName);
+                result.Item.ProviderIds.Add(Constants.PluginName, id);
+            }
+            else
+            {
+                result.Item.ProviderIds.Add(Constants.PluginName, id);
+            }
             return result;
         }
 
@@ -74,7 +90,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json, string id)
         {
             var result = Utils.YTDLJsonToEpisode(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
+            if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
+            {
+                result.Item.ProviderIds.Remove(Constants.PluginName);
+                result.Item.ProviderIds.Add(Constants.PluginName, id);
+            }
+            else
+            {
+                result.Item.ProviderIds.Add(Constants.PluginName, id);
+            }
             return result;
         }
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
@@ -84,16 +108,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 return true;
             }
             return false;
-        }
-        /// <summary>
-        ///  Returns the Youtube ID from the file path. Matches last 11 character field inside square brackets.
-        /// </summary>
-        /// <param name="name"></param>
-        /// <returns></returns>
-        public static string GetYTID(string name)
-        {
-            var match = Regex.Match(name, Constants.YTID_RE);
-            return match.Value;
         }
         /// <summary>
         /// Returns path to where metadata json file should be.
@@ -126,7 +140,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             _logger.LogDebug("YTDL GetMetadata: {Path}", info.Path);
             MetadataResult<T> result = new();
-            var id = GetYTID(info.Path);
+            var id = Utils.GetYTID(info.Path);
             if (string.IsNullOrWhiteSpace(id))
             {
                 _logger.LogInformation("YTDL GetMetadata: Youtube ID not found in filename of title: {info.Name}", info.Name);

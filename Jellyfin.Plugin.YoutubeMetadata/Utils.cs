@@ -33,12 +33,20 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         /// <returns></returns>
         public static string GetYTID(string name)
         {
-            var match = Regex.Match(name, Constants.YTID_RE);
-            if (!match.Success)
+            var rxc = new Regex(Constants.YTCHANNEL_RE, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            if (rxc.IsMatch(name))
             {
-                match = Regex.Match(name, Constants.YTCHANNEL_RE);
+                MatchCollection match = rxc.Matches(name);
+                return match[0].Groups["id"].ToString();
             }
-            return match.Value;
+
+            var rx = new Regex(Constants.YTID_RE, RegexOptions.Compiled | RegexOptions.IgnoreCase);
+            if (rx.IsMatch(name))
+            {
+                MatchCollection match = rx.Matches(name);
+                return match[0].Groups["id"].ToString();
+            }
+            return "";
         }
 
         /// <summary>
@@ -70,7 +78,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
 
-        public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        public static async Task<string> SearchChannel(string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDLP();
@@ -115,11 +123,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
             await task;
-            
+
+            Regex rx = new Regex(@".*The playlist does not exist\..*", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
             foreach (string err in ytdl_errs)
             {
-                var match = Regex.Match(err, @".*The playlist does not exist\..*");
-                if (match.Success)
+                if (rx.IsMatch(err))
                 {
                     return false;
                 }
@@ -152,14 +161,15 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
-            if ( File.Exists(cookie_file) ) {
+            if (File.Exists(cookie_file))
+            {
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
-            
+
             var dlstring = "https://www.youtube.com/watch?v=" + id;
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
-            
+
             List<string> ytdl_errs = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             var task = ytd.DownloadAsync(dlstring);
@@ -270,6 +280,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             result.Item.IndexNumber = 1;
             result.Item.ParentIndexNumber = 1;
+            if (String.IsNullOrEmpty(json.id))
+            {
+                return result;
+            }
+
+            if (result.Item.ProviderIds.ContainsKey(Constants.PluginName))
+            {
+                result.Item.ProviderIds.Remove(Constants.PluginName);
+                result.Item.ProviderIds.Add(Constants.PluginName, json.id);
+            }
+            else
+            {
+                result.Item.ProviderIds.Add(Constants.PluginName, json.id);
+            }
+
             return result;
         }
         /// <summary>
