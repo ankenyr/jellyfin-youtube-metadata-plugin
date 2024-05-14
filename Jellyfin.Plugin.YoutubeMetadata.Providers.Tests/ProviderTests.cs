@@ -11,6 +11,7 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using System.Net.Http;
+using Jellyfin.Data.Enums;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 {
@@ -150,7 +151,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                         },
                         People = new List<PersonInfo> {new PersonInfo {
                             Name = "ankenyr",
-                            Type = PersonType.Director,
+                            Type = PersonKind.Director,
                             ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     }
@@ -180,7 +181,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                         },
                         People = new List<PersonInfo> {new PersonInfo {
                             Name = "ankenyr",
-                            Type = PersonType.Director,
+                            Type = PersonKind.Director,
                             ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     }
@@ -219,7 +220,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                         },
                         People = new List<PersonInfo> {new PersonInfo {
                             Name = "ankenyr",
-                            Type = PersonType.Director,
+                            Type = PersonKind.Director,
                             ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     }

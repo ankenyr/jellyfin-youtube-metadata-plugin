@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Data.Enums;
 
 namespace Jellyfin.Plugin.YoutubeMetadata
 {
@@ -52,7 +53,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return new PersonInfo
             {
                 Name = name,
-                Type = PersonType.Director,
+                Type = PersonKind.Director,
                 ProviderIds = new Dictionary<string, string> { { Constants.PluginName, channel_id }
             },
             };
