@@ -14,11 +14,11 @@
 	</ItemGroup>
 
 	<ItemGroup>
-          <PackageReference Include="Jellyfin.Controller" Version="10.*-*" />
-          <PackageReference Include="Jellyfin.Data" Version="10.9.*" />
-          <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
-          <PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
-          <PackageReference Include="NYoutubeDLP" Version="0.12.1" />
-          <PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
+		<PackageReference Include="Jellyfin.Controller" Version="10.*-*" />
+		<PackageReference Include="Jellyfin.Data" Version="10.9.*" />
+		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="8.0.0" />
+		<PackageReference Include="Microsoft.Extensions.Http" Version="8.0.0" />
+		<PackageReference Include="NYoutubeDLP" Version="0.12.1" />
+		<PackageReference Include="System.IO.Abstractions" Version="14.0.13" />
 	</ItemGroup>
 </Project>

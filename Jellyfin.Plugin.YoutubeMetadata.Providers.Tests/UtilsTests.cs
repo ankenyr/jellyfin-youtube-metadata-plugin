@@ -42,7 +42,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         {
             var mockAppPath = Mock.Of<IServerApplicationPaths>(a =>
             a.CachePath == @"\foo\bar");
-            
+
             var result = Utils.GetVideoInfoPath(mockAppPath, "id123");
             Assert.Equal(@"\foo\bar\youtubemetadata\id123\ytvideo.info.json", result);
         }
@@ -50,12 +50,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         [Fact]
         public void YTDLJsonToMovieTest()
         {
-            var data = new YTDLData {
+            var data = new YTDLData
+            {
                 title = "Foo",
                 description = "Some cool movie!",
                 upload_date = "20220131",
                 uploader = "SomeGuyIKnow",
-                channel_id = "ABCDEFGHIJKLMNOPQRSTUVWX" };
+                channel_id = "ABCDEFGHIJKLMNOPQRSTUVWX"
+            };
             var result = Utils.YTDLJsonToMovie(data);
             var person = new PersonInfo
             {
