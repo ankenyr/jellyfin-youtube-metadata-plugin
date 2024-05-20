@@ -3,7 +3,6 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -12,6 +11,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Jellyfin.Data.Enums;
 
 namespace Jellyfin.Plugin.YoutubeMetadata
 {
@@ -52,7 +52,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return new PersonInfo
             {
                 Name = name,
-                Type = PersonType.Director,
+                Type = PersonKind.Director,
                 ProviderIds = new Dictionary<string, string> { { Constants.PluginName, channel_id }
             },
             };
@@ -70,7 +70,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return Path.Combine(dataPath, "ytvideo.info.json");
         }
 
-        public static async Task<string> SearchChannel (string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
+        public static async Task<string> SearchChannel(string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
             var ytd = new YoutubeDLP();
@@ -100,6 +100,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 return null;
             }
         }
+
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -115,7 +116,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
             await task;
-            
+
             foreach (string err in ytdl_errs)
             {
                 var match = Regex.Match(err, @".*The playlist does not exist\..*");
@@ -126,6 +127,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             }
             return true;
         }
+
         public static async Task GetChannelInfo(string id, string name, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -144,6 +146,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var task = ytd.DownloadAsync(String.Format(Constants.ChannelUrl, id));
             await task;
         }
+
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             //var foo = await ValidCookie(appPaths, cancellationToken);
@@ -152,19 +155,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.FilesystemOptions.WriteInfoJson = true;
             ytd.Options.VerbositySimulationOptions.SkipDownload = true;
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
-            if ( File.Exists(cookie_file) ) {
+            if (File.Exists(cookie_file))
+            {
                 ytd.Options.FilesystemOptions.Cookies = cookie_file;
             }
-            
+
             var dlstring = "https://www.youtube.com/watch?v=" + id;
             var dataPath = Path.Combine(appPaths.CachePath, "youtubemetadata", id, "ytvideo");
             ytd.Options.FilesystemOptions.Output = dataPath;
-            
+
             List<string> ytdl_errs = new();
             ytd.StandardErrorEvent += (sender, error) => ytdl_errs.Add(error);
             var task = ytd.DownloadAsync(dlstring);
             await task;
         }
+
         /// <summary>
         /// Reads JSON data from file.
         /// </summary>
@@ -272,6 +277,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ParentIndexNumber = 1;
             return result;
         }
+
         /// <summary>
         /// Provides a MusicVideo Metadata Result from a json object.
         /// </summary>
@@ -291,5 +297,4 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return result;
         }
     }
-
 }

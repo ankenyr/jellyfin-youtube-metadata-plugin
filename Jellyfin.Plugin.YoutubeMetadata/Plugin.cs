@@ -10,6 +10,8 @@ using MediaBrowser.Common.Plugins;
 using MediaBrowser.Model.Plugins;
 using MediaBrowser.Model.Serialization;
 using Microsoft.Extensions.DependencyInjection;
+using MediaBrowser.Controller;
+using MediaBrowser.Controller.Plugins;
 
 namespace Jellyfin.Plugin.YoutubeMetadata
 {
@@ -19,6 +21,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
         public override Guid Id => Guid.Parse(Constants.PluginGuid);
         IHttpClientFactory _httpClientFactory;
+
         public Plugin(IApplicationPaths applicationPaths, IXmlSerializer xmlSerializer, IHttpClientFactory httpClientFactory) : base(applicationPaths, xmlSerializer)
         {
             Instance = this;
@@ -34,6 +37,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
 
             return httpClient;
         }
+
         public IEnumerable<PluginPageInfo> GetPages()
         {
             return new[]
@@ -53,7 +57,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
     public class PluginServiceRegistrator : IPluginServiceRegistrator
     {
         /// <inheritdoc />
-        public void RegisterServices(IServiceCollection serviceCollection)
+        public void RegisterServices(IServiceCollection serviceCollection, IServerApplicationHost applicationHost)
         {
             serviceCollection.AddScoped<System.IO.Abstractions.IFileSystem, FileSystem>();
         }
