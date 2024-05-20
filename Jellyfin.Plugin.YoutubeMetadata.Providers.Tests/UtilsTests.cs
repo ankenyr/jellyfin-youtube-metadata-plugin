@@ -1,17 +1,14 @@
 ﻿using Xunit;
-using Jellyfin.Plugin.YoutubeMetadata;
 using MediaBrowser.Controller.Entities;
-using MediaBrowser.Model.Entities;
 using Newtonsoft.Json;
 using MediaBrowser.Controller;
 using Moq;
 using System.Collections.Generic;
-using System.IO.Abstractions.TestingHelpers;
-using System.Threading;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities.Movies;
 using System;
 using Jellyfin.Data.Enums;
+using Jellyfin.Plugin.YoutubeMetadata;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 {
@@ -24,8 +21,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         public void GetYTIDTest(string fn, string expected)
         {
             Assert.Equal(expected, Utils.GetYTID(fn));
-
-
         }
 
         [Fact]
@@ -34,9 +29,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             var result = Utils.CreatePerson("3Blue1Brown", "UCYO_jab_esuFRV4b17AJtAw");
             var expected = new PersonInfo { Name = "3Blue1Brown", Type = PersonKind.Director, ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "UCYO_jab_esuFRV4b17AJtAw" } } };
 
-
             Assert.Equal(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(result));
         }
+
         [Fact]
         public void GetVideoInfoPathTest()
         {
@@ -190,5 +185,4 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.Item.ProviderIds["YoutubeMetadata"]);
         }
     }
-
 }

@@ -8,15 +8,12 @@ using System.IO.Abstractions.TestingHelpers;
 using System.Collections.Generic;
 using System.Text.Json;
 using MediaBrowser.Controller.Entities;
-using MediaBrowser.Model.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using System.Net.Http;
 using Jellyfin.Data.Enums;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 {
-
-
     public class YTDLEpisodeProviderTest
     {
         private readonly Moq.Mock<MediaBrowser.Model.IO.IFileSystem> _jf_fs;
@@ -187,6 +184,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                     }
                 }
         };
+
         [Theory]
         [MemberData(nameof(MusicJsonTests))]
         public void YTDLJsonToMusicVideo(YTDLData json, MetadataResult<MusicVideo> expected)
@@ -226,6 +224,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                     }
                 }
         };
+
         [Theory]
         [MemberData(nameof(MovieJsonTests))]
         public void YTDLJsonToMovie(YTDLData json, MetadataResult<Movie> expected)
@@ -233,14 +232,5 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMovie(json, "id123"));
             Assert.Equal(JsonSerializer.Serialize(expected), result);
         }
-
-
     }
-
-
-
-
-
-
-
 }

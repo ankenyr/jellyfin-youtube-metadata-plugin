@@ -3,7 +3,6 @@ using MediaBrowser.Controller.Entities;
 using MediaBrowser.Controller.Entities.Movies;
 using MediaBrowser.Controller.Entities.TV;
 using MediaBrowser.Controller.Providers;
-using MediaBrowser.Model.Entities;
 using NYoutubeDL;
 using System;
 using System.Collections.Generic;
@@ -101,6 +100,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
                 return null;
             }
         }
+
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -127,6 +127,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             }
             return true;
         }
+
         public static async Task GetChannelInfo(string id, string name, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             cancellationToken.ThrowIfCancellationRequested();
@@ -145,6 +146,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var task = ytd.DownloadAsync(String.Format(Constants.ChannelUrl, id));
             await task;
         }
+
         public static async Task YTDLMetadata(string id, IServerApplicationPaths appPaths, CancellationToken cancellationToken)
         {
             //var foo = await ValidCookie(appPaths, cancellationToken);
@@ -167,6 +169,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             var task = ytd.DownloadAsync(dlstring);
             await task;
         }
+
         /// <summary>
         /// Reads JSON data from file.
         /// </summary>
@@ -274,6 +277,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ParentIndexNumber = 1;
             return result;
         }
+
         /// <summary>
         /// Provides a MusicVideo Metadata Result from a json object.
         /// </summary>
@@ -293,5 +297,4 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             return result;
         }
     }
-
 }
