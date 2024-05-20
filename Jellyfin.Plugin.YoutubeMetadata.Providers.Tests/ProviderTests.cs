@@ -64,7 +64,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             _fs.AddFile(@"\cache\youtubemetadata\AAAAAAAAAAA\ytvideo.info.json", new MockFileData(JsonSerializer.Serialize(json)));
             _epInfo.Path = "/Something [AAAAAAAAAAA].mkv";
 
-            //var provider = new YTDLEpisodeProvider(_jf_fs.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
+            //var provider = new YTDLEpisodeProvider(_jf_fs.Object, new Mock<IHttpClientFactory>().Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
             var metadata = _provider.GetMetadata(_epInfo, _token);
             metadata.Wait();
             Assert.Equal(json.title, metadata.Result.Item.Name);
