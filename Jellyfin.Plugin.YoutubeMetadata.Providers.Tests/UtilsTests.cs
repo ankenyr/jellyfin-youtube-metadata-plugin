@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Controller.Entities.Movies;
 using System;
+using System.IO;
 using Jellyfin.Data.Enums;
 using Jellyfin.Plugin.YoutubeMetadata;
 
@@ -35,11 +36,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         [Fact]
         public void GetVideoInfoPathTest()
         {
-            // TODO: make path test work on both Windows and Linux
-            var mockAppPath = Mock.Of<IServerApplicationPaths>(a => a.CachePath == @"\foo\bar");
+            var mockAppPath = Mock.Of<IServerApplicationPaths>(a => a.CachePath == Path.Combine("foo", "bar").ToString());
 
             var result = Utils.GetVideoInfoPath(mockAppPath, "id123");
-            Assert.Equal(@"\foo\bar\youtubemetadata\id123\ytvideo.info.json", result);
+            Assert.Equal(Path.Combine("foo", "bar", "youtubemetadata", "id123", "ytvideo.info.json").ToString(), result);
         }
 
         [Fact]
