@@ -13,7 +13,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.ExternalId
             => item is Movie || item is Episode || item is MusicVideo;
 
         public string ProviderName
-            => Constants.PluginName;
+            => "YouTube";
 
         public string Key
             => Constants.PluginName;
@@ -31,7 +31,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.ExternalId
             => item is Series;
 
         public string ProviderName
-            => Constants.PluginName;
+            => "YouTube";
 
         public string Key
             => Constants.PluginName;
