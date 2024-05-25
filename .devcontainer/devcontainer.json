@@ -4,7 +4,7 @@
     "service": "app",
     "workspaceFolder": "/workspaces/",
 	"features": {
-		"ghcr.io/guiyomh/features/vim:0": {}
-	},
-    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+		"ghcr.io/guiyomh/features/vim:0": {},
+        "ghcr.io/devcontainers/features/python:1": {}
+	}
 }

@@ -8,4 +8,4 @@ services:
       - .env
     command: sleep infinity
     volumes:
-      - ../:/workspaces:cached
+      - ../:/workspaces/youtube-metadata:cached
