@@ -2,9 +2,9 @@
 	<PropertyGroup>
 		<TargetFramework>net8.0</TargetFramework>
 		<RootNamespace>Jellyfin.Plugin.YoutubeMetadata</RootNamespace>
-		<AssemblyVersion>1.0.3.10</AssemblyVersion>
-		<FileVersion>1.0.3.10</FileVersion>
-		<Version>1.0.3.10</Version>
+		<AssemblyVersion>1.0.3.11</AssemblyVersion>
+		<FileVersion>1.0.3.11</FileVersion>
+		<Version>1.0.3.11</Version>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />
