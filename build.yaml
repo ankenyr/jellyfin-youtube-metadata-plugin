@@ -13,4 +13,6 @@ artifacts:
 - "NYoutubeDLP.dll"
 - "System.IO.Abstractions.dll"
 changelog: >
-  changelog
+  #66 Bryan792: Fixed error that prevented local metadata from being used.
+  #105 nalsai: Updated the provider name
+  #107 nalsai: Improved some util methods.
