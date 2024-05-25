@@ -1,0 +1,10 @@
+{
+    "name": "Youtube Metadata",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "app",
+    "workspaceFolder": "/workspaces/",
+	"features": {
+		"ghcr.io/guiyomh/features/vim:0": {}
+	},
+    "postStartCommand": "git config --global --add safe.directory ${containerWorkspaceFolder}"
+}

@@ -1,0 +1,11 @@
+version: '3.8'
+services:
+  app:
+    build:
+      context: .
+      dockerfile: dockerfile
+    env_file:
+      - .env
+    command: sleep infinity
+    volumes:
+      - ../:/workspaces:cached
