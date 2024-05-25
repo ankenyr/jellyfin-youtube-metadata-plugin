@@ -210,6 +210,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
             return result;
         }
 
@@ -242,6 +243,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.Item.ProductionYear = date.Year;
             result.Item.PremiereDate = date;
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
             return result;
         }
 
@@ -275,6 +277,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
             result.Item.IndexNumber = 1;
             result.Item.ParentIndexNumber = 1;
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
             return result;
         }
 

@@ -16,6 +16,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
     }
     public class YTDLData
     {
+        public string id { get; set; }
         // Human name
         public string uploader { get; set; }
         public string upload_date { get; set; }

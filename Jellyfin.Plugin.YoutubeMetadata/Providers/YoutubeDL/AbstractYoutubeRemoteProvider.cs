@@ -50,7 +50,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static MetadataResult<Movie> YTDLJsonToMovie(YTDLData json, string id)
         {
             var result = Utils.YTDLJsonToMovie(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -62,7 +61,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static MetadataResult<MusicVideo> YTDLJsonToMusicVideo(YTDLData json, string id)
         {
             var result = Utils.YTDLJsonToMusicVideo(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
 
@@ -74,7 +72,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public static MetadataResult<Episode> YTDLJsonToEpisode(YTDLData json, string id)
         {
             var result = Utils.YTDLJsonToEpisode(json);
-            result.Item.ProviderIds.Add(Constants.PluginName, id);
             return result;
         }
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
