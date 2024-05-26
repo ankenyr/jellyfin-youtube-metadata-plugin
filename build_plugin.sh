@@ -45,6 +45,6 @@ meta_version=$(grep -Po '^ *version: * "*\K[^"$]+' "${PLUGIN}/build.yaml")
 find "${PLUGIN}" -name project.assets.json -exec rm -v '{}' ';'
 
 zipfile=$($JPRM --verbosity=debug plugin build "${PLUGIN}" --output="${ARTIFACT_DIR}" --version="${meta_version}") && {
-    $JPRM --verbosity=debug repo add --url=https://github.com/ankenyr/jellyfin-plugin-repo "/workspaces/jellyfin-plugin-repo/" "${zipfile}"
+    $JPRM --verbosity=debug repo add --url=https://raw.githubusercontent.com/ankenyr/jellyfin-plugin-repo/master/ "/workspaces/jellyfin-plugin-repo/" "${zipfile}"
 }
 exit $?
