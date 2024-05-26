@@ -81,7 +81,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
                 result.Add(new RemoteImageInfo
                 {
                     ProviderName = Name,
-                    Url = video.thumbnails[^1].url,
+                    Url = video.thumbnail,
                     Type = ImageType.Primary
                 });
             }
@@ -107,6 +107,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Supports(BaseItem item)
-            => item is Movie || item is Episode;
+            => item is Movie || item is Episode || item is MusicVideo;
     }
 }
