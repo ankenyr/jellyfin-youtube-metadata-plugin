@@ -1,0 +1,6 @@
+{
+    "jellyfinDir"     : "${workspaceFolder}/../jellyfin/Jellyfin.Server",
+    "jellyfinWebDir"  : "${workspaceFolder}/../jellyfin-web",
+    "jellyfinDataDir" : "${env:LOCALAPPDATA}/jellyfin",
+    "pluginName" : "Jellyfin.Plugin.YoutubeMetadata",
+}

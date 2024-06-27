@@ -1,0 +1,46 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "build-and-copy",
+        "dependsOrder": "sequence",
+        "dependsOn": ["build", "make-plugin-dir", "copy-dll"]
+      },
+      {
+        "label": "build",
+        "command": "dotnet",
+        "type": "shell",
+        "args": [
+          "publish",
+          "${workspaceFolder}/${config:pluginName}.sln",
+          "/property:GenerateFullPaths=true",
+          "/consoleloggerparameters:NoSummary"
+        ],
+        "group": "build",
+        "presentation": {
+          "reveal": "silent"
+        },
+        "problemMatcher": "$msCompile"
+      },
+      {
+          "label": "make-plugin-dir",
+          "type": "shell",
+          "command": "mkdir",
+          "args": [
+             "-Force",
+             "-Path",
+             "${config:jellyfinDataDir}/plugins/${config:pluginName}/"
+          ]
+      },
+      {
+          "label": "copy-dll",
+          "type": "shell",
+          "command": "cp",
+          "args": [
+             "./${config:pluginName}/bin/Debug/net8.0/publish/*",
+             "${config:jellyfinDataDir}/plugins/${config:pluginName}/"
+          ]
+  
+      },
+    ]
+  }

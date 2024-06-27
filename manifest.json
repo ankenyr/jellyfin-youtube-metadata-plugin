@@ -1,0 +1,20 @@
+[
+    {
+        "guid": "4c748daa-a7e4-4ed1-817c-5e18c683585e",
+        "name": "YouTube Metadata",
+        "description": "Provides YouTube metadata from yt-dlp metadata files.",
+        "overview": "YouTube metadata provider",
+        "owner": "neBM",
+        "category": "Metadata",
+        "versions": [
+            {
+                "version": "1.0.0.0",
+                "changelog": "Initial release",
+                "targetAbi": "10.6.0.0",
+                "sourceUrl": "",
+                "checksum": "",
+                "timestamp": ""
+            }
+        ]
+    }
+]

@@ -1,18 +1,13 @@
 ---
 name: "YouTube Metadata"
 guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
-version: "1.0.3.12"
-targetAbi: "10.9.1.0"
+version: "1.0.0.0"
+targetAbi: "10.8.0.0"
 framework: "net8.0"
-owner: "ankenyr"
+owner: "neBM"
 overview: "YouTube metadata provider"
 description: "Provides YouTube metadata from the YouTube API and Youtube-dl metadata files."
 category: "Metadata"
 artifacts:
 - "Jellyfin.Plugin.YoutubeMetadata.dll"
-- "NYoutubeDLP.dll"
-- "System.IO.Abstractions.dll"
-changelog: >
-  #66 Bryan792: Fixed error that prevented local metadata from being used.
-  #105 nalsai: Updated the provider name
-  #107 nalsai: Improved some util methods.
+changelog: "Initial release"
