@@ -30,7 +30,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             IServerApplicationPaths appPaths,
             CancellationToken cancellationToken)
         {
-            _logger.LogDebug("YTDLEpisodeProvider: GetAndCacheMetadata ", id);
+            _logger.LogDebug("YTDLEpisodeProvider: GetAndCacheMetadata {Id}", id);
             await Utils.YTDLMetadata(id, appPaths, cancellationToken);
         }
     }
