@@ -42,7 +42,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var name = info.Name;
             if (string.IsNullOrWhiteSpace(name))
             {
-                _logger.LogDebug("YTDLSeries GetMetadata: No name found for media: ", info.Path);
+                _logger.LogDebug("YTDLSeries GetMetadata: No name found for media: {Path}", info.Path);
                 result.HasMetadata = false;
                 return result;
             }
@@ -51,7 +51,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             _logger.LogDebug("YTDLSeries GetMetadata: FileInfo: {Path} ", fileInfo.Name);
             if (!IsFresh(fileInfo))
             {
-                _logger.LogDebug("YTDLSeries GetMetadata: {info.Name} is not fresh.", fileInfo.Name);
+                _logger.LogDebug("YTDLSeries GetMetadata: {Name} is not fresh.", fileInfo.Name);
                 await this.GetAndCacheMetadata(name, this._config.ApplicationPaths, cancellationToken);
             }
             var video = ReadYTDLInfo(ytPath, cancellationToken);

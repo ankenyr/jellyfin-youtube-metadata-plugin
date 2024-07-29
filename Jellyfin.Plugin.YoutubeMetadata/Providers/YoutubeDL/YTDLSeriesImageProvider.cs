@@ -64,7 +64,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers.YoutubeDL
             var name = item.Name;
             if (string.IsNullOrWhiteSpace(name))
             {
-                _logger.LogDebug("YTDLSeriesImage GetImages: Youtube ID not found in Item: {item.Name}", item.Name);
+                _logger.LogDebug("YTDLSeriesImage GetImages: Youtube ID not found in Item: {Name}", item.Name);
                 return result;
             }
             var ytPath = Utils.GetVideoInfoPath(_config.ApplicationPaths, name);
