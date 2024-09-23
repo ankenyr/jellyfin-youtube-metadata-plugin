@@ -41,8 +41,7 @@ $ apt update && apt install --no-install-recommends --no-install-suggests python
 ```
 FROM linuxserver/jellyfin:nightly
 RUN apt-get update && apt-get install -y \
-    python3-pip
-RUN python3 -m pip install -U yt-dlp
+    python3-pip && python3 -m pip install -U yt-dlp --break-system-packages
 ```
 
 ### Installing From Repository (Recommended)
