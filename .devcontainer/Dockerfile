@@ -8,3 +8,8 @@ WORKDIR /workspaces/
 RUN git clone https://github.com/ankenyr/jellyfin-plugin-repo
 RUN chown -R vscode jellyfin-plugin-repo/
 RUN chgrp -R vscode jellyfin-plugin-repo/
+RUN apt install extrepo -y
+RUN apt update
+RUN extrepo enable jellyfin
+RUN apt update
+RUN apt install jellyfin -y

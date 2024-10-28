@@ -114,3 +114,8 @@ UpgradeLog*.XML
 # MonoDevelop metafiles
 MediaBrowser.Plugins.Anime.userprefs
 
+media_copy.py
+cachedir
+logdir
+datadir
+library

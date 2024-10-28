@@ -2,7 +2,7 @@
     "name": "Youtube Metadata",
     "dockerComposeFile": "docker-compose.yml",
     "service": "app",
-    "workspaceFolder": "/workspaces/",
+    "workspaceFolder": "/workspaces/youtube-metadata",
 	"features": {
 		"ghcr.io/guiyomh/features/vim:0": {},
         "ghcr.io/devcontainers/features/python:1": {}
