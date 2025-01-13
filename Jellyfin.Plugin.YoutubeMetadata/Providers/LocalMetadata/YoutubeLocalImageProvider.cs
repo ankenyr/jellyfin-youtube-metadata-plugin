@@ -28,7 +28,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         public string Name => Constants.PluginName;
 
         public int Order => 1;
-        private string GetSeriesInfo(string path)
+        private string GetSeriesInfo(string ytID, string path)
         {
             _logger.LogDebug("YTLocalImage GetSeriesInfo: {Path}", path);
             Matcher matcher = new();
@@ -37,7 +37,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             string infoPath = "";
             foreach (string file in matcher.GetResultsInFullPath(path))
             {
-                if (Regex.Match(file, Constants.YTID_RE).Success)
+                var match = Regex.Match(file, Constants.YTID_RE);
+                if (match.Success && match.Value == ytID)
                 {
                     infoPath = file;
                     break;
@@ -56,11 +57,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             _logger.LogDebug("YTLocalImage GetImages: {Name}", item.Name);
             var list = new List<LocalImageInfo>();
-            string jpgPath = GetSeriesInfo(item.ContainingFolderPath);
-            if (String.IsNullOrEmpty(jpgPath))
-            {
-                return list;
-            }
+            var id = Utils.GetYTID(item.FileNameWithoutExtension);
+            string jpgPath = GetSeriesInfo(id, item.ContainingFolderPath);
             if (String.IsNullOrEmpty(jpgPath))
             {
                 return list;
