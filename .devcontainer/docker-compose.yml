@@ -6,6 +6,8 @@ services:
       dockerfile: dockerfile
     env_file:
       - .env
+    ports:
+      - 8096:8096
     command: sleep infinity
     volumes:
       - ../:/workspaces/youtube-metadata:cached
