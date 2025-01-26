@@ -53,8 +53,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             {
                 Name = name,
                 Type = PersonKind.Director,
-                ProviderIds = new Dictionary<string, string> { { Constants.PluginName, channel_id }
-            },
+                ProviderIds = channel_id is null ?
+                        new Dictionary<string, string> {} : new Dictionary<string, string> {
+                                { Constants.PluginName, channel_id }
+                        },
             };
         }
 
