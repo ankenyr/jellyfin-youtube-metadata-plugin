@@ -7,13 +7,13 @@
             "label": "mkdir",
             "type": "shell",
             "command": "mkdir",
-            "args": ["-p", "/workspaces/youtube-metadata/datadir/plugins/youtube-metadata"]
+            "args": ["-p", "/workspaces/jellyfin-youtube-metadata-plugin/datadir/plugins/youtube-metadata"]
         },
         {
             "label": "cp",
             "type": "shell",
             "command": "cp",
-            "args": ["/workspaces/youtube-metadata/Jellyfin.Plugin.YoutubeMetadata/bin/Debug/net8.0/*", "/workspaces/youtube-metadata/datadir/plugins/youtube-metadata"]
+            "args": ["/workspaces/jellyfin-youtube-metadata-plugin//Jellyfin.Plugin.YoutubeMetadata/bin/Debug/net8.0/*", "/workspaces/jellyfin-youtube-metadata-plugin/datadir/plugins/youtube-metadata"]
         },
         {
             "label": "build-plugin",

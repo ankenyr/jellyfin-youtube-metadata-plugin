@@ -5,11 +5,21 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
 && pip3 install --break-system-packages jprm
 
 WORKDIR /workspaces/
-RUN git clone https://github.com/ankenyr/jellyfin-plugin-repo
-RUN chown -R vscode jellyfin-plugin-repo/
-RUN chgrp -R vscode jellyfin-plugin-repo/
+RUN apt-get update && apt-get install -y curl && \
+    curl -fsSL https://deb.nodesource.com/setup_20.x | bash - && \
+    apt-get install -y nodejs && \
+    apt-get clean
+RUN node -v && npm -v
 RUN apt install extrepo -y
 RUN apt update
 RUN extrepo enable jellyfin
 RUN apt update
 RUN apt install jellyfin -y
+RUN apt install ffmpeg -y
+
+RUN git clone --depth 1 --branch v10.10.5 https://github.com/jellyfin/jellyfin
+RUN git clone --depth 1 --branch v10.10.5 https://github.com/jellyfin/jellyfin-web
+WORKDIR /workspaces/jellyfin-web
+
+RUN npm install
+RUN npm run build:development
