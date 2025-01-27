@@ -19,6 +19,8 @@ RUN apt install ffmpeg -y
 
 RUN git clone --depth 1 --branch v10.10.5 https://github.com/jellyfin/jellyfin
 RUN git clone --depth 1 --branch v10.10.5 https://github.com/jellyfin/jellyfin-web
+RUN mkdir -p /workspaces/jellyfin-data/
+RUN chown vscode /workspaces/jellyfin-data
 WORKDIR /workspaces/jellyfin-web
 
 RUN npm install

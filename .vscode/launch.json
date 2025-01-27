@@ -10,7 +10,7 @@
             "request": "launch",
             "preLaunchTask": "build",
             "program": "jellyfin ",
-            "args": ["-d", "./datadir", "-C", "cachedir", "-l", "logdir", "-w", "/usr/share/jellyfin/web"],
+            "args": ["-d", "/workspace/jellyfin-data/datadir", "-C", "/workspace/jellyfin-data/cachedir", "-l", "/workspace/jellyfin-data/logdir", "-w", "/workspaces/jellyfin-web/dist/"],
             "cwd": "${workspaceFolder}",
             "console": "internalConsole",
             "stopAtEntry": false
