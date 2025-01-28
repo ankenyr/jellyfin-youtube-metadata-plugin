@@ -63,9 +63,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 }
                 catch (System.ArgumentException e)
                 {
-                    _logger.LogError("YTDLSeries GetMetadata: Error parsing json: ");
-                    _logger.LogError(video.ToString());
-                    _logger.LogError(video.title);
+                    _logger.LogError(e,
+                        "YTDLSeries GetMetadata: Error parsing json: {Video} {Title}",
+                        video.ToString(),
+                        video.title);
                 }
             }
             return result;
