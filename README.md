@@ -122,6 +122,11 @@ Placing a file named `cookies.txt` into the `<jellyfin data directory>/plugins/Y
 1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
    Advanced -> Plugins`.
 
+# Helper Tools
+
+## Media Copy
+This script will copy a library but all video media will be replaced with a 10 second video using the testsrc filter.
+
 ### Donations
 If this plugin helps you, please consider a donation!
 You can use my [ko-fi](https://ko-fi.com/ankenyr) link.
