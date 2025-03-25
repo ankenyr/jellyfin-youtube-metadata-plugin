@@ -81,16 +81,18 @@ jobs:
     - name: Checksums for `.zip` files
       shell: bash
       run: |
-        python3 md5sum.py *.zip | tee MD5SUMS
+        python3 sum_files.py md5 *.zip | tee MD5SUMS
+        python3 sum_files.py sha256 *.zip | tee SHA256SUMS
 
-    - uses: "marvinpinto/action-automatic-releases@latest"
+    - uses: softprops/action-gh-release@v2
       if: ${{ 'Linux' == runner.os }}
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        title: "${{ steps.create_package.outputs.release_tag }}"
-        automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        name: "${{ steps.create_package.outputs.release_name }}"
+        tag_name: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
-          #          "${{ steps.create_package.outputs.filename }}"
+        generate_release_notes: true
+        preserve_order: true
         files: |
-          MD5SUMS
+          *SUMS
           *.zip
