@@ -52,9 +52,10 @@ jobs:
 
         # Pack files
         7z a -tzip "${release_name}.zip" "./bin/*"
-        echo "::set-output name=release_name::${release_name}"
-        echo "::set-output name=release_tag::${tag}"
-        echo "::set-output name=filename::${release_name}.zip"
+        printf -- '%s=%s\n' >> "${GITHUB_OUTPUT}" \
+          'release_name' "${release_name}" \
+          'release_tag' "${tag}" \
+          'filename' "${release_name}.zip"
 
     - uses: "marvinpinto/action-automatic-releases@latest"
       with:
