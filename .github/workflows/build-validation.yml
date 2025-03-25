@@ -17,6 +17,7 @@ jobs:
     name: build-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
@@ -47,22 +48,49 @@ jobs:
       id: create_package
       shell: bash
       run: |
-        tag=$(git describe --tags --always)
+        tag=$(git describe --tags --always --first-parent)
         release_name="YoutubeMetadata-$tag"
 
         # Pack files
         7z a -tzip "${release_name}.zip" "./bin/*"
+
+        # Set outputs
         printf -- '%s=%s\n' >> "${GITHUB_OUTPUT}" \
           'release_name' "${release_name}" \
           'release_tag' "${tag}" \
+          'filepath' "${PWD}/${release_name}.zip" \
           'filename' "${release_name}.zip"
 
+    - name: Build plugin zip with `jprm`
+      id: create_plugin
+      shell: bash
+      run: |
+        command -v pip
+        pip install --user git+https://github.com/oddstr13/jellyfin-plugin-repository-manager
+        declare -p PATH
+        set -x
+
+        find . -name project.assets.json -exec rm -v '{}' +
+        _file="$(python3 -m jprm --verbosity=debug plugin build . --output='.')"
+
+        # Set outputs
+        printf -- '%s=%s\n' >> "${GITHUB_OUTPUT}" \
+          'filepath' "${PWD}/${_file#./}" \
+          'filename' "${_file#./}"
+
+    - name: Checksums for `.zip` files
+      shell: bash
+      run: |
+        python3 md5sum.py *.zip | tee MD5SUMS
+
     - uses: "marvinpinto/action-automatic-releases@latest"
+      if: ${{ 'Linux' == runner.os }}
       with:
         repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        name: "${{ steps.create_package.outputs.release_tag }}"
+        title: "${{ steps.create_package.outputs.release_tag }}"
         automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
           #          "${{ steps.create_package.outputs.filename }}"
         files: |
+          MD5SUMS
           *.zip
