@@ -33,7 +33,7 @@ def main(args):
         path = pathlib.Path(arg)
         if path.is_file():
             file = path.resolve(strict=True)
-            digest = sum_file(func, path)
+            digest = sum_file(func, file)
             line = f'{digest} *{file.name}'
             print(line, flush=True)
 
