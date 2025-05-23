@@ -17,6 +17,7 @@ jobs:
     name: build-${{matrix.os}}
     runs-on: ${{ matrix.os }}
     strategy:
+      fail-fast: false
       matrix:
         os: [ubuntu-latest, windows-latest, macOS-latest]
 
@@ -47,21 +48,51 @@ jobs:
       id: create_package
       shell: bash
       run: |
-        tag=$(git describe --tags --always)
+        tag=$(git describe --tags --always --first-parent)
         release_name="YoutubeMetadata-$tag"
 
         # Pack files
         7z a -tzip "${release_name}.zip" "./bin/*"
-        echo "::set-output name=release_name::${release_name}"
-        echo "::set-output name=release_tag::${tag}"
-        echo "::set-output name=filename::${release_name}.zip"
 
-    - uses: "marvinpinto/action-automatic-releases@latest"
+        # Set outputs
+        printf -- '%s=%s\n' >> "${GITHUB_OUTPUT}" \
+          'release_name' "${release_name}" \
+          'release_tag' "${tag}" \
+          'filepath' "${PWD}/${release_name}.zip" \
+          'filename' "${release_name}.zip"
+
+    - name: Build plugin zip with `jprm`
+      id: create_plugin
+      shell: bash
+      run: |
+        command -v pip
+        pip install --user git+https://github.com/oddstr13/jellyfin-plugin-repository-manager
+        declare -p PATH
+        set -x
+
+        find . -name project.assets.json -exec rm -v '{}' +
+        _file="$(python3 -m jprm --verbosity=debug plugin build . --output='.')"
+
+        # Set outputs
+        printf -- '%s=%s\n' >> "${GITHUB_OUTPUT}" \
+          'filepath' "${PWD}/${_file#./}" \
+          'filename' "${_file#./}"
+
+    - name: Checksums for `.zip` files
+      shell: bash
+      run: |
+        python3 sum_files.py md5 *.zip | tee MD5SUMS
+        python3 sum_files.py sha256 *.zip | tee SHA256SUMS
+
+    - uses: softprops/action-gh-release@v2
+      if: ${{ 'Linux' == runner.os }}
       with:
-        repo_token: "${{ secrets.GITHUB_TOKEN }}"
-        name: "${{ steps.create_package.outputs.release_tag }}"
-        automatic_release_tag: "${{ steps.create_package.outputs.release_tag }}"
+        token: "${{ secrets.GITHUB_TOKEN }}"
+        name: "${{ steps.create_package.outputs.release_name }}"
+        tag_name: "${{ steps.create_package.outputs.release_tag }}"
         prerelease: true
-          #          "${{ steps.create_package.outputs.filename }}"
+        generate_release_notes: true
+        preserve_order: true
         files: |
+          *SUMS
           *.zip
