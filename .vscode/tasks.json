@@ -13,7 +13,7 @@
             "label": "cp",
             "type": "shell",
             "command": "cp",
-            "args": ["/workspaces/jellyfin-youtube-metadata-plugin/Jellyfin.Plugin.YoutubeMetadata/bin/Debug/net8.0/*", "/workspaces/jellyfin-data/datadir/plugins/youtube-metadata"]
+            "args": ["/workspaces/jellyfin-youtube-metadata-plugin/Jellyfin.Plugin.YoutubeMetadata/bin/Debug/net9.0/*", "/workspaces/jellyfin-data/datadir/plugins/youtube-metadata"]
         },
         {
             "label": "build-plugin",

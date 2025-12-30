@@ -158,6 +158,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                             ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
                     },
+                },{
                  new object[] {
                     new YTDLData
                     {
