@@ -24,9 +24,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         {
             var solutionDir = FindSolutionDirectory("Jellyfin.Plugin.YoutubeMetadata.sln");
             _repoRoot = solutionDir ?? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".."));
-            _pluginTempDir = Path.Combine(Path.GetTempPath(), "jellyfin-plugin-test", Guid.NewGuid().ToString("N"));
+            _pluginTempDir = Path.Combine(".test-artifacts", "jellyfin-plugin-test", Guid.NewGuid().ToString("N"));
             Directory.CreateDirectory(_pluginTempDir);
             this.output = output;
+            
+            Console.WriteLine("foo");
+
         }
 
         [Fact]
@@ -34,20 +37,25 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         {
             output.WriteLine("Testing");
             BuildSolution();
-            CopyPluginToTempDir();
+            
 
             var image = "jellyfin/jellyfin:latest";
             StartJellyfinContainer(image, _pluginTempDir, _containerName);
-            
+            CopyPluginIntoContainer();
+            Console.WriteLine("Foo");
 
         }
 
-
+        private void CopyFiles()
+        {
+            
+        }
         private void StartJellyfinContainer(string image, string pluginHostDir, string containerName)
         {
             // Map plugin directory into /config/plugins inside the container so Jellyfin loads it.
             // Expose port 8096 for HTTP.
-            var args = $"run --rm -d --name {containerName} -p 8096:8096 -v \"{pluginHostDir}:/config/plugins:ro\" {image}";
+            var args = $"docker run -d --name {containerName} -p 8096:8096 --entrypoint sleep jellyfin/jellyfin:latest infinity";
+            
             RunProcess("docker", args, Directory.GetCurrentDirectory());
         }
         private void BuildSolution()
@@ -95,26 +103,18 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 
             return null;
         }
-        private void CopyPluginToTempDir()
+        private void CopyPluginIntoContainer()
         {
             // Compiled outputs may be under the plugin project `bin/Debug/net9.0` (or other TFM/config).
             var pluginProjectDir = Path.Combine(_repoRoot, "Jellyfin.Plugin.YoutubeMetadata");
             var searchRoot = Path.Combine(pluginProjectDir, "bin");
             if (!Directory.Exists(searchRoot))
                 throw new DirectoryNotFoundException("Plugin build output not found. Run build first.");
-
             // Try to locate the most recent build folder
             var dlls = Directory.GetFiles(searchRoot, "Jellyfin.Plugin.YoutubeMetadata.dll", SearchOption.AllDirectories);
             if (dlls.Length == 0)
                 throw new FileNotFoundException("Built plugin DLL not found under bin/. Ensure the plugin was built for a supported TFM.");
-
             var buildDir = Path.GetDirectoryName(dlls.OrderByDescending(File.GetLastWriteTimeUtc).First()) ?? searchRoot;
-            foreach (var file in Directory.GetFiles(buildDir))
-            {
-                var dest = Path.Combine(_pluginTempDir, Path.GetFileName(file));
-                File.Copy(file, dest, overwrite: true);
-            }
-
             // Try to read the .deps.json to determine the plugin package version.
             var depsPath = Path.Combine(buildDir, "Jellyfin.Plugin.YoutubeMetadata.deps.json");
             try
@@ -129,7 +129,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                             var packages = tfm.Value;
                             foreach (var pkg in packages.EnumerateObject())
                             {
-                                var name = pkg.Name; // e.g. "Jellyfin.Plugin.YoutubeMetadata/1.0.3.12"
+                                var name = pkg.Name;
                                 const string prefix = "Jellyfin.Plugin.YoutubeMetadata/";
                                 if (name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase))
                                 {
@@ -153,6 +153,20 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             {
                 output?.WriteLine($"Failed to parse deps.json: {ex.Message}");
             }
+            var pluginPath = $"/config/plugins/YoutubeMetadata_{_pluginVersion}/";
+            var args = $"exec {_containerName} mkdir -p {pluginPath}";
+            RunProcess("docker", args, Directory.GetCurrentDirectory());
+            args = $"cp {buildDir}/. {_containerName}:{pluginPath}";
+            RunProcess("docker", args, Directory.GetCurrentDirectory());
+            
+            
+            // foreach (var file in Directory.GetFiles(buildDir))
+            // {
+            //     var dest = Path.Combine(_pluginTempDir, Path.GetFileName(file));
+            //     File.Copy(file, dest, overwrite: true);
+            // }
+
+            
         }
         public void Dispose()
         {

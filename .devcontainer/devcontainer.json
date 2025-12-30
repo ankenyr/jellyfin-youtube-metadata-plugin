@@ -8,7 +8,7 @@
 	"features": {
 		"ghcr.io/guiyomh/features/vim:0": {},
         "ghcr.io/devcontainers/features/python:1": {},
-        "ghcr.io/devcontainers/features/docker-in-docker:2" : {}
+        "ghcr.io/devcontainers/features/docker-outside-of-docker:1" : {}
 
     },
     "customizations": {
