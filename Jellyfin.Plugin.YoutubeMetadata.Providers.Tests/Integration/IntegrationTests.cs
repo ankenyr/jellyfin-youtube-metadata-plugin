@@ -20,44 +20,40 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
     {
         private readonly ITestOutputHelper output;
         private readonly string _containerName = "jellyfin-integration-test-" + Guid.NewGuid().ToString("N");
-        private readonly string _pluginTempDir;
-        private readonly string _repoRoot;
+        private readonly string _pluginTempDir = string.Empty;
+        private readonly string _solutionDir = string.Empty;
+        private readonly string _repoRoot = string.Empty;
         private string? _pluginVersion;
 
         private string? _baseUrl;
 
         public YTDLIntegrationTest(ITestOutputHelper output)
         {
-            var solutionDir = FindSolutionDirectory("Jellyfin.Plugin.YoutubeMetadata.sln");
-            _repoRoot = solutionDir ?? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".."));
-            _pluginTempDir = Path.Combine(".test-artifacts", "jellyfin-plugin-test", Guid.NewGuid().ToString("N"));
-            Directory.CreateDirectory(_pluginTempDir);
+            _solutionDir = FindSolutionDirectory("Jellyfin.Plugin.YoutubeMetadata.sln") ?? throw new DirectoryNotFoundException("Solution file 'Jellyfin.Plugin.YoutubeMetadata.sln' not found in parent directories.");
+            _repoRoot = _solutionDir ?? Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "..", "..", ".."));
+            // _pluginTempDir = Path.Combine(".test-artifacts", "jellyfin-plugin-test", Guid.NewGuid().ToString("N"));
+            // Directory.CreateDirectory(_pluginTempDir);
             this.output = output;
-            
-            Console.WriteLine("foo");
-
+            _pluginTempDir = BuildSolution();
+            var image = "jellyfin/jellyfin:latest";
+            StartJellyfinContainer(image, _pluginTempDir, _containerName);
+            CopyBackupIntoContainerAndStartJellyfin();
         }
 
         [Fact]
         public async void IntegrationTest()
         {
-            output.WriteLine("Testing");
-            BuildSolution();
             
-
-            var image = "jellyfin/jellyfin:latest";
-            StartJellyfinContainer(image, _pluginTempDir, _containerName);
-            CopyBackupIntoContainerAndStartJellyfin();
-            CopyPluginIntoContainer();
-            // await SetupServer(_baseUrl ?? throw new InvalidOperationException("Base URL was not set after starting Jellyfin container"));
-            Console.WriteLine("foo");
-
+            Console.WriteLine("Done");
         }
 
-        private void CopyFiles()
+        [Fact]
+        public async void IntegrationTestTwo()
         {
             
+            Console.WriteLine("Done Two");
         }
+
         private void StartJellyfinContainer(string image, string pluginHostDir, string containerName)
         {
             // Map plugin directory into /config/plugins inside the container so Jellyfin loads it.
@@ -66,13 +62,11 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             
             RunProcess("docker", args, Directory.GetCurrentDirectory());
         }
-        private void BuildSolution()
+        private string BuildSolution()
         {
             // Locate the solution directory by searching up from the current directory.
             var solutionFile = "Jellyfin.Plugin.YoutubeMetadata.sln";
-            var solutionDir = FindSolutionDirectory(solutionFile);
-            if (solutionDir == null)
-                throw new InvalidOperationException($"Could not locate {solutionFile} in this repo (cwd={Directory.GetCurrentDirectory()})");
+            
 
             // Run `dotnet build` for the solution. Use the solution directory as the working directory to
             // avoid fragile relative paths that depend on how the tests are executed.
@@ -80,7 +74,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             {
                 FileName = "dotnet",
                 Arguments = $"build {solutionFile} --configuration Debug",
-                WorkingDirectory = solutionDir,
+                WorkingDirectory = _solutionDir,
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,
                 UseShellExecute = false,
@@ -96,6 +90,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                 var outp = p.StandardOutput.ReadToEnd();
                 throw new InvalidOperationException($"dotnet build failed (code={p.ExitCode})\nstdout:\n{outp}\nstderr:\n{err}");
             }
+            return Path.Combine(".test-artifacts", "jellyfin-plugin-test", Guid.NewGuid().ToString("N"));
         }
 
         private static string? FindSolutionDirectory(string solutionFileName)
@@ -166,31 +161,19 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             RunProcess("docker", args, Directory.GetCurrentDirectory());
             args = $"cp {buildDir}/. {_containerName}:{pluginPath}";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
-            
-            
-            // foreach (var file in Directory.GetFiles(buildDir))
-            // {
-            //     var dest = Path.Combine(_pluginTempDir, Path.GetFileName(file));
-            //     File.Copy(file, dest, overwrite: true);
-            // }
-
-            
         }
 
         private void CopyBackupIntoContainerAndStartJellyfin()
         {
-            // Backup file is expected to be in the Integration test directory next to this file.
             var integrationDir = Path.Combine(_repoRoot, "Jellyfin.Plugin.YoutubeMetadata.Providers.Tests", "Integration");
             var backupFileName = "jellyfin-backup-20251230224958.zip";
             var backupPath = Path.Combine(integrationDir, backupFileName);
             if (!File.Exists(backupPath))
                 throw new FileNotFoundException($"Backup file not found: {backupPath}");
 
-            // 1) Start Jellyfin (no restore) in the container detached
             var args = $"exec -d {_containerName} /jellyfin/jellyfin";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
 
-            // Determine how the container's port 8096 is published on the host so we can reach it
             var hostIp = "127.0.0.1";
             var hostPort = "8096";
             try
@@ -213,41 +196,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             {
                 output?.WriteLine($"Failed to detect container host binding: {ex.Message}. Falling back to 127.0.0.1:8096");
             }
+            _baseUrl = $"http://{hostIp}:{hostPort}";
 
-            // 2) Poll the /healthy endpoint until Jellyfin reports it's healthy
-            using var client = new HttpClient();
-            var timeout = TimeSpan.FromSeconds(120);
-            var retry = TimeSpan.FromSeconds(2);
-            var sw = Stopwatch.StartNew();
-            var healthyUrl = $"http://{hostIp}:{hostPort}/health";
-            output?.WriteLine($"Polling Jellyfin healthy endpoint at {healthyUrl}");
-            var healthy = false;
-            while (sw.Elapsed < timeout)
-            {
-                try
-                {
-                    var resp = client.GetAsync(healthyUrl).Result;
-                    if (resp.StatusCode == HttpStatusCode.OK)
-                    {
-                        output?.WriteLine("Jellyfin /health returned 200 OK.");
-                        healthy = true;
-                        break;
-                    }
-                    output?.WriteLine($"/health returned {(int)resp.StatusCode}. Retrying...");
-                }
-                catch (Exception ex)
-                {
-                    output?.WriteLine($"/health request failed: {ex.Message}");
-                }
+            CheckHealth(_baseUrl);
 
-                Thread.Sleep(retry);
-            }
-
-            if (!healthy)
-                throw new InvalidOperationException("Jellyfin did not become healthy in time (initial start).");
-
-            // 3) Ask Jellyfin process to quit inside the container
-            // Try to terminate dotnet (common for Jellyfin) or any /jellyfin/jellyfin process. Allow non-zero exit so cleanup continues.
             try
             {
                 var killArgs = $"exec {_containerName} /bin/sh -c \"pidof jellyfin >/dev/null 2>&1 && kill -TERM $(pidof jellyfin) || (ps aux | grep '/jellyfin/jellyfin' | awk '{{{{print $2}}}}' | xargs -r kill -TERM)\"";
@@ -267,36 +219,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             args = $"cp {backupPath} {_containerName}:/config/data/backups/";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
 
+            CopyPluginIntoContainer();
+
             // 5) Start Jellyfin with --restore-archive
             args = $"exec -d {_containerName} /jellyfin/jellyfin --restore-archive /config/data/backups/{backupFileName}";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
-
-            // 6) Poll the /health endpoint until it returns 200 or times out (server ready after restore)
-            sw.Restart();
-            var healthUrl = $"http://{hostIp}:{hostPort}/health";
-            output?.WriteLine($"Polling Jellyfin health endpoint at {healthUrl}");
-            while (sw.Elapsed < timeout)
-            {
-                try
-                {
-                    var resp = client.GetAsync(healthUrl).Result;
-                    if (resp.StatusCode == HttpStatusCode.OK)
-                    {
-                        output?.WriteLine("Jellyfin health check returned 200 OK after restore.");
-                        _baseUrl = $"http://{hostIp}:{hostPort}";
-                        return;
-                    }
-                    output?.WriteLine($"Health check returned {(int)resp.StatusCode}. Retrying...");
-                }
-                catch (Exception ex)
-                {
-                    output?.WriteLine($"Health check request failed: {ex.Message}");
-                }
-
-                Thread.Sleep(retry);
-            }
-
-            throw new InvalidOperationException("Jellyfin did not become healthy in time after restore.");
+            CheckHealth(_baseUrl);
         }
         public void Dispose()
         {
@@ -363,6 +291,38 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             if (p.ExitCode != 0 && !allowNonZeroExit)
                 throw new InvalidOperationException($"Process {fileName} {arguments} failed with code {p.ExitCode}\nstdout:\n{outp}\nstderr:\n{err}");
             return outp ?? string.Empty;
+        }
+        
+        private void CheckHealth(string url)
+        {
+            using var client = new HttpClient();
+            var timeout = TimeSpan.FromSeconds(120);
+            var retry = TimeSpan.FromSeconds(2);
+            var sw = Stopwatch.StartNew();
+            var healthyUrl = $"{url}/health";
+            output?.WriteLine($"Polling Jellyfin healthy endpoint at {healthyUrl}");
+            var healthy = false;
+            while (sw.Elapsed < timeout)
+            {
+                try
+                {
+                    var resp = client.GetAsync(healthyUrl).Result;
+                    if (resp.StatusCode == HttpStatusCode.OK)
+                    {
+                        output?.WriteLine("Jellyfin /health returned 200 OK.");
+                        healthy = true;
+                        break;
+                    }
+                    output?.WriteLine($"/health returned {(int)resp.StatusCode}. Retrying...");
+                }
+                catch (Exception ex)
+                {
+                    output?.WriteLine($"/health request failed: {ex.Message}");
+                }
+                Thread.Sleep(retry);
+            }
+            if (!healthy)
+                throw new InvalidOperationException("Jellyfin did not become healthy in time (initial start).");
         }
 
     }
