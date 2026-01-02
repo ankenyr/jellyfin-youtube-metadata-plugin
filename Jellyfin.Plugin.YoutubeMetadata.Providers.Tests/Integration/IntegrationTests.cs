@@ -2,8 +2,12 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Net.Http.Headers;
+using System.Threading;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
@@ -20,6 +24,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         private readonly string _repoRoot;
         private string? _pluginVersion;
 
+        private string? _baseUrl;
+
         public YTDLIntegrationTest(ITestOutputHelper output)
         {
             var solutionDir = FindSolutionDirectory("Jellyfin.Plugin.YoutubeMetadata.sln");
@@ -33,7 +39,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         }
 
         [Fact]
-        public void IntegrationTest()
+        public async void IntegrationTest()
         {
             output.WriteLine("Testing");
             BuildSolution();
@@ -41,8 +47,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 
             var image = "jellyfin/jellyfin:latest";
             StartJellyfinContainer(image, _pluginTempDir, _containerName);
+            CopyBackupIntoContainerAndStartJellyfin();
             CopyPluginIntoContainer();
-            Console.WriteLine("Foo");
+            // await SetupServer(_baseUrl ?? throw new InvalidOperationException("Base URL was not set after starting Jellyfin container"));
+            Console.WriteLine("foo");
 
         }
 
@@ -54,7 +62,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         {
             // Map plugin directory into /config/plugins inside the container so Jellyfin loads it.
             // Expose port 8096 for HTTP.
-            var args = $"docker run -d --name {containerName} -p 8096:8096 --entrypoint sleep jellyfin/jellyfin:latest infinity";
+            var args = $"run -d --name {containerName} -p 8096:8096 --entrypoint sleep jellyfin/jellyfin:latest infinity";
             
             RunProcess("docker", args, Directory.GetCurrentDirectory());
         }
@@ -168,6 +176,128 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
 
             
         }
+
+        private void CopyBackupIntoContainerAndStartJellyfin()
+        {
+            // Backup file is expected to be in the Integration test directory next to this file.
+            var integrationDir = Path.Combine(_repoRoot, "Jellyfin.Plugin.YoutubeMetadata.Providers.Tests", "Integration");
+            var backupFileName = "jellyfin-backup-20251230224958.zip";
+            var backupPath = Path.Combine(integrationDir, backupFileName);
+            if (!File.Exists(backupPath))
+                throw new FileNotFoundException($"Backup file not found: {backupPath}");
+
+            // 1) Start Jellyfin (no restore) in the container detached
+            var args = $"exec -d {_containerName} /jellyfin/jellyfin";
+            RunProcess("docker", args, Directory.GetCurrentDirectory());
+
+            // Determine how the container's port 8096 is published on the host so we can reach it
+            var hostIp = "127.0.0.1";
+            var hostPort = "8096";
+            try
+            {
+                var inspectArgs = $"inspect --format \"{{{{.NetworkSettings.IPAddress}}}}:{{{{(index (index .NetworkSettings.Ports \\\"8096/tcp\\\") 0).HostPort}}}}\" {_containerName}";
+                var mapping = RunProcessGetOutput("docker", inspectArgs, Directory.GetCurrentDirectory(), allowNonZeroExit: true).Trim();
+                if (!string.IsNullOrEmpty(mapping) && mapping.Contains(':'))
+                {
+                    var parts = mapping.Split(':');
+                    if (parts.Length == 2)
+                    {
+                        hostIp = parts[0];
+                        hostPort = parts[1];
+                        if (string.IsNullOrEmpty(hostIp) || hostIp == "0.0.0.0")
+                            hostIp = "127.0.0.1";
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                output?.WriteLine($"Failed to detect container host binding: {ex.Message}. Falling back to 127.0.0.1:8096");
+            }
+
+            // 2) Poll the /healthy endpoint until Jellyfin reports it's healthy
+            using var client = new HttpClient();
+            var timeout = TimeSpan.FromSeconds(120);
+            var retry = TimeSpan.FromSeconds(2);
+            var sw = Stopwatch.StartNew();
+            var healthyUrl = $"http://{hostIp}:{hostPort}/health";
+            output?.WriteLine($"Polling Jellyfin healthy endpoint at {healthyUrl}");
+            var healthy = false;
+            while (sw.Elapsed < timeout)
+            {
+                try
+                {
+                    var resp = client.GetAsync(healthyUrl).Result;
+                    if (resp.StatusCode == HttpStatusCode.OK)
+                    {
+                        output?.WriteLine("Jellyfin /health returned 200 OK.");
+                        healthy = true;
+                        break;
+                    }
+                    output?.WriteLine($"/health returned {(int)resp.StatusCode}. Retrying...");
+                }
+                catch (Exception ex)
+                {
+                    output?.WriteLine($"/health request failed: {ex.Message}");
+                }
+
+                Thread.Sleep(retry);
+            }
+
+            if (!healthy)
+                throw new InvalidOperationException("Jellyfin did not become healthy in time (initial start).");
+
+            // 3) Ask Jellyfin process to quit inside the container
+            // Try to terminate dotnet (common for Jellyfin) or any /jellyfin/jellyfin process. Allow non-zero exit so cleanup continues.
+            try
+            {
+                var killArgs = $"exec {_containerName} /bin/sh -c \"pidof jellyfin >/dev/null 2>&1 && kill -TERM $(pidof jellyfin) || (ps aux | grep '/jellyfin/jellyfin' | awk '{{{{print $2}}}}' | xargs -r kill -TERM)\"";
+                RunProcess("docker", killArgs, Directory.GetCurrentDirectory(), allowNonZeroExit: true);
+                // give the process a moment to exit
+                Thread.Sleep(TimeSpan.FromSeconds(2));
+            }
+            catch (Exception ex)
+            {
+                output?.WriteLine($"Failed to stop Jellyfin process inside container: {ex.Message}");
+            }
+
+            // 4) Ensure backups directory exists inside container, then copy backup into container
+            args = $"exec {_containerName} mkdir -p /config/data/backups";
+            RunProcess("docker", args, Directory.GetCurrentDirectory());
+
+            args = $"cp {backupPath} {_containerName}:/config/data/backups/";
+            RunProcess("docker", args, Directory.GetCurrentDirectory());
+
+            // 5) Start Jellyfin with --restore-archive
+            args = $"exec -d {_containerName} /jellyfin/jellyfin --restore-archive /config/data/backups/{backupFileName}";
+            RunProcess("docker", args, Directory.GetCurrentDirectory());
+
+            // 6) Poll the /health endpoint until it returns 200 or times out (server ready after restore)
+            sw.Restart();
+            var healthUrl = $"http://{hostIp}:{hostPort}/health";
+            output?.WriteLine($"Polling Jellyfin health endpoint at {healthUrl}");
+            while (sw.Elapsed < timeout)
+            {
+                try
+                {
+                    var resp = client.GetAsync(healthUrl).Result;
+                    if (resp.StatusCode == HttpStatusCode.OK)
+                    {
+                        output?.WriteLine("Jellyfin health check returned 200 OK after restore.");
+                        _baseUrl = $"http://{hostIp}:{hostPort}";
+                        return;
+                    }
+                    output?.WriteLine($"Health check returned {(int)resp.StatusCode}. Retrying...");
+                }
+                catch (Exception ex)
+                {
+                    output?.WriteLine($"Health check request failed: {ex.Message}");
+                }
+
+                Thread.Sleep(retry);
+            }
+
+            throw new InvalidOperationException("Jellyfin did not become healthy in time after restore.");
+        }
         public void Dispose()
         {
             try
@@ -213,7 +343,27 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             if (p.ExitCode != 0 && !allowNonZeroExit)
                 throw new InvalidOperationException($"Process {fileName} {arguments} failed with code {p.ExitCode}\nstdout:\n{outp}\nstderr:\n{err}");
         }
-    }
 
-    
+        private static string RunProcessGetOutput(string fileName, string arguments, string workingDirectory, bool allowNonZeroExit = false)
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = fileName,
+                Arguments = arguments,
+                WorkingDirectory = workingDirectory,
+                RedirectStandardOutput = true,
+                RedirectStandardError = true,
+                UseShellExecute = false,
+            };
+
+            using var p = Process.Start(psi) ?? throw new InvalidOperationException($"Failed to start {fileName} {arguments}");
+            var outp = p.StandardOutput.ReadToEnd();
+            var err = p.StandardError.ReadToEnd();
+            p.WaitForExit();
+            if (p.ExitCode != 0 && !allowNonZeroExit)
+                throw new InvalidOperationException($"Process {fileName} {arguments} failed with code {p.ExitCode}\nstdout:\n{outp}\nstderr:\n{err}");
+            return outp ?? string.Empty;
+        }
+
+    }
 }
