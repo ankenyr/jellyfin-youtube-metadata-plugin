@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using System.Text.RegularExpressions;
 using J2N;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests 
@@ -36,9 +37,46 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             // Directory.CreateDirectory(_pluginTempDir);
             this.output = output;
             _pluginTempDir = BuildSolution();
+
+            // Clean up any leftover integration-test containers from previous runs.
+            CleanupOldIntegrationContainers();
+
             var image = "jellyfin/jellyfin:latest";
             StartJellyfinContainer(image, _pluginTempDir, _containerName);
             CopyBackupIntoContainerAndStartJellyfin();
+        }
+
+        private void CleanupOldIntegrationContainers()
+        {
+            output?.WriteLine("Cleaning up previous integration test containers...");
+            try
+            {
+                var listOutput = RunProcessGetOutput("docker", "ps -a --format \"{{.Names}}\"", Directory.GetCurrentDirectory(), allowNonZeroExit: true);
+                var names = listOutput.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                    .Select(n => n.Trim())
+                    .Where(n => !string.IsNullOrEmpty(n));
+
+                var matcher = new Regex("^jellyfin[_-]integration-test-", RegexOptions.IgnoreCase);
+                foreach (var name in names)
+                {
+                    if (matcher.IsMatch(name))
+                    {
+                        output?.WriteLine($"Removing container '{name}'");
+                        try
+                        {
+                            RunProcess("docker", $"rm -f {name}", Directory.GetCurrentDirectory(), allowNonZeroExit: true);
+                        }
+                        catch (Exception ex)
+                        {
+                            output?.WriteLine($"Failed to remove container {name}: {ex.Message}");
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                output?.WriteLine($"Failed to list or remove containers: {ex.Message}");
+            }
         }
 
         [Fact]
