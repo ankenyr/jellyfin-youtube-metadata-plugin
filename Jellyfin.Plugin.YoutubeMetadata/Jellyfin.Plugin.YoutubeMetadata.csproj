@@ -5,6 +5,8 @@
 		<AssemblyVersion>1.0.3.12</AssemblyVersion>
 		<FileVersion>1.0.3.12</FileVersion>
 		<Version>1.0.3.12</Version>
+		<!-- Ensure NuGet package assemblies are copied to the build output for plugin deployment -->
+		<CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
 	</PropertyGroup>
 	<ItemGroup>
 		<None Remove="Configuration\configPage.html" />

@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using J2N;
 
 namespace Jellyfin.Plugin.YoutubeMetadata.Tests 
 {
@@ -159,14 +160,37 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             var pluginPath = $"/config/plugins/YoutubeMetadata_{_pluginVersion}/";
             var args = $"exec {_containerName} mkdir -p {pluginPath}";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
-            args = $"cp {buildDir}/. {_containerName}:{pluginPath}";
-            RunProcess("docker", args, Directory.GetCurrentDirectory());
+
+            // Copy a curated list of files into the container plugin folder instead of the entire build directory.
+            var filesToCopy = new[] { "Jellyfin.Plugin.YoutubeMetadata.dll", "System.IO.Abstractions.dll", "NYoutubeDLP.dll" };
+            foreach (var fileName in filesToCopy)
+            {
+                // Try top-level build directory first, then search subdirectories as fallback.
+                var src = Path.Combine(buildDir, fileName);
+                if (!File.Exists(src))
+                {
+                    var matches = Directory.GetFiles(buildDir, fileName, SearchOption.TopDirectoryOnly);
+                    if (matches.Length == 0)
+                        matches = Directory.GetFiles(buildDir, fileName, SearchOption.AllDirectories);
+                    if (matches.Length > 0)
+                        src = matches[0];
+                }
+
+                if (!File.Exists(src))
+                {
+                    output?.WriteLine($"Warning: {fileName} not found under build dir '{buildDir}'; skipping.");
+                    continue;
+                }
+
+                var copyArgs = $"cp \"{src}\" {_containerName}:{pluginPath}";
+                RunProcess("docker", copyArgs, Directory.GetCurrentDirectory());
+            }
         }
 
         private void CopyBackupIntoContainerAndStartJellyfin()
         {
             var integrationDir = Path.Combine(_repoRoot, "Jellyfin.Plugin.YoutubeMetadata.Providers.Tests", "Integration");
-            var backupFileName = "jellyfin-backup-20251230224958.zip";
+            var backupFileName = "jellyfin-backup-20260102231108.zip";
             var backupPath = Path.Combine(integrationDir, backupFileName);
             if (!File.Exists(backupPath))
                 throw new FileNotFoundException($"Backup file not found: {backupPath}");
@@ -199,13 +223,14 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             _baseUrl = $"http://{hostIp}:{hostPort}";
 
             CheckHealth(_baseUrl);
-
+            // It might be better to check in the logs for the message that the startup has completed.
+            Thread.Sleep(TimeSpan.FromSeconds(5));
             try
             {
                 var killArgs = $"exec {_containerName} /bin/sh -c \"pidof jellyfin >/dev/null 2>&1 && kill -TERM $(pidof jellyfin) || (ps aux | grep '/jellyfin/jellyfin' | awk '{{{{print $2}}}}' | xargs -r kill -TERM)\"";
                 RunProcess("docker", killArgs, Directory.GetCurrentDirectory(), allowNonZeroExit: true);
                 // give the process a moment to exit
-                Thread.Sleep(TimeSpan.FromSeconds(2));
+                Thread.Sleep(TimeSpan.FromSeconds(5));
             }
             catch (Exception ex)
             {
@@ -219,12 +244,13 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             args = $"cp {backupPath} {_containerName}:/config/data/backups/";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
 
-            CopyPluginIntoContainer();
+            // CopyPluginIntoContainer();
 
             // 5) Start Jellyfin with --restore-archive
             args = $"exec -d {_containerName} /jellyfin/jellyfin --restore-archive /config/data/backups/{backupFileName}";
             RunProcess("docker", args, Directory.GetCurrentDirectory());
             CheckHealth(_baseUrl);
+            Thread.Sleep(TimeSpan.FromSeconds(5));
         }
         public void Dispose()
         {
