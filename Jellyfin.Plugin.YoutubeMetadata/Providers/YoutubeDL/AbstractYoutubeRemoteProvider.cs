@@ -145,9 +145,78 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             }
             return result;
         }
-        public Task<IEnumerable<RemoteSearchResult>> GetSearchResults(E searchInfo, CancellationToken cancellationToken)
+        public virtual async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(E searchInfo, CancellationToken cancellationToken)
         {
-            throw new System.NotImplementedException();
+            _logger.LogDebug("YTDL GetSearchResults: Name={Name}", searchInfo.Name);
+            var results = new List<RemoteSearchResult>();
+
+            // Check if we have a direct YouTube ID to look up
+            if (searchInfo.ProviderIds.TryGetValue(Constants.PluginName, out var youtubeId) && !string.IsNullOrEmpty(youtubeId))
+            {
+                _logger.LogDebug("YTDL GetSearchResults: Looking up by ID={ID}", youtubeId);
+                // Fetch metadata for this specific ID
+                var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, youtubeId);
+                var fileInfo = _fileSystem.GetFileSystemInfo(ytPath);
+                if (!IsFresh(fileInfo))
+                {
+                    await this.GetAndCacheMetadata(youtubeId, this._config.ApplicationPaths, cancellationToken);
+                }
+                try
+                {
+                    var video = ReadYTDLInfo(ytPath, cancellationToken);
+                    if (video != null)
+                    {
+                        var result = new RemoteSearchResult
+                        {
+                            Name = video.title,
+                            SearchProviderName = Name,
+                            ImageUrl = video.thumbnails?.Count > 0 ? video.thumbnails[^1].url : null,
+                            Overview = video.description?.Length > 200 ? video.description.Substring(0, 200) + "..." : video.description,
+                        };
+                        result.ProviderIds = new Dictionary<string, string> { { Constants.PluginName, video.id } };
+                        if (!string.IsNullOrEmpty(video.upload_date))
+                        {
+                            try
+                            {
+                                var date = DateTime.ParseExact(video.upload_date, "yyyyMMdd", null);
+                                result.PremiereDate = date;
+                                result.ProductionYear = date.Year;
+                            }
+                            catch { }
+                        }
+                        results.Add(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "YTDL GetSearchResults: Failed to get metadata for ID={ID}", youtubeId);
+                }
+                return results;
+            }
+
+            // Search by name
+            var searchQuery = searchInfo.Name;
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                return results;
+            }
+
+            _logger.LogDebug("YTDL GetSearchResults: Searching for '{Query}'", searchQuery);
+            var searchResults = await Utils.SearchVideos(searchQuery, this._config.ApplicationPaths, cancellationToken);
+
+            foreach (var item in searchResults)
+            {
+                var result = new RemoteSearchResult
+                {
+                    Name = item.Title,
+                    SearchProviderName = Name,
+                    ImageUrl = item.ThumbnailUrl,
+                };
+                result.ProviderIds = new Dictionary<string, string> { { Constants.PluginName, item.Id } };
+                results.Add(result);
+            }
+
+            return results;
         }
 
         internal abstract MetadataResult<T> GetMetadataImpl(YTDLData jsonObj, string id);
