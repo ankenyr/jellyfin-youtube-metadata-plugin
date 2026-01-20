@@ -1,7 +1,7 @@
 ---
 name: "YouTube Metadata"
 guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
-version: "1.0.3.12"
+version: "1.0.3.13"
 targetAbi: "10.9.1.0"
 framework: "net9.0"
 owner: "ankenyr"
@@ -13,6 +13,5 @@ artifacts:
 - "NYoutubeDLP.dll"
 - "System.IO.Abstractions.dll"
 changelog: >
-  #66 Bryan792: Fixed error that prevented local metadata from being used.
-  #105 nalsai: Updated the provider name
-  #107 nalsai: Improved some util methods.
+  #120 tcely: Match a specific YouTube ID for thumbnail
+  #143 mcronce: Jellyfin 10.11 support
