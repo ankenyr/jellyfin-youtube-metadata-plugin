@@ -80,10 +80,50 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         }
 
         [Fact]
-        public async void IntegrationTest()
+        public async Task IntegrationTest()
         {
-            
-            Console.WriteLine("Done");
+            if (string.IsNullOrEmpty(_baseUrl))
+                throw new InvalidOperationException("_baseUrl not set");
+
+            using var client = new HttpClient();
+            client.Timeout = TimeSpan.FromSeconds(30);
+            // Use the provided API key to authenticate the request
+            client.DefaultRequestHeaders.Add("X-Emby-Token", "f94210f2353f418daa28c5f40561483a");
+
+            // Request the API endpoint that returns the current user for the token
+            var url = $"{_baseUrl}/System/Info";
+            output?.WriteLine($"GET {url}");
+
+            var resp = await client.GetAsync(url);
+            output?.WriteLine($"Response: {(int)resp.StatusCode}");
+            resp.EnsureSuccessStatusCode();
+
+            var content = await resp.Content.ReadAsStringAsync();
+            // Save the returned JSON to a file for inspection
+            try
+            {
+                var outPath = Path.Combine("/workspaces/jellyfin-youtube-metadata-plugin", "output.txt");
+                File.WriteAllText(outPath, content ?? string.Empty, Encoding.UTF8);
+                output?.WriteLine($"Wrote response content to {outPath}");
+            }
+            catch (Exception ex)
+            {
+                output?.WriteLine($"Failed to write response content to file: {ex.Message}");
+            }
+
+            // Basic assertion that JSON contains an Id or Name field
+            try
+            {
+                using var doc = JsonDocument.Parse(content ?? "{}");
+                var root = doc.RootElement;
+                var hasId = root.TryGetProperty("Id", out var idProp) || root.TryGetProperty("ID", out idProp);
+                var hasName = root.TryGetProperty("Name", out var nameProp) || root.TryGetProperty("name", out nameProp);
+                Assert.True(hasId || hasName, "Expected JSON response to contain 'Id' or 'Name' property");
+            }
+            catch (JsonException je)
+            {
+                Assert.False(true, $"Response was not valid JSON: {je.Message}");
+            }
         }
 
         [Fact]
