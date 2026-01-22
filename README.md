@@ -122,10 +122,18 @@ Placing a file named `cookies.txt` into the `<jellyfin data directory>/plugins/Y
 1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
    Advanced -> Plugins`.
 
-# Helper Tools
-
-## Media Copy
-This script will copy a library but all video media will be replaced with a 10 second video using the testsrc filter.
+# Releasing a new version
+1. Update `build.yaml` with the new version number and changelog.
+1. Commit the changes.
+1. Create a new Release on GitHub.
+1. Set the tag version. **Important**: The tag must match the version in `build.yaml` with the inclusion of a prefixing v. i.e. if `build.yaml` has `1.2.3.4` the tag verison must be `v1.2.3.4`
+1.1 Create version release notes that match the changelog.
+1. Publish the release.
+1. The GitHub Action will automatically:
+   - Build the plugin.
+   - Verify the tag matches `build.yaml`.
+   - Upload artifacts.
+   - Update the repository manifest.
 
 ### Donations
 If this plugin helps you, please consider a donation!
