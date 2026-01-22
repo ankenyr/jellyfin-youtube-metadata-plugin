@@ -45,6 +45,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: ankenyr/jellyfin-plugin-repo
+          ref: master
           token: ${{ secrets.REPO_TOKEN }}
           path: manifest-repo
 
