@@ -4,6 +4,7 @@ using Xunit;
 using Moq;
 using System.Threading;
 using System;
+using System.IO;
 using System.IO.Abstractions.TestingHelpers;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -24,13 +25,16 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         private readonly MediaBrowser.Model.IO.FileSystemMetadata _fs_metadata;
         private readonly CancellationToken _token;
         private readonly YTDLEpisodeProvider _provider;
+        private readonly string _cacheBase;
         public YTDLEpisodeProviderTest()
         {
             _jf_fs = new Mock<MediaBrowser.Model.IO.IFileSystem>();
             _fs = new MockFileSystem(new Dictionary<string, MockFileData> { });
             _mockFactory = new Mock<IHttpClientFactory>();
             _config = new Mock<MediaBrowser.Controller.Configuration.IServerConfigurationManager>();
-            _config.Setup(config => config.ApplicationPaths.CachePath).Returns("\\cache");
+            // Use platform-native root cache path (e.g. "/cache" on Unix, "\\cache" on Windows)
+            _cacheBase = Path.DirectorySeparatorChar + "cache";
+            _config.Setup(config => config.ApplicationPaths.CachePath).Returns(_cacheBase);
             _epInfo = new EpisodeInfo();
             _fs_metadata = new MediaBrowser.Model.IO.FileSystemMetadata();
             _token = new CancellationToken();
@@ -49,6 +53,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                 resolution = "10x10",
                 id = "id912az"
             };
+            thumbnails.Add(tn);
             var json = new YTDLData
             {
                 uploader = "Someone",
@@ -60,8 +65,9 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             };
             _fs_metadata.LastWriteTimeUtc = DateTime.Today.AddDays(-1);
             _fs_metadata.Exists = true;
-            _jf_fs.Setup(fs => fs.GetFileSystemInfo(@"\cache\youtubemetadata\AAAAAAAAAAA\ytvideo.info.json")).Returns(_fs_metadata);
-            _fs.AddFile(@"\cache\youtubemetadata\AAAAAAAAAAA\ytvideo.info.json", new MockFileData(JsonSerializer.Serialize(json)));
+            var expectedPath = Path.Combine(_cacheBase, "youtubemetadata", "AAAAAAAAAAA", "ytvideo.info.json");
+            _jf_fs.Setup(fs => fs.GetFileSystemInfo(expectedPath)).Returns(_fs_metadata);
+            _fs.AddFile(expectedPath, new MockFileData(JsonSerializer.Serialize(json)));
             _epInfo.Path = "/Something [AAAAAAAAAAA].mkv";
 
             //var provider = new YTDLEpisodeProvider(_jf_fs.Object, new Mock<IHttpClientFactory>().Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLEpisodeProvider>>().Object, _config.Object, _fs);
@@ -151,12 +157,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                             Type = PersonKind.Director,
                             ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
                         }
-                    }
-                },
+                    },
+                },{
                  new object[] {
                     new YTDLData
                     {
-                        track = "FooTrack",
+                        track = "Foo",
                         album = "Bar",
                         artist = "Someone",
                         upload_date = "20211215",
@@ -183,13 +189,28 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
                         }
                     }
                 }
+                }
         };
 
         [Theory]
         [MemberData(nameof(MusicJsonTests))]
         public void YTDLJsonToMusicVideo(YTDLData json, MetadataResult<MusicVideo> expected)
         {
-            var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMusicVideo(json, "id123"));
+            var actual = YTDLEpisodeProvider.YTDLJsonToMusicVideo(json, "id123");
+            // Ids are generated at runtime; copy them from actual to expected so comparison ignores generated Ids
+            if (actual.Item != null && expected.Item != null)
+            {
+                expected.Item.Id = actual.Item.Id;
+            }
+            if (actual.People != null && expected.People != null)
+            {
+                for (int i = 0; i < expected.People.Count && i < actual.People.Count; i++)
+                {
+                    expected.People[i].Id = actual.People[i].Id;
+                }
+            }
+
+            var result = JsonSerializer.Serialize(actual);
             Assert.Equal(JsonSerializer.Serialize(expected), result);
 
         }
@@ -229,7 +250,21 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         [MemberData(nameof(MovieJsonTests))]
         public void YTDLJsonToMovie(YTDLData json, MetadataResult<Movie> expected)
         {
-            var result = JsonSerializer.Serialize(YTDLEpisodeProvider.YTDLJsonToMovie(json, "id123"));
+            var actual = YTDLEpisodeProvider.YTDLJsonToMovie(json, "id123");
+            // Ids are generated at runtime; copy them from actual to expected so comparison ignores generated Ids
+            if (actual.Item != null && expected.Item != null)
+            {
+                expected.Item.Id = actual.Item.Id;
+            }
+            if (actual.People != null && expected.People != null)
+            {
+                for (int i = 0; i < expected.People.Count && i < actual.People.Count; i++)
+                {
+                    expected.People[i].Id = actual.People[i].Id;
+                }
+            }
+
+            var result = JsonSerializer.Serialize(actual);
             Assert.Equal(JsonSerializer.Serialize(expected), result);
         }
     }

@@ -11,7 +11,7 @@
     <PackageReference Include="Jellyfin.Controller" Version="10.11.4" />
     <PackageReference Include="Jellyfin.Data" Version="10.11.4" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="16.11.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
     <PackageReference Include="NYoutubeDL" Version="0.11.2" />
     <PackageReference Include="System.IO.Abstractions.TestingHelpers" Version="14.0.13" />
@@ -24,10 +24,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="Xunit.SkippableFact" Version="1.5.23" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Jellyfin.Plugin.YoutubeMetadata\Jellyfin.Plugin.YoutubeMetadata.csproj" />
   </ItemGroup>
-
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
 </Project>

@@ -29,7 +29,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
         {
             var result = Utils.CreatePerson("3Blue1Brown", "UCYO_jab_esuFRV4b17AJtAw");
             var expected = new PersonInfo { Name = "3Blue1Brown", Type = PersonKind.Director, ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "UCYO_jab_esuFRV4b17AJtAw" } } };
-
+            // Id is generated and will differ; copy it from result so other fields are compared
+            expected.Id = result.Id;
             Assert.Equal(JsonConvert.SerializeObject(expected), JsonConvert.SerializeObject(result));
         }
 
@@ -76,7 +77,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             Assert.Equal("Foo", result.Item.Name);
             Assert.Equal("Some cool movie!", result.Item.Overview);
             Assert.Equal(2022, result.Item.ProductionYear);
-            Assert.Equal("1/31/2022 12:00:00 AM", result.Item.PremiereDate.ToString());
+            Assert.Equal(expected.Item.PremiereDate, result.Item.PremiereDate);
             Assert.Equal("SomeGuyIKnow", result.People[0].Name);
             Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.People[0].ProviderIds["YoutubeMetadata"]);
         }
@@ -103,7 +104,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             Assert.Equal("Foo", result.Item.Name);
             Assert.Equal("Some cool movie!", result.Item.Overview);
             Assert.Equal(2022, result.Item.ProductionYear);
-            Assert.Equal("1/31/2022 12:00:00 AM", result.Item.PremiereDate.ToString());
+            Assert.Equal(DateTime.ParseExact("20220131", "yyyyMMdd", null), result.Item.PremiereDate);
             Assert.Equal("SomeGuyIKnow", result.People[0].Name);
             Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.People[0].ProviderIds["YoutubeMetadata"]);
         }
@@ -131,7 +132,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             Assert.Equal("Bar", result.Item.Name);
             Assert.Equal("Some cool movie!", result.Item.Overview);
             Assert.Equal(2022, result.Item.ProductionYear);
-            Assert.Equal("1/31/2022 12:00:00 AM", result.Item.PremiereDate.ToString());
+            Assert.Equal(DateTime.ParseExact("20220131", "yyyyMMdd", null), result.Item.PremiereDate);
             Assert.Equal("SomeGuyIKnow", result.People[0].Name);
             Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.People[0].ProviderIds["YoutubeMetadata"]);
         }
@@ -158,7 +159,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             Assert.Equal("Foo", result.Item.Name);
             Assert.Equal("Some cool movie!", result.Item.Overview);
             Assert.Equal(2022, result.Item.ProductionYear);
-            Assert.Equal("1/31/2022 12:00:00 AM", result.Item.PremiereDate.ToString());
+            Assert.Equal(DateTime.ParseExact("20220131", "yyyyMMdd", null), result.Item.PremiereDate);
             Assert.Equal("SomeGuyIKnow", result.People[0].Name);
             Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.People[0].ProviderIds["YoutubeMetadata"]);
             Assert.Equal("20220131-Foo", result.Item.ForcedSortName);
