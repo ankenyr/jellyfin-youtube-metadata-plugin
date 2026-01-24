@@ -177,8 +177,8 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             ytd.Options.VerbositySimulationOptions.Simulate = true;
             ytd.Options.GeneralOptions.FlatPlaylist = true;
             ytd.Options.VideoSelectionOptions.PlaylistItems = $"1:{maxResults}";
-            // Print tab-separated: channel_id, uploader (channel name), thumbnail
-            ytd.Options.VerbositySimulationOptions.Print = "%(id)s\t%(title)s\t%(thumbnail)s";
+            // Print unit-separator-separated: channel_id, uploader (channel name), thumbnail
+            ytd.Options.VerbositySimulationOptions.Print = "%(id)s\x1f%(title)s\x1f%(thumbnail)s";
             List<string> ytdl_out = new();
             ytd.StandardOutputEvent += (sender, output) => ytdl_out.Add(output);
             var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
@@ -189,7 +189,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             await ytd.DownloadAsync(url);
             foreach (var line in ytdl_out)
             {
-                var parts = line.Split('\t');
+                var parts = line.Split('\x1f');
                 if (parts.Length >= 3)
                 {
                     results.Add(new YTSearchResult
