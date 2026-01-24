@@ -161,6 +161,12 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                 {
                     await this.GetAndCacheMetadata(youtubeId, this._config.ApplicationPaths, cancellationToken);
                 }
+                var fileInfoAfterCache = _fileSystem.GetFileSystemInfo(ytPath);
+                if (!fileInfoAfterCache.Exists)
+                {
+                    _logger.LogWarning("YTDL GetSearchResults: Info file not found for ID={ID}", youtubeId);
+                    return results;
+                }
                 try
                 {
                     var video = ReadYTDLInfo(ytPath, cancellationToken);
