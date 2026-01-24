@@ -188,7 +188,10 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
                                 result.PremiereDate = date;
                                 result.ProductionYear = date.Year;
                             }
-                            catch { }
+                            catch (FormatException ex)
+                            {
+                                _logger.LogWarning(ex, "YTDL GetSearchResults: Failed to parse upload_date '{Date}' for ID={ID}", video.upload_date, video.id);
+                            }
                         }
                         results.Add(result);
                     }
