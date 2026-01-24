@@ -108,7 +108,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             {
                 _logger.LogDebug("YTDLSeries GetSearchResults: Looking up by ChannelID={ID}", channelId);
                 // Fetch metadata for this specific channel
-                var tempName = $"_search_{channelId}";
+                var tempName = $"_search_{channelId}_{Guid.NewGuid():N}";
                 try
                 {
                     await Utils.GetChannelInfo(channelId, tempName, this._config.ApplicationPaths, cancellationToken);
