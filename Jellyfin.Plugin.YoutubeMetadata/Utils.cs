@@ -15,6 +15,18 @@ using Jellyfin.Data.Enums;
 
 namespace Jellyfin.Plugin.YoutubeMetadata
 {
+    /// <summary>
+    /// Represents a search result from YouTube.
+    /// </summary>
+    public class YTSearchResult
+    {
+        public string Id { get; set; }
+        public string Title { get; set; }
+        public string ChannelId { get; set; }
+        public string Uploader { get; set; }
+        public string ThumbnailUrl { get; set; }
+    }
+
     public class Utils
     {
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
@@ -101,6 +113,96 @@ namespace Jellyfin.Plugin.YoutubeMetadata
             {
                 return null;
             }
+        }
+
+        /// <summary>
+        /// Searches YouTube for videos matching the query.
+        /// </summary>
+        /// <param name="query">Search query string.</param>
+        /// <param name="appPaths">Application paths for cookie file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="maxResults">Maximum number of results to return.</param>
+        /// <returns>List of search results.</returns>
+        public static async Task<List<YTSearchResult>> SearchVideos(string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken, int maxResults = 10)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var results = new List<YTSearchResult>();
+            var ytd = new YoutubeDLP();
+            var url = String.Format(Constants.VideoSearchQuery, System.Web.HttpUtility.UrlEncode(query));
+            ytd.Options.VerbositySimulationOptions.Simulate = true;
+            ytd.Options.GeneralOptions.FlatPlaylist = true;
+            ytd.Options.VideoSelectionOptions.PlaylistItems = $"1:{maxResults}";
+            // Print unit-separator-separated: id, title, channel_id, uploader, thumbnail
+            ytd.Options.VerbositySimulationOptions.Print = "%(id)s\x1f%(title)s\x1f%(channel_id)s\x1f%(uploader)s\x1f%(thumbnail)s";
+            List<string> ytdl_out = new();
+            ytd.StandardOutputEvent += (sender, output) => ytdl_out.Add(output);
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (File.Exists(cookie_file))
+            {
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            }
+            await ytd.DownloadAsync(url);
+            foreach (var line in ytdl_out)
+            {
+                var parts = line.Split('\x1f');
+                if (parts.Length >= 5)
+                {
+                    results.Add(new YTSearchResult
+                    {
+                        Id = parts[0],
+                        Title = parts[1],
+                        ChannelId = parts[2],
+                        Uploader = parts[3],
+                        ThumbnailUrl = parts[4]
+                    });
+                }
+            }
+            return results;
+        }
+
+        /// <summary>
+        /// Searches YouTube for channels matching the query.
+        /// </summary>
+        /// <param name="query">Search query string.</param>
+        /// <param name="appPaths">Application paths for cookie file.</param>
+        /// <param name="cancellationToken">Cancellation token.</param>
+        /// <param name="maxResults">Maximum number of results to return.</param>
+        /// <returns>List of search results.</returns>
+        public static async Task<List<YTSearchResult>> SearchChannels(string query, IServerApplicationPaths appPaths, CancellationToken cancellationToken, int maxResults = 10)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            var results = new List<YTSearchResult>();
+            var ytd = new YoutubeDLP();
+            var url = String.Format(Constants.SearchQuery, System.Web.HttpUtility.UrlEncode(query));
+            ytd.Options.VerbositySimulationOptions.Simulate = true;
+            ytd.Options.GeneralOptions.FlatPlaylist = true;
+            ytd.Options.VideoSelectionOptions.PlaylistItems = $"1:{maxResults}";
+            // Print unit-separator-separated: channel_id, uploader (channel name), thumbnail
+            ytd.Options.VerbositySimulationOptions.Print = "%(id)s\x1f%(title)s\x1f%(thumbnail)s";
+            List<string> ytdl_out = new();
+            ytd.StandardOutputEvent += (sender, output) => ytdl_out.Add(output);
+            var cookie_file = Path.Join(appPaths.PluginsPath, "YoutubeMetadata", "cookies.txt");
+            if (File.Exists(cookie_file))
+            {
+                ytd.Options.FilesystemOptions.Cookies = cookie_file;
+            }
+            await ytd.DownloadAsync(url);
+            foreach (var line in ytdl_out)
+            {
+                var parts = line.Split('\x1f');
+                if (parts.Length >= 3)
+                {
+                    results.Add(new YTSearchResult
+                    {
+                        Id = parts[0],        // Channel ID
+                        Title = parts[1],     // Channel name
+                        ChannelId = parts[0], // Same as Id for channels
+                        Uploader = parts[1],  // Same as Title for channels
+                        ThumbnailUrl = parts[2]
+                    });
+                }
+            }
+            return results;
         }
 
         public static async Task<bool> ValidCookie(IServerApplicationPaths appPaths, CancellationToken cancellationToken)

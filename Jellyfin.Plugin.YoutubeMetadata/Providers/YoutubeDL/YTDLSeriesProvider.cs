@@ -1,4 +1,6 @@
-﻿using System.Net.Http;
+﻿using System;
+using System.Collections.Generic;
+using System.Net.Http;
 using System.Threading;
 using System.Threading.Tasks;
 using MediaBrowser.Controller;
@@ -6,6 +8,7 @@ using MediaBrowser.Controller.Configuration;
 using MediaBrowser.Controller.Library;
 using MediaBrowser.Controller.Providers;
 using MediaBrowser.Model.IO;
+using MediaBrowser.Model.Providers;
 using Microsoft.Extensions.Logging;
 using Series = MediaBrowser.Controller.Entities.TV.Series;
 
@@ -91,6 +94,71 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             }
 
         }
+
+        /// <summary>
+        /// Searches for YouTube channels matching the query.
+        /// </summary>
+        public override async Task<IEnumerable<RemoteSearchResult>> GetSearchResults(SeriesInfo searchInfo, CancellationToken cancellationToken)
+        {
+            _logger.LogDebug("YTDLSeries GetSearchResults: Name={Name}", searchInfo.Name);
+            var results = new List<RemoteSearchResult>();
+
+            // Check if we have a direct YouTube channel ID to look up
+            if (searchInfo.ProviderIds.TryGetValue(Constants.PluginName, out var channelId) && !string.IsNullOrEmpty(channelId))
+            {
+                _logger.LogDebug("YTDLSeries GetSearchResults: Looking up by ChannelID={ID}", channelId);
+                // Fetch metadata for this specific channel
+                var tempName = $"_search_{channelId}_{Guid.NewGuid():N}";
+                try
+                {
+                    await Utils.GetChannelInfo(channelId, tempName, this._config.ApplicationPaths, cancellationToken);
+                    var ytPath = GetVideoInfoPath(this._config.ApplicationPaths, tempName);
+                    var video = ReadYTDLInfo(ytPath, cancellationToken);
+                    if (video != null)
+                    {
+                        var result = new RemoteSearchResult
+                        {
+                            Name = video.uploader,
+                            SearchProviderName = Name,
+                            ImageUrl = video.thumbnails?.Count > 0 ? video.thumbnails[^1].url : null,
+                            Overview = video.description?.Length > 200 ? video.description.Substring(0, 200) + "..." : video.description,
+                        };
+                        result.ProviderIds = new Dictionary<string, string> { { Constants.PluginName, video.channel_id } };
+                        results.Add(result);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "YTDLSeries GetSearchResults: Failed to get metadata for ChannelID={ID}", channelId);
+                }
+                return results;
+            }
+
+            // Search by name
+            var searchQuery = searchInfo.Name;
+            if (string.IsNullOrWhiteSpace(searchQuery))
+            {
+                return results;
+            }
+
+            _logger.LogDebug("YTDLSeries GetSearchResults: Searching for '{Query}'", searchQuery);
+            var searchResults = await Utils.SearchChannels(searchQuery, this._config.ApplicationPaths, cancellationToken);
+
+            foreach (var item in searchResults)
+            {
+                var result = new RemoteSearchResult
+                {
+                    Name = item.Title,
+                    SearchProviderName = Name,
+                    ImageUrl = item.ThumbnailUrl,
+                };
+                result.ProviderIds = new Dictionary<string, string> { { Constants.PluginName, item.Id } };
+                results.Add(result);
+            }
+
+            return results;
+        }
+
         public override Task<HttpResponseMessage> GetImageResponse(string url, CancellationToken cancellationToken)
         {
             _logger.LogDebug("YTDLSeries GetImageResponse: {URL}", url);
