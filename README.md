@@ -1,14 +1,16 @@
 [![Release version](https://img.shields.io/github/v/release/ankenyr/jellyfin-youtube-metadata-plugin?color=blue&label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases/latest)
-[![CI Status](https://img.shields.io/github/workflow/status/yt-dlp/yt-dlp/Core%20Tests/master?label=&style=for-the-badge)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/actions)
+[![CI Status](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/workflows/build/badge.svg)](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/actions?workflow=build)
 [![Donate](https://img.shields.io/badge/_-Donate-red.svg?logo=githubsponsors&labelColor=555555&style=for-the-badge)](https://ko-fi.com/ankenyr)
 
 # Jellyfin Youtube Metadata Plugin
 
 ## Overview
+
 Plugin for [Jellyfin](https://jellyfin.org/) that retrieves metadata
 for content from Youtube.
 
 ### Features
+
 - Local provider uses the `info.json` files provided from [yt-dlp](https://github.com/yt-dlp/yt-dlp) or similar programs.
 - Remote provider uses [yt-dlp](https://github.com/yt-dlp/yt-dlp) to download `info.json` files.
 - Supports thumbnails of `jpg` or `webp` format for both channel and videos
@@ -19,26 +21,32 @@ for content from Youtube.
 - Supports ExternalID providing quick links to source of metadata.
 
 ### Requirements
+
 - [yt-dlp](https://github.com/yt-dlp/yt-dlp) is required if you are using the remote provider.
 
 ## Installation
 
 ### Prerequirements
+
 You are required to have yt-dlp available on the system or container Jellyfin is running on. The following are examples of how you could do this depending on your setup and are not to be considered an exhaustive list.
 
 #### Installing from package manager
-`sudo apt-get install yt-dlp`
+
+APT: `sudo apt-get install yt-dlp`
+Nix package manager: also called `yt-dlp`
 
 #### Installing in a container
-```
-$ docker exec -it -u root jellyfin bash
-$ curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /bin/yt-dlp
-$ chmod a+rx /bin/yt-dlp
-$ apt update && apt install --no-install-recommends --no-install-suggests python3
+
+```sh
+docker exec -it -u root jellyfin bash
+curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o /bin/yt-dlp
+chmod a+rx /bin/yt-dlp
+apt update && apt install --no-install-recommends --no-install-suggests python3
 ```
 
 #### Building a docker image depending on YT-DLP
-```
+
+```dockerfile
 FROM linuxserver/jellyfin:nightly
 RUN apt-get update && apt-get install -y \
     python3-pip
@@ -46,6 +54,7 @@ RUN python3 -m pip install -U yt-dlp
 ```
 
 ### Installing From Repository (Recommended)
+
 1. Go to the `Admin Dashboard`.
 1. In the left navigation menu, click on `Plugins`.
 1. In the top menu, click `Repositories`.
@@ -61,6 +70,7 @@ RUN python3 -m pip install -U yt-dlp
 1. If successful, you will see `YoutubeMetadata` with status as `Active`
 
 ### Manual Installation (Hard)
+
 1. Navigate to the [releases page](https://github.com/ankenyr/jellyfin-youtube-metadata-plugin/releases).
 1. Download the latest zip file.
 1. Unzip contents into `<jellyfin data directory>/plugins/YoutubeMetadata`.
@@ -69,7 +79,9 @@ RUN python3 -m pip install -U yt-dlp
 1. If successful, you will see `YoutubeMetadata` with status as `Active`
 
 ## Usage
+
 ### File Naming Requirements
+
 All media needs to have the ID embeded in the file name within square brackets.
 The following are valid examples of a channel and video.
 - `3Blue1Brown - NA - 3Blue1Brown_-_Videos [UCYO_jab_esuFRV4b17AJtAw].info.json`
@@ -83,6 +95,7 @@ The proper naming format is the default when using [yt-dlp](https://github.com/y
 and is also enforced in [TheFrenchGhosty's Ultimate YouTube-DL Scripts Collection](https://github.com/TheFrenchGhosty/TheFrenchGhostys-Ultimate-YouTube-DL-Scripts-Collection) which I highly recommend.
 
 ### Enabling Provider
+
 1. Navigate to your `Admin Dashboard`.
 1. On the left navigation menu, click `Libraries`.
 1. Click on ![Threedots](docs/threedots.png) for a supported library type.
@@ -93,49 +106,16 @@ and is also enforced in [TheFrenchGhosty's Ultimate YouTube-DL Scripts Collectio
 1. Click `Scan All Libraries`.
 
 ### Providing Cookies to YT-DLP
+
 ***Warning*** your cookie grants access to accounts the cookie is granted for. Please protect this file if you decide to use it.
 Placing a file named `cookies.txt` into the `<jellyfin data directory>/plugins/YoutubeMetadata` plugin directory will enable YT-DLP to start using your cookie.
 
-## Build and Installing from source
+## Contributing
 
-1. Clone or download this repository.
-1. Ensure you have .NET Core SDK setup and installed.
-1. Build plugin with following command.
-    ```
-    dotnet publish --configuration Release --output bin
-    ```
-1. Create folder named `YoutubeMetadata` in the `plugins` directory inside your Jellyfin data
-   directory. You can find your directory by going to Dashboard, and noticing the Paths section.
-   Mine is the root folder of the default Metadata directory.
-    ```
-    # mkdir <Jellyfin Data Directory>/plugins/YoutubeMetadata/
+For building from source, contributing and release details see [CONTRIBUTING.md](CONTRIBUTING.md).
 
-    ```
-1. Place the resulting files from step 3 in the `plugins/YoutubeMetadata` folder created in step 4.
-    ```
-    # cp -r bin/*.dll <Jellyfin Data Directory>/plugins/YoutubeMetadata/`
-    ```
-1. Be sure that the plugin files are owned by your `jellyfin` user:
-    ```
-    # chown -R jellyfin:jellyfin /var/lib/jellyfin/plugins/YoutubeMetadata/
-    ```
-1. If performed correctly you will see a plugin named YoutubeMetadata in `Admin -> Dashboard ->
-   Advanced -> Plugins`.
+## Donations
 
-# Releasing a new version
-1. Update `build.yaml` with the new version number and changelog.
-1. Commit the changes.
-1. Create a new Release on GitHub.
-1. Set the tag version. **Important**: The tag must match the version in `build.yaml` with the inclusion of a prefixing v. i.e. if `build.yaml` has `1.2.3.4` the tag verison must be `v1.2.3.4`
-1.1 Create version release notes that match the changelog.
-1. Publish the release.
-1. The GitHub Action will automatically:
-   - Build the plugin.
-   - Verify the tag matches `build.yaml`.
-   - Upload artifacts.
-   - Update the repository manifest.
-
-### Donations
 If this plugin helps you, please consider a donation!
 You can use my [ko-fi](https://ko-fi.com/ankenyr) link.
 If you would rather donate in some way not supported yet, let me know how you would like to donate.
