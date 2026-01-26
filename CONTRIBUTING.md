@@ -38,6 +38,7 @@ Thank you for contributing to Jellyfin Youtube Metadata Plugin.
 ## Releasing a new version
 
 1. Update `build.yaml` with the new version number and changelog.
+1. Update also `Jellyfin.Plugin.YoutubeMetadata/Jellyfin.Plugin.YoutubeMetadata.csproj` with the changes on version.
 1. Commit the changes.
 1. Create a new Release on GitHub.
 1. Set the tag version. **Important**: The tag must match the version in `build.yaml` with the

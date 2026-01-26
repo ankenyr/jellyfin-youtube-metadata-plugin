@@ -1,7 +1,7 @@
 ---
 name: "YouTube Metadata"
 guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
-version: "1.0.3.13"
+version: "1.0.3.14"
 targetAbi: "10.9.1.0"
 framework: "net9.0"
 owner: "ankenyr"
@@ -13,5 +13,4 @@ artifacts:
 - "NYoutubeDLP.dll"
 - "System.IO.Abstractions.dll"
 changelog: >
-  #120 tcely: Match a specific YouTube ID for thumbnail
-  #143 mcronce: Jellyfin 10.11 support
+  #147 a-andreyev: Implement GetSearchResults for Identify support
