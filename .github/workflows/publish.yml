@@ -35,14 +35,14 @@ jobs:
           asset_path: ./*
 
       - name: Checkout Source Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           path: source-repo
           sparse-checkout: |
             build.yaml
 
       - name: Checkout Manifest Repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           repository: ankenyr/jellyfin-plugin-repo
           ref: master
