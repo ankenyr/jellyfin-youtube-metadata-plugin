@@ -15,7 +15,7 @@
 
 	<ItemGroup>
 		<PackageReference Include="Jellyfin.Controller" Version="10.11.2" />
-		<PackageReference Include="Jellyfin.Data" Version="10.11.2" />
+		<PackageReference Include="Jellyfin.Data" Version="10.11.6" />
 		<PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="9.0.0" />
 		<PackageReference Include="NYoutubeDLP" Version="0.12.1" />
