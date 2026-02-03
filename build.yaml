@@ -2,7 +2,7 @@
 name: "YouTube Metadata"
 guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
 version: "1.0.3.14"
-targetAbi: "10.9.1.0"
+targetAbi: "10.11.2"
 framework: "net9.0"
 owner: "ankenyr"
 overview: "YouTube metadata provider"

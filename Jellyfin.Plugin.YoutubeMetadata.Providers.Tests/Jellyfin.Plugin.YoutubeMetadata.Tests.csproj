@@ -8,8 +8,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Jellyfin.Controller" Version="10.11.4" />
-    <PackageReference Include="Jellyfin.Data" Version="10.11.4" />
+    <PackageReference Include="Jellyfin.Controller" Version="10.11.2" />
+    <PackageReference Include="Jellyfin.Data" Version="10.11.2" />
     <PackageReference Include="Microsoft.Extensions.FileSystemGlobbing" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.0" />
     <PackageReference Include="Moq" Version="4.16.1" />
