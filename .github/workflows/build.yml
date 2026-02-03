@@ -28,7 +28,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: Setup .NET Core
-        uses: actions/setup-dotnet@v1
+        uses: actions/setup-dotnet@v5
         with:
           dotnet-version: '${{ env.DOTNET_VERSION }}'
       - name: Install dependencies
