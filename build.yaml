@@ -13,4 +13,4 @@ artifacts:
 - "NYoutubeDLP.dll"
 - "System.IO.Abstractions.dll"
 changelog: >
-  #147 a-andreyev: Implement GetSearchResults for Identify support
+  #154 staticdev: fix targetAbi and target to Jellyfin 10.11.2
