@@ -185,5 +185,27 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             Assert.Equal("Some cool movie!", result.Item.Overview);
             Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.Item.ProviderIds["YoutubeMetadata"]);
         }
+
+        [Fact]
+        public void YTDLJsonToVideoTest()
+        {
+            var data = new YTDLData
+            {
+                title = "Foo",
+                description = "Some cool video!",
+                upload_date = "20220131",
+                uploader = "SomeGuyIKnow",
+                channel_id = "ABCDEFGHIJKLMNOPQRSTUVWX"
+            };
+            var result = Utils.YTDLJsonToVideo(data);
+
+            Assert.True(result.HasMetadata);
+            Assert.Equal("Foo", result.Item.Name);
+            Assert.Equal("Some cool video!", result.Item.Overview);
+            Assert.Equal(2022, result.Item.ProductionYear);
+            Assert.Equal(DateTime.ParseExact("20220131", "yyyyMMdd", null), result.Item.PremiereDate);
+            Assert.Equal("SomeGuyIKnow", result.People[0].Name);
+            Assert.Equal("ABCDEFGHIJKLMNOPQRSTUVWX", result.People[0].ProviderIds["YoutubeMetadata"]);
+        }
     }
 }

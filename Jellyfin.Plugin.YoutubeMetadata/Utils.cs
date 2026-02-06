@@ -386,7 +386,38 @@ namespace Jellyfin.Plugin.YoutubeMetadata
         }
 
         /// <summary>
-        /// Provides a MusicVideo Metadata Result from a json object.
+        /// Provides a Video Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Video> YTDLJsonToVideo(YTDLData json)
+        {
+            var item = new Video();
+            var result = new MetadataResult<Video>
+            {
+                HasMetadata = true,
+                Item = item
+            };
+            result.Item.Name = json.title;
+            result.Item.Overview = json.description;
+            var date = new DateTime(1970, 1, 1);
+            try
+            {
+                date = DateTime.ParseExact(json.upload_date, "yyyyMMdd", null);
+            }
+            catch
+            {
+
+            }
+            result.Item.ProductionYear = date.Year;
+            result.Item.PremiereDate = date;
+            result.AddPerson(Utils.CreatePerson(json.uploader, json.channel_id));
+            result.Item.ProviderIds.Add(Constants.PluginName, json.id);
+            return result;
+        }
+
+        /// <summary>
+        /// Provides a Series Metadata Result from a json object.
         /// </summary>
         /// <param name="json"></param>
         /// <returns></returns>

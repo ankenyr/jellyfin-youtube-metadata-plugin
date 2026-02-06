@@ -267,5 +267,133 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Tests
             var result = JsonSerializer.Serialize(actual);
             Assert.Equal(JsonSerializer.Serialize(expected), result);
         }
+
+        public static IEnumerable<object[]> VideoJsonTests =>
+            new List<object[]>
+            {
+                new object[] {
+                    new YTDLData
+                    {
+                        title = "Foo",
+                        upload_date = "20211215",
+                        description = "Some video",
+                        uploader = "ankenyr",
+                        channel_id = "abc123",
+                    },
+                    new MetadataResult<Video>
+                    {
+                        HasMetadata = true,
+                        Item = new Video
+                        {
+                            Name = "Foo",
+                            Overview = "Some video",
+                            ProductionYear = 2021,
+                            PremiereDate = DateTime.ParseExact("20211215", "yyyyMMdd", null)
+                        },
+                        People = new List<PersonInfo> {new PersonInfo {
+                            Name = "ankenyr",
+                            Type = PersonKind.Director,
+                            ProviderIds = new Dictionary<string, string> { { "YoutubeMetadata", "abc123" } } }
+                        }
+                    }
+                }
+        };
+
+        [Theory]
+        [MemberData(nameof(VideoJsonTests))]
+        public void YTDLJsonToVideo(YTDLData json, MetadataResult<Video> expected)
+        {
+            var actual = YTDLVideoProvider.YTDLJsonToVideo(json, "id123");
+            // Ids are generated at runtime; copy them from actual to expected so comparison ignores generated Ids
+            if (actual.Item != null && expected.Item != null)
+            {
+                expected.Item.Id = actual.Item.Id;
+            }
+            if (actual.People != null && expected.People != null)
+            {
+                for (int i = 0; i < expected.People.Count && i < actual.People.Count; i++)
+                {
+                    expected.People[i].Id = actual.People[i].Id;
+                }
+            }
+
+            var result = JsonSerializer.Serialize(actual);
+            Assert.Equal(JsonSerializer.Serialize(expected), result);
+        }
+    }
+
+    public class YTDLVideoProviderTest
+    {
+        private readonly Moq.Mock<MediaBrowser.Model.IO.IFileSystem> _jf_fs;
+        private readonly MockFileSystem _fs;
+        private readonly Moq.Mock<IHttpClientFactory> _mockFactory;
+        private readonly Moq.Mock<MediaBrowser.Controller.Configuration.IServerConfigurationManager> _config;
+        private readonly ItemLookupInfo _videoInfo;
+        private readonly MediaBrowser.Model.IO.FileSystemMetadata _fs_metadata;
+        private readonly CancellationToken _token;
+        private readonly YTDLVideoProvider _provider;
+        private readonly string _cacheBase;
+        public YTDLVideoProviderTest()
+        {
+            _jf_fs = new Mock<MediaBrowser.Model.IO.IFileSystem>();
+            _fs = new MockFileSystem(new Dictionary<string, MockFileData> { });
+            _mockFactory = new Mock<IHttpClientFactory>();
+            _config = new Mock<MediaBrowser.Controller.Configuration.IServerConfigurationManager>();
+            _cacheBase = Path.DirectorySeparatorChar + "cache";
+            _config.Setup(config => config.ApplicationPaths.CachePath).Returns(_cacheBase);
+            _videoInfo = new ItemLookupInfo();
+            _fs_metadata = new MediaBrowser.Model.IO.FileSystemMetadata();
+            _token = new CancellationToken();
+            _provider = new YTDLVideoProvider(_jf_fs.Object, _mockFactory.Object, new Mock<Microsoft.Extensions.Logging.ILogger<YTDLVideoProvider>>().Object, _config.Object, _fs);
+        }
+
+        [Fact]
+        public void RemoteProviderCachedResultsTest()
+        {
+            var thumbnails = new List<ThumbnailInfo>();
+            var tn = new ThumbnailInfo
+            {
+                url = "https://www.something.com",
+                width = 10,
+                height = 10,
+                resolution = "10x10",
+                id = "id912az"
+            };
+            thumbnails.Add(tn);
+            var json = new YTDLData
+            {
+                uploader = "Someone",
+                upload_date = "20211215",
+                title = "Cool Video",
+                description = "This is the best video.",
+                channel_id = "12345",
+                thumbnails = thumbnails
+            };
+            _fs_metadata.LastWriteTimeUtc = DateTime.Today.AddDays(-1);
+            _fs_metadata.Exists = true;
+            var expectedPath = Path.Combine(_cacheBase, "youtubemetadata", "AAAAAAAAAAA", "ytvideo.info.json");
+            _jf_fs.Setup(fs => fs.GetFileSystemInfo(expectedPath)).Returns(_fs_metadata);
+            _fs.AddFile(expectedPath, new MockFileData(JsonSerializer.Serialize(json)));
+            _videoInfo.Path = "/Something [AAAAAAAAAAA].mkv";
+
+            var metadata = _provider.GetMetadata(_videoInfo, _token);
+            metadata.Wait();
+            Assert.Equal(json.title, metadata.Result.Item.Name);
+            Assert.Equal(json.description, metadata.Result.Item.Overview);
+            Assert.Equal(2021, metadata.Result.Item.ProductionYear);
+            Assert.Equal(DateTime.ParseExact(json.upload_date, "yyyyMMdd", null), metadata.Result.Item.PremiereDate);
+            Assert.Equal("Someone", metadata.Result.People[0].Name);
+        }
+
+        [Theory]
+        [InlineData("/Foo.mkv")]
+        [InlineData("/2019 - Foo (AAAAAAAAAAA).mp4")]
+        public void RemoteProviderInvalidIdTest(string path)
+        {
+            _videoInfo.Path = path;
+            var metadata = _provider.GetMetadata(_videoInfo, _token);
+            metadata.Wait();
+            Assert.False(metadata.Result.HasMetadata);
+        }
     }
 }
