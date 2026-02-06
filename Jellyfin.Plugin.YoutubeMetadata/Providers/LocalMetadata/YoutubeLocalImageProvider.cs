@@ -76,6 +76,6 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         /// <param name="item"></param>
         /// <returns></returns>
         public bool Supports(BaseItem item)
-            => item is Movie || item is Episode || item is MusicVideo;
+            => item is Movie || item is Episode || item is MusicVideo || item is Video;
     }
 }

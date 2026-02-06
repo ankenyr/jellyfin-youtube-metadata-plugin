@@ -74,6 +74,17 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
             var result = Utils.YTDLJsonToEpisode(json);
             return result;
         }
+
+        /// <summary>
+        /// Provides a Video Metadata Result from a json object.
+        /// </summary>
+        /// <param name="json"></param>
+        /// <returns></returns>
+        public static MetadataResult<Video> YTDLJsonToVideo(YTDLData json, string id)
+        {
+            var result = Utils.YTDLJsonToVideo(json);
+            return result;
+        }
         public static bool IsFresh(MediaBrowser.Model.IO.FileSystemMetadata fileInfo)
         {
             if (fileInfo.Exists && DateTime.UtcNow.Subtract(fileInfo.LastWriteTimeUtc).Days <= 10)
