@@ -1,9 +1,9 @@
 ---
 name: "YouTube Metadata"
 guid: "b4b4353e-dc57-4398-82c1-de9079e7146a"
-version: "1.0.3.15"
-targetAbi: "10.11.2"
-framework: "net9.0"
+version: "1.0.3.16"
+targetAbi: "12.0.0.0"
+framework: "net10.0"
 owner: "ankenyr"
 overview: "YouTube metadata provider"
 description: "Provides YouTube metadata from the YouTube API and Youtube-dl metadata files."
@@ -13,4 +13,4 @@ artifacts:
 - "NYoutubeDLP.dll"
 - "System.IO.Abstractions.dll"
 changelog: >
-  #154 staticdev: fix targetAbi and target to Jellyfin 10.11.2
+  Update to Jellyfin 12.0 / .NET 10. Bump targetAbi to 12.0.0.0, framework to net10.0, Jellyfin.Controller/Data to 12.0.0.
