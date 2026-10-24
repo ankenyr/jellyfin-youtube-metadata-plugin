@@ -48,7 +48,7 @@ namespace Jellyfin.Plugin.YoutubeMetadata.Providers
         {
             _logger.LogDebug("YTLocal HasChanged: {Name}", item.Name);
             var infoJson = GetInfoJson(item.Path);
-            var result = infoJson.Exists && _fileSystem.GetLastWriteTimeUtc(infoJson) < item.DateLastSaved;
+            var result = infoJson.Exists && (_fileSystem.GetLastWriteTimeUtc(infoJson) - item.DateLastSaved) > TimeSpan.FromMinutes(1);
             _logger.LogDebug("YTLocal HasChanged Result: {Result}", result);
             return result;
         }
